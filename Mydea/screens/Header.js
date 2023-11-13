@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import menu from './Imagenes/Menu.png'
-import lupa from './Imagenes/lupa.png'
+import Menu from './Imagenes/Menu.svg'
+import Lupa from './Imagenes/lupa.svg'
 import {Image, TextInput, View, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
 
 function Header() {
@@ -17,19 +17,19 @@ function Header() {
     return (
         <SafeAreaView style={styles.header_contenedor}>
             <View style={styles.logo_icono_contenedor}>
-                <Image source={menu}  style={styles.logo_icono}></Image>
+                <Menu width={25} height={25}></Menu>
             </View>
             <View style={styles.buscar_contenedor}>
                 <TextInput 
                 style={styles.buscar}
-                placeholder="Buscar... (Cafeterías, Tiendas)"
+                placeholder="Buscar ... (Cafeterías, Tiendas)"
                 placeholderTextColor="#000" >
                 </TextInput>
                 <TouchableOpacity 
                 style={[styles.boton_buscar, {backgroundColor: isPressed ? '#da5d03' : '#c8a700'}]} 
                 onPress={handlePress}
                 activeOpacity={1}>
-                    <Image source={lupa} style={styles.lupa_icono}></Image>
+                    <Lupa width={20} height={20}></Lupa>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -68,10 +68,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         borderBottomRightRadius: 20,
     },
-    lupa_icono:{
-        height: 20,
-        width: 20,
-    },
     logo_icono_contenedor: {
         flex: 1,
         justifyContent: 'center',
@@ -79,10 +75,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'Red',
         marginRight: 10,
     },
-    logo_icono: {
-        width: 25,
-        height: 25,
-    }
 });
 
 export default Header;
