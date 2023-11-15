@@ -1,24 +1,23 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import { useFonts } from 'expo-font';
+import { useFonts} from '@expo-google-fonts/inter'
+import Tienda from './Imagenes/store-solid.svg';
+import Bolsa from './Imagenes/bag-shopping-solid.svg';
+import BolsaDinero from './Imagenes/sack-dollar-solid.svg';
+import HandShake from './Imagenes/handshake-solid.svg';
+
 
 function Crear_negocio_info({navigation}) {
 
     const [fontsLoaded] = useFonts({
-        'Josefin Sans': require('./fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf'),
-        'Inria-Sans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
+        'JosefinSans': require('./fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf'),
+        'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
+    
+    if (!fontsLoaded) {
+        return undefined;
+    }
 
-    const [isPressed, setIsPressed] = useState(false);
-
-    const handlePress = () => {
-        setIsPressed(true);
-        setTimeout(() => {
-            setIsPressed(false);
-        }, 200);
-
-        console.log(fontsLoaded);
-    };
 
 
     return (
@@ -29,23 +28,34 @@ function Crear_negocio_info({navigation}) {
                     <Text style={styles.parrafo}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro, minus quibusdam! Ipsa repellendus, cupiditate nulla nisi at consequuntur porro sequi maiores molestiae magni. Voluptates error, eius quia vitae repellat amet. Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis, obcaecati? Facilis nam placeat ipsam, tenetur, qui libero voluptatum excepturi, aut dolore quae alias temporibus sit sint id dolorem et quis.
                     </Text>
                     <View style={styles.contenedor_botones}>
-                        <TouchableOpacity style={[styles.boton_cancelar, {backgroundColor: isPressed ? '#000' : '#fff'}]}
-                        onPress={handlePress}
-                        activeOpacity={1}>
-                            <Text style={[styles.texto_cancelar, {color: isPressed ? '#fff' : '#000'}]}>Cancelar</Text>
+                        <TouchableOpacity style={styles.boton_cancelar}
+                        onPress={() => navigation.goBack()}>
+                            <Text style={styles.texto_cancelar}>Cancelar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity  style={styles.boton_continuar}>
+                        <TouchableOpacity  style={styles.boton_continuar} onPress={() => navigation.navigate('Crear_negocio_formulario')}>
                             <Text style={styles.texto_continuar}>Continuar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={styles.contenedor_porque}>
                     <Text style={styles.texto_porque}>¿Por qué unirte a MYDEA?</Text>
+                    <View style={styles.contenedor_icono}>
+                        <Tienda width={50} height={50} style={styles.icono}></Tienda>
+                        <Text style={styles.texto_icono}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et architecto esse voluptas ad alias labore minima! Beatae.</Text>
+                    </View>
+                    <View style={styles.contenedor_icono}>
+                        <Bolsa width={50} height={50} style={styles.icono}></Bolsa>
+                        <Text style={styles.texto_icono}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et architecto esse voluptas ad alias labore minima! Beatae.</Text>
+                    </View>
+                    <View style={styles.contenedor_icono}>
+                        <BolsaDinero width={50} height={50} style={styles.icono}></BolsaDinero>
+                        <Text style={styles.texto_icono}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et architecto esse voluptas ad alias labore minima! Beatae.</Text>
+                    </View>
+                    <View style={styles.contenedor_icono}>
+                        <HandShake width={50} height={50} style={styles.icono}></HandShake>
+                        <Text style={styles.texto_icono}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Et architecto esse voluptas ad alias labore minima! Beatae.</Text>
+                    </View>
                 </View>
-                <View></View>
-                <View></View>
-                <View></View>
-                <View></View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -65,9 +75,10 @@ const styles = StyleSheet.create({
         color: '#000',
         fontWeight: 'bold',
         fontSize: 40,
+        fontFamily: 'JosefinSans'
     },
     parrafo: {
-        fontFamily: 'Inria-Sans',
+        fontFamily: 'InriaSans',
         margin: 10,
         fontSize: 15,
     },
@@ -93,15 +104,17 @@ const styles = StyleSheet.create({
         borderColor: '#F43770',
         borderStyle:'solid',
         borderWidth: 2,
-        borderRadius: 5,
+        borderTopLeftRadius: 5,
         margin: 10, 
     },
     texto_cancelar: {
         fontSize: 20,
+        fontFamily: 'InriaSans',
     },
     texto_continuar: {
         fontSize: 20,
         color: '#fff',
+        fontFamily: 'InriaSans',
     },
     contenedor_porque:{
         backgroundColor: '#FB7356',
@@ -111,7 +124,27 @@ const styles = StyleSheet.create({
     texto_porque: {
         color: '#fff',
         fontSize: 25,
-    }
+        fontFamily: 'InriaSans',
+        margin: 10,
+    },
+    contenedor_icono: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginRight: 5,
+        marginLeft: 5,
+        marginBottom: 10,
+    },
+    icono: {
+        flex: 1,
+        fill: '#fff',
+        marginRight: 9,
+    },
+    texto_icono: {
+        flex: 1,
+        color: '#fff',
+        fontSize: 15,
+        fontFamily: 'InriaSans',
+    },
 });
 
 export default Crear_negocio_info;

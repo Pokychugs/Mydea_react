@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Menu from './Imagenes/Menu.svg'
 import Lupa from './Imagenes/lupa.svg'
 import { TextInput, View, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 
 function Header({ navigation }) {
@@ -19,13 +18,13 @@ function Header({ navigation }) {
 
     return (
             <SafeAreaView style={styles.header_contenedor}>
-                <TouchableOpacity style={styles.logo_icono_contenedor} onPress={() => navigation.openDrawer()}>
+                <TouchableOpacity style={styles.logo_icono_contenedor}>
                     <Menu width={25} height={25}></Menu>
                 </TouchableOpacity>
                 <View style={styles.buscar_contenedor}>
                     <TextInput 
                     style={styles.buscar}
-                    placeholder="Buscar ... (Cafeterías, )"
+                    placeholder="Buscar ... (Cafeterías, Abarrotes, Snacks)"
                     placeholderTextColor="#000" >
                     </TextInput>
                     <TouchableOpacity 
