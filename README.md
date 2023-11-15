@@ -9,3 +9,4 @@
 * npm i react-native-svg-transformer
 * npm install @react-navigation/drawer
 * npx expo install react-native-gesture-handler react-native-reanimated
+* npx expo install expo-font

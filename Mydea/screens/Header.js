@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import Menu from './Imagenes/Menu.svg'
 import Lupa from './Imagenes/lupa.svg'
-import {Image, TextInput, View, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
+import { TextInput, View, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-function Header() {
+
+function Header({ navigation }) {
 
     const [isPressed, setIsPressed] = useState(false);
 
@@ -14,32 +16,33 @@ function Header() {
         }, 200);
     };
 
+
     return (
-        <SafeAreaView style={styles.header_contenedor}>
-            <View style={styles.logo_icono_contenedor}>
-                <Menu width={25} height={25}></Menu>
-            </View>
-            <View style={styles.buscar_contenedor}>
-                <TextInput 
-                style={styles.buscar}
-                placeholder="Buscar ... (Cafeterías, Tiendas)"
-                placeholderTextColor="#000" >
-                </TextInput>
-                <TouchableOpacity 
-                style={[styles.boton_buscar, {backgroundColor: isPressed ? '#da5d03' : '#c8a700'}]} 
-                onPress={handlePress}
-                activeOpacity={1}>
-                    <Lupa width={20} height={20}></Lupa>
+            <SafeAreaView style={styles.header_contenedor}>
+                <TouchableOpacity style={styles.logo_icono_contenedor} onPress={() => navigation.openDrawer()}>
+                    <Menu width={25} height={25}></Menu>
                 </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+                <View style={styles.buscar_contenedor}>
+                    <TextInput 
+                    style={styles.buscar}
+                    placeholder="Buscar ... (Cafeterías, )"
+                    placeholderTextColor="#000" >
+                    </TextInput>
+                    <TouchableOpacity 
+                    style={[styles.boton_buscar, {backgroundColor: isPressed ? '#da5d03' : '#c8a700'}]} 
+                    onPress={handlePress}
+                    activeOpacity={1}>
+                        <Lupa width={20} height={20}></Lupa>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        
     );
 }
 
 const styles = StyleSheet.create({
     
     header_contenedor: {
-        flex: 1,
         flexDirection: 'row',
         alignItems: 'center', 
         marginRight: 25,
