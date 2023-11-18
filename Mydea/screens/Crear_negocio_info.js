@@ -10,7 +10,7 @@ import HandShake from './Imagenes/handshake-solid.svg';
 function Crear_negocio_info({navigation}) {
 
     const [fontsLoaded] = useFonts({
-        'JosefinSans': require('./fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf'),
+        'JosefinSans': require('./fonts/Josefin_Sans/static/JosefinSans-Bold.ttf'),
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
     
