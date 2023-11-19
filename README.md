@@ -11,3 +11,4 @@
 * npx expo install react-native-gesture-handler react-native-reanimated
 * npx expo install expo-font
 * npm install react-native-element-dropdown --save
+* npx expo install @react-native-community/datetimepicker

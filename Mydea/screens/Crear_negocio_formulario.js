@@ -1,7 +1,8 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import { SafeAreaView, View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, Pressable, Platform} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import Imagen from './Imagenes/image-solid.svg';
 import Telefono from './Imagenes/phone-solid.svg';
@@ -10,6 +11,7 @@ import Facebook from './Imagenes/facebook.svg'
 import Instagram from './Imagenes/square-instagram.svg'
 import Twitter from './Imagenes/square-twitter.svg'
 import Web from './Imagenes/globe-solid.svg'
+
 
 const data = [
     { label: 'Abarrotes', value: '1' },
@@ -47,8 +49,20 @@ function Crear_negocio_formulario({navigation}) {
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
 
+
+    const [hora, setHora] = useState(new Date());
+    const [horario, setHorario] = useState("");
+    const [showPicker, setShowPicker] = useState(false);
+
+    const [hora_2, setHora_2] = useState(new Date());
+    const [horario_2, setHorario_2] = useState("");
+    const [showPicker_2, setShowPicker_2] = useState(false);
+
     const [value, setValue] = useState(null);
+    const [value_2, setValue_2] = useState(null);
+    const [value_3, setValue_3] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
+
     const [image, setImage] = useState(null);
     const [image_2, setImage_2] = useState(null);
     const [image_3, setImage_3] = useState(null);
@@ -60,18 +74,6 @@ function Crear_negocio_formulario({navigation}) {
         return undefined;
     }
 
-
-    const renderLabel = () => {
-        if (value || isFocus) {
-            return (
-            <Text style={[styles.label, isFocus && { color: 'blue' }]}>
-                Dropdown label
-            </Text>
-            );
-        }
-        return null;
-    };
-
     const pickImage = async (containerId) => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -81,7 +83,6 @@ function Crear_negocio_formulario({navigation}) {
             quality: 1,
         });
     
-        console.log(result);
     
         if (!result.canceled) {
             switch (containerId) {
@@ -106,6 +107,59 @@ function Crear_negocio_formulario({navigation}) {
         }
     };
     
+    const togglePicker = () => {
+        setShowPicker(!showPicker);
+    };
+    const togglePicker_2 = () => {
+        setShowPicker_2(!showPicker_2);
+    };
+
+    const onChange = ({type}, horaSeleccionada) => {
+        if(type == 'set'){
+            const horaActual = horaSeleccionada;
+            setHora(horaActual);
+
+            if(Platform.OS === 'android'){
+                togglePicker();
+                setHorario(horaFormato(horaActual));
+            }
+        }else{
+            togglePicker();
+        }
+    };
+
+    const onChange_2 = ({type}, horaSeleccionada_2) => {
+        if(type == 'set'){
+            const horaActual = horaSeleccionada_2;
+            setHora_2(horaActual);
+
+            if(Platform.OS === 'android'){
+                togglePicker_2();
+                setHorario_2(horaFormato(horaActual));
+            }
+        }else{
+            togglePicker_2();
+        }
+    };
+
+    const horaIos = () => {
+        setHorario(horaFormato(hora));
+        togglePicker();
+    };
+
+    const horaIos_2 = () => {
+        setHorario_2(horaFormato(hora_2));
+        togglePicker_2();
+    };
+
+    const horaFormato = (date) => {
+        const hours = date.getHours();
+        const minutes = `0${date.getMinutes()}`.slice(-2);
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        const formattedHours = hours % 12 || 12;
+        return `${formattedHours}:${minutes} ${ampm}`;
+    };
+
     return (
         <SafeAreaView>
             <View style={styles.container_morado}></View>
@@ -157,7 +211,6 @@ function Crear_negocio_formulario({navigation}) {
                         </View>
                         <View style={styles.subcontenedor_formulario}>
                             <Text style={styles.subtitulo_formulario}>Horarios</Text>
-                            <View style={styles.contenedor_botones_semana}>
                             <Dropdown
                                 style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
                                 placeholderStyle={styles.placeholderStyle}
@@ -167,15 +220,86 @@ function Crear_negocio_formulario({navigation}) {
                                 maxHeight={300}
                                 labelField="label"
                                 valueField="value"
-                                placeholder={!isFocus ? 'Seleccione la Disponibilidad del Producto o Servicio ' : '...'}
-                                value={value}
+                                placeholder={!isFocus ? 'Seleccione el día ' : '...'}
+                                value={value_2}
                                 onFocus={() => setIsFocus(true)}
                                 onBlur={() => setIsFocus(false)}
                                 onChange={item => {
-                                setValue(item.value);
+                                setValue_2(item.value);
                                 setIsFocus(false);
                                 }}>
                             </Dropdown>
+                            <View>
+                                <Text style={styles.texto}>Hora de apertura</Text>
+                                {showPicker && (
+                                    <DateTimePicker 
+                                    mode='time' 
+                                    value={hora} 
+                                    display='spinner'
+                                    onChange={onChange}/>
+                                )}
+                                {showPicker && Platform.OS === 'ios' && (
+                                    <View style={styles.contenedor_botones_semana}>
+                                        <TouchableOpacity 
+                                        style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
+                                        onPress={togglePicker}>
+                                            <Text style={[styles.texto_boton, {color: '#000',}]}>Cancelar</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity 
+                                        style={[{flex: 1, marginHorizontal: 6,}, styles.boton_agregar_lista]}
+                                        onPress={horaIos}>
+                                            <Text style={styles.texto_boton}>Aceptar</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {!showPicker && (
+                                    <Pressable onPress={togglePicker}>
+                                        <TextInput 
+                                        style={[styles.text_input, {color: '#000'}]}
+                                        placeholder="Hora de apertura"
+                                        textAlign="center" 
+                                        value={horario}
+                                        onChangeText={setHorario}
+                                        editable={false}
+                                        onPressIn={togglePicker}>
+                                        </TextInput>
+                                    </Pressable>
+                                )}
+                                <Text style={styles.texto}>Hora de cerrado</Text>
+                                {showPicker_2 && (
+                                    <DateTimePicker 
+                                    mode='time' 
+                                    value={hora_2} 
+                                    display='spinner'
+                                    onChange={onChange_2}/>
+                                )}
+                                {showPicker_2 && Platform.OS === 'ios' && (
+                                    <View style={styles.contenedor_botones_semana}>
+                                        <TouchableOpacity 
+                                        style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
+                                        onPress={togglePicker_2}>
+                                            <Text style={[styles.texto_boton, {color: '#000',}]}>Cancelar</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity 
+                                        style={[{flex: 1, marginHorizontal: 6,}, styles.boton_agregar_lista]}
+                                        onPress={horaIos_2}>
+                                            <Text style={styles.texto_boton}>Aceptar</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {!showPicker_2 && (
+                                    <Pressable onPress={togglePicker_2}>
+                                        <TextInput 
+                                        style={[styles.text_input, {color: '#000'}]}
+                                        placeholder="Hora de cerrado"
+                                        textAlign="center" 
+                                        value={horario_2}
+                                        onChangeText={setHorario_2}
+                                        editable={false}
+                                        onPressIn={togglePicker_2}>
+                                        </TextInput>
+                                    </Pressable>
+                                )}
                             </View>
                         </View>
                         <View style={styles.subcontenedor_formulario_direccion}>
@@ -271,12 +395,12 @@ function Crear_negocio_formulario({navigation}) {
                                 labelField="label"
                                 valueField="value"
                                 placeholder={!isFocus ? 'Seleccione la Disponibilidad del Producto o Servicio ' : '...'}
-                                value={value}
+                                value={value_3}
                                 onFocus={() => setIsFocus(true)}
                                 onBlur={() => setIsFocus(false)}
                                 onChange={item => {
-                                setValue(item.value);
-                                setIsFocus(false);
+                                    setValue_3(item.value);
+                                    setIsFocus(false);
                                 }}>
                             </Dropdown>
                             <TouchableOpacity style={styles.boton_agregar_lista}>
@@ -427,42 +551,6 @@ const styles = StyleSheet.create({
     contenedor_botones_semana: {
         flexDirection: 'row',
         width: '90%',
-    },
-    boton_dia: {
-        flex: 1,
-        borderColor: '#E5E5E5',
-        borderStyle:'solid',
-        borderWidth: 2,
-        borderTopLeftRadius: 7,
-        borderBottomLeftRadius: 7,
-        marginBottom: 10,
-        height: 50,
-        backgroundColor: '#E5E5E5',
-        alignItems: 'center', 
-        justifyContent: 'center',
-    },
-    
-    boton_cerrado: {
-        alignItems: 'center', 
-        justifyContent: 'center',
-        flex: 1, 
-        backgroundColor: '#F43770',
-        borderColor: '#F43770',
-        borderStyle:'solid',
-        borderWidth: 2,
-        height: 50,
-    },
-    boton_sin_horario: {
-        alignItems: 'center', 
-        justifyContent: 'center',
-        flex: 1, 
-        backgroundColor: '#000',
-        borderColor: '#000',
-        borderStyle:'solid',
-        borderWidth: 2,
-        height: 50,
-        borderTopRightRadius: 7,
-        borderBottomRightRadius: 7,
     },
     contenedor_mapa:{
         borderColor: '#000',
