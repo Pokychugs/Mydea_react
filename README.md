@@ -12,3 +12,4 @@
 * npx expo install expo-font
 * npm install react-native-element-dropdown --save
 * npx expo install @react-native-community/datetimepicker
+* npm install native-base

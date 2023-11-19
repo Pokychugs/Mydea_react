@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import { useFonts} from '@expo-google-fonts/inter'
+import { useFonts } from 'expo-font';
 import Tienda from './Imagenes/store-solid.svg';
 import Bolsa from './Imagenes/bag-shopping-solid.svg';
 import BolsaDinero from './Imagenes/sack-dollar-solid.svg';

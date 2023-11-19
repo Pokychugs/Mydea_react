@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, Pressable, Platform} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { NativeBaseProvider, Checkbox } from "native-base";
 import * as ImagePicker from 'expo-image-picker';
 import Imagen from './Imagenes/image-solid.svg';
 import Telefono from './Imagenes/phone-solid.svg';
@@ -57,6 +58,8 @@ function Crear_negocio_formulario({navigation}) {
     const [hora_2, setHora_2] = useState(new Date());
     const [horario_2, setHorario_2] = useState("");
     const [showPicker_2, setShowPicker_2] = useState(false);
+    const [diaCerrado, setDiaCerrado] = useState(false);
+    const [sinHorarioEspecifico, setSinHorarioEspecifico] = useState(false);
 
     const [value, setValue] = useState(null);
     const [value_2, setValue_2] = useState(null);
@@ -160,8 +163,26 @@ function Crear_negocio_formulario({navigation}) {
         return `${formattedHours}:${minutes} ${ampm}`;
     };
 
+    const handleDíaCerradoToggle = () => {
+        setDiaCerrado(!diaCerrado);
+        setSinHorarioEspecifico(false);
+        setHorario('');
+        setHorario_2('');
+        setShowPicker(false);
+        setShowPicker_2(false);
+    };
+
+    const handleSinHorarioEspecificoToggle = () => {
+        setSinHorarioEspecifico(!sinHorarioEspecifico);
+        setDiaCerrado(false);
+        setHorario('');
+        setHorario_2('');
+        setShowPicker(false);
+        setShowPicker_2(false);
+    };
+
     return (
-        <SafeAreaView>
+        <NativeBaseProvider>
             <View style={styles.container_morado}></View>
             <ScrollView>
                 <View style={styles.container}>
@@ -209,7 +230,7 @@ function Crear_negocio_formulario({navigation}) {
                                 {image && <Image source={{ uri: image }} style={styles.Imagen_logo} />}
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.subcontenedor_formulario}>
+                        <View style={styles.subcontenedor_formulario_direccion}>
                             <Text style={styles.subtitulo_formulario}>Horarios</Text>
                             <Dropdown
                                 style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
@@ -230,15 +251,14 @@ function Crear_negocio_formulario({navigation}) {
                                 }}>
                             </Dropdown>
                             <View>
-                                <Text style={styles.texto}>Hora de apertura</Text>
-                                {showPicker && (
+                                {!diaCerrado && !sinHorarioEspecifico && showPicker && (
                                     <DateTimePicker 
                                     mode='time' 
                                     value={hora} 
                                     display='spinner'
                                     onChange={onChange}/>
                                 )}
-                                {showPicker && Platform.OS === 'ios' && (
+                                {!diaCerrado && !sinHorarioEspecifico &&showPicker && Platform.OS === 'ios' && (
                                     <View style={styles.contenedor_botones_semana}>
                                         <TouchableOpacity 
                                         style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
@@ -252,8 +272,9 @@ function Crear_negocio_formulario({navigation}) {
                                         </TouchableOpacity>
                                     </View>
                                 )}
-                                {!showPicker && (
+                                {!diaCerrado && !sinHorarioEspecifico && !showPicker && (
                                     <Pressable onPress={togglePicker}>
+                                        <Text style={styles.texto}>Hora de apertura</Text>
                                         <TextInput 
                                         style={[styles.text_input, {color: '#000'}]}
                                         placeholder="Hora de apertura"
@@ -265,15 +286,14 @@ function Crear_negocio_formulario({navigation}) {
                                         </TextInput>
                                     </Pressable>
                                 )}
-                                <Text style={styles.texto}>Hora de cerrado</Text>
-                                {showPicker_2 && (
+                                {!diaCerrado && !sinHorarioEspecifico &&showPicker_2 && (
                                     <DateTimePicker 
                                     mode='time' 
                                     value={hora_2} 
                                     display='spinner'
                                     onChange={onChange_2}/>
                                 )}
-                                {showPicker_2 && Platform.OS === 'ios' && (
+                                {!diaCerrado && !sinHorarioEspecifico &&showPicker_2 && Platform.OS === 'ios' && (
                                     <View style={styles.contenedor_botones_semana}>
                                         <TouchableOpacity 
                                         style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
@@ -287,8 +307,9 @@ function Crear_negocio_formulario({navigation}) {
                                         </TouchableOpacity>
                                     </View>
                                 )}
-                                {!showPicker_2 && (
+                                {!diaCerrado && !sinHorarioEspecifico &&!showPicker_2 && (
                                     <Pressable onPress={togglePicker_2}>
+                                        <Text style={styles.texto}>Hora de cerrado</Text>
                                         <TextInput 
                                         style={[styles.text_input, {color: '#000'}]}
                                         placeholder="Hora de cerrado"
@@ -300,9 +321,29 @@ function Crear_negocio_formulario({navigation}) {
                                         </TextInput>
                                     </Pressable>
                                 )}
+                                <View style={{flexDirection: 'row', width: '100%', margin: 6}}>
+                                    <View style={[{flex: 1}, styles.container]}>
+                                        <Checkbox 
+                                        colorScheme="danger" 
+                                        size="md"
+                                        isChecked={diaCerrado} 
+                                        onChange={handleDíaCerradoToggle}>
+                                            Día Cerrado
+                                        </Checkbox>
+                                    </View>
+                                    <View style={[{flex: 1}, styles.container]}>
+                                        <Checkbox 
+                                        colorScheme="purple" 
+                                        size="md"
+                                        isChecked={sinHorarioEspecifico} 
+                                        onChange={handleSinHorarioEspecificoToggle}>
+                                            Sin Horario Específico
+                                        </Checkbox>
+                                    </View>
+                                </View>
                             </View>
                         </View>
-                        <View style={styles.subcontenedor_formulario_direccion}>
+                        <View style={styles.subcontenedor_formulario_Imagenes}>
                             <Text style={styles.subtitulo_formulario}>Dirección del local</Text>
                             <View style={styles.contenedor_mapa}></View>
                             <Text style={styles.texto}>Código postal</Text>
@@ -420,7 +461,7 @@ function Crear_negocio_formulario({navigation}) {
                 </View>
                 
             </ScrollView>
-        </SafeAreaView>
+        </NativeBaseProvider>
     );
 }
 
