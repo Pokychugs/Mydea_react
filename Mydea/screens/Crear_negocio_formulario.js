@@ -1,10 +1,10 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { SafeAreaView, View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, Pressable, Platform} from 'react-native';
+import { View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity,} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { NativeBaseProvider, Checkbox } from "native-base";
+import { NativeBaseProvider} from "native-base";
 import * as ImagePicker from 'expo-image-picker';
+import Horarios from './horarios';
 import Imagen from './Imagenes/image-solid.svg';
 import Telefono from './Imagenes/phone-solid.svg';
 import Correo from './Imagenes/square-envelope-solid.svg'
@@ -34,15 +34,6 @@ const data_2 = [
     { label: 'Proximamente', value: '6' },
 ];
 
-const data_3 = [
-    { label: 'Lunes', value: '1' },
-    { label: 'Martes', value: '2' },
-    { label: 'Miércoles', value: '3' },
-    { label: 'Jueves', value: '4' },
-    { label: 'Viernes', value: '5' },
-    { label: 'Sábado', value: '6' },
-    { label: 'Domingo', value: '7' },
-];
 
 function Crear_negocio_formulario({navigation}) {
 
@@ -50,19 +41,7 @@ function Crear_negocio_formulario({navigation}) {
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
 
-
-    const [hora, setHora] = useState(new Date());
-    const [horario, setHorario] = useState("");
-    const [showPicker, setShowPicker] = useState(false);
-
-    const [hora_2, setHora_2] = useState(new Date());
-    const [horario_2, setHorario_2] = useState("");
-    const [showPicker_2, setShowPicker_2] = useState(false);
-    const [diaCerrado, setDiaCerrado] = useState(false);
-    const [sinHorarioEspecifico, setSinHorarioEspecifico] = useState(false);
-
     const [value, setValue] = useState(null);
-    const [value_2, setValue_2] = useState(null);
     const [value_3, setValue_3] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
@@ -108,77 +87,6 @@ function Crear_negocio_formulario({navigation}) {
                     break;
             }
         }
-    };
-    
-    const togglePicker = () => {
-        setShowPicker(!showPicker);
-    };
-    const togglePicker_2 = () => {
-        setShowPicker_2(!showPicker_2);
-    };
-
-    const onChange = ({type}, horaSeleccionada) => {
-        if(type == 'set'){
-            const horaActual = horaSeleccionada;
-            setHora(horaActual);
-
-            if(Platform.OS === 'android'){
-                togglePicker();
-                setHorario(horaFormato(horaActual));
-            }
-        }else{
-            togglePicker();
-        }
-    };
-
-    const onChange_2 = ({type}, horaSeleccionada_2) => {
-        if(type == 'set'){
-            const horaActual = horaSeleccionada_2;
-            setHora_2(horaActual);
-
-            if(Platform.OS === 'android'){
-                togglePicker_2();
-                setHorario_2(horaFormato(horaActual));
-            }
-        }else{
-            togglePicker_2();
-        }
-    };
-
-    const horaIos = () => {
-        setHorario(horaFormato(hora));
-        togglePicker();
-    };
-
-    const horaIos_2 = () => {
-        setHorario_2(horaFormato(hora_2));
-        togglePicker_2();
-    };
-
-    const horaFormato = (date) => {
-        const hours = date.getHours();
-        const minutes = `0${date.getMinutes()}`.slice(-2);
-        const ampm = hours >= 12 ? 'pm' : 'am';
-        const formattedHours = hours % 12 || 12;
-        return `${formattedHours}:${minutes} ${ampm}`;
-    };
-
-    const handleDíaCerradoToggle = () => {
-        setDiaCerrado(!diaCerrado);
-        setSinHorarioEspecifico(false);
-        setHorario('');
-        setHorario_2('');
-        setShowPicker(false);
-        setShowPicker_2(false);
-    };
-
-    const handleSinHorarioEspecificoToggle = () => {
-        setSinHorarioEspecifico(!sinHorarioEspecifico);
-        setDiaCerrado(false);
-        setHorario('');
-        setHorario_2('');
-        setShowPicker(false);
-        setShowPicker_2(false);
     };
 
     return (
@@ -230,119 +138,7 @@ function Crear_negocio_formulario({navigation}) {
                                 {image && <Image source={{ uri: image }} style={styles.Imagen_logo} />}
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.subcontenedor_formulario_direccion}>
-                            <Text style={styles.subtitulo_formulario}>Horarios</Text>
-                            <Dropdown
-                                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                                placeholderStyle={styles.placeholderStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                iconStyle={styles.iconStyle}
-                                data={data_3}
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={!isFocus ? 'Seleccione el día ' : '...'}
-                                value={value_2}
-                                onFocus={() => setIsFocus(true)}
-                                onBlur={() => setIsFocus(false)}
-                                onChange={item => {
-                                setValue_2(item.value);
-                                setIsFocus(false);
-                                }}>
-                            </Dropdown>
-                            <View>
-                                {!diaCerrado && !sinHorarioEspecifico && showPicker && (
-                                    <DateTimePicker 
-                                    mode='time' 
-                                    value={hora} 
-                                    display='spinner'
-                                    onChange={onChange}/>
-                                )}
-                                {!diaCerrado && !sinHorarioEspecifico &&showPicker && Platform.OS === 'ios' && (
-                                    <View style={styles.contenedor_botones_semana}>
-                                        <TouchableOpacity 
-                                        style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
-                                        onPress={togglePicker}>
-                                            <Text style={[styles.texto_boton, {color: '#000',}]}>Cancelar</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity 
-                                        style={[{flex: 1, marginHorizontal: 6,}, styles.boton_agregar_lista]}
-                                        onPress={horaIos}>
-                                            <Text style={styles.texto_boton}>Aceptar</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                                {!diaCerrado && !sinHorarioEspecifico && !showPicker && (
-                                    <Pressable onPress={togglePicker}>
-                                        <Text style={styles.texto}>Hora de apertura</Text>
-                                        <TextInput 
-                                        style={[styles.text_input, {color: '#000'}]}
-                                        placeholder="Hora de apertura"
-                                        textAlign="center" 
-                                        value={horario}
-                                        onChangeText={setHorario}
-                                        editable={false}
-                                        onPressIn={togglePicker}>
-                                        </TextInput>
-                                    </Pressable>
-                                )}
-                                {!diaCerrado && !sinHorarioEspecifico &&showPicker_2 && (
-                                    <DateTimePicker 
-                                    mode='time' 
-                                    value={hora_2} 
-                                    display='spinner'
-                                    onChange={onChange_2}/>
-                                )}
-                                {!diaCerrado && !sinHorarioEspecifico &&showPicker_2 && Platform.OS === 'ios' && (
-                                    <View style={styles.contenedor_botones_semana}>
-                                        <TouchableOpacity 
-                                        style={[ styles.boton_agregar_lista, {flex: 1, backgroundColor: '#E5E5E5',}]}
-                                        onPress={togglePicker_2}>
-                                            <Text style={[styles.texto_boton, {color: '#000',}]}>Cancelar</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity 
-                                        style={[{flex: 1, marginHorizontal: 6,}, styles.boton_agregar_lista]}
-                                        onPress={horaIos_2}>
-                                            <Text style={styles.texto_boton}>Aceptar</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                                {!diaCerrado && !sinHorarioEspecifico &&!showPicker_2 && (
-                                    <Pressable onPress={togglePicker_2}>
-                                        <Text style={styles.texto}>Hora de cerrado</Text>
-                                        <TextInput 
-                                        style={[styles.text_input, {color: '#000'}]}
-                                        placeholder="Hora de cerrado"
-                                        textAlign="center" 
-                                        value={horario_2}
-                                        onChangeText={setHorario_2}
-                                        editable={false}
-                                        onPressIn={togglePicker_2}>
-                                        </TextInput>
-                                    </Pressable>
-                                )}
-                                <View style={{flexDirection: 'row', width: '100%', margin: 6}}>
-                                    <View style={[{flex: 1}, styles.container]}>
-                                        <Checkbox 
-                                        colorScheme="danger" 
-                                        size="md"
-                                        isChecked={diaCerrado} 
-                                        onChange={handleDíaCerradoToggle}>
-                                            Día Cerrado
-                                        </Checkbox>
-                                    </View>
-                                    <View style={[{flex: 1}, styles.container]}>
-                                        <Checkbox 
-                                        colorScheme="purple" 
-                                        size="md"
-                                        isChecked={sinHorarioEspecifico} 
-                                        onChange={handleSinHorarioEspecificoToggle}>
-                                            Sin Horario Específico
-                                        </Checkbox>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
+                        <Horarios></Horarios>
                         <View style={styles.subcontenedor_formulario_Imagenes}>
                             <Text style={styles.subtitulo_formulario}>Dirección del local</Text>
                             <View style={styles.contenedor_mapa}></View>
