@@ -4,6 +4,7 @@ import { View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity,
 import { Dropdown } from 'react-native-element-dropdown';
 import { NativeBaseProvider} from "native-base";
 import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker } from 'react-native-maps';
 import Horarios from './horarios';
 import Imagen from './Imagenes/image-solid.svg';
 import Telefono from './Imagenes/phone-solid.svg';
@@ -51,6 +52,14 @@ function Crear_negocio_formulario({navigation}) {
     const [image_4, setImage_4] = useState(null);
     const [image_5, setImage_5] = useState(null);
 
+    const [formData, setFormData] = useState({
+        imagen: null,
+        productName: '',
+        productPrice: '',
+        productDescription: '',
+        availability: '',
+    });
+
 
     if (!fontsLoaded) {
         return undefined;
@@ -88,6 +97,7 @@ function Crear_negocio_formulario({navigation}) {
             }
         }
     };
+
 
     return (
         <NativeBaseProvider>
@@ -141,7 +151,20 @@ function Crear_negocio_formulario({navigation}) {
                         <Horarios></Horarios>
                         <View style={styles.subcontenedor_formulario_Imagenes}>
                             <Text style={styles.subtitulo_formulario}>Dirección del local</Text>
-                            <View style={styles.contenedor_mapa}></View>
+                            <MapView 
+                            style={styles.contenedor_mapa}
+                            initialRegion={{
+                                latitude: 19.251111,
+                                longitude: -99.055556,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01,
+                            }}>
+                                <Marker
+                                    coordinate={{ latitude: 19.251111, longitude: -99.055556 }}
+                                    title="Negocio"
+                                    description="Dirección del negocio"
+                                />
+                            </MapView>
                             <Text style={styles.texto}>Código postal</Text>
                             <TextInput
                             style={styles.text_input}
@@ -201,7 +224,7 @@ function Crear_negocio_formulario({navigation}) {
                                 <TextInput style={styles.input_contacto}></TextInput>
                             </View>
                         </View>
-                        <Text style={styles.title_formulario}>Crear y Añadir Productos o Servicios</Text>
+                        <Text style={styles.title_formulario}>Crear y Añadir un Producto o Servicio</Text>
                         <View style={styles.subcontenedor_formulario_Imagenes}>
                             <Text style={styles.subtitulo_formulario}>Imagen del producto o servicio</Text>
                             <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container5')}>
@@ -240,22 +263,12 @@ function Crear_negocio_formulario({navigation}) {
                                     setIsFocus(false);
                                 }}>
                             </Dropdown>
-                            <TouchableOpacity style={styles.boton_agregar_lista}>
-                                <Text style={styles.texto_boton}>Agregar a la lista</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={styles.title_formulario}>Lista de productos</Text>
-                        <View style={styles.subcontenedor_formulario_Imagenes}>
-                            <View style={styles.contenedor_mapa}></View>
-                            <View style={styles.contenedor_mapa}></View>
-                            <View style={styles.contenedor_mapa}></View>
                         </View>
                         <TouchableOpacity style={styles.boton_agregar_lista}>
                                 <Text style={styles.texto_boton}>Continuar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
-                
             </ScrollView>
         </NativeBaseProvider>
     );
@@ -396,7 +409,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         width: '100%',
         marginBottom: 10,
-        height: 150,
+        height: 200,
         backgroundColor: '#E5E5E5',
         elevation: 4,
         alignItems: 'center', 

@@ -13,3 +13,4 @@
 * npm install react-native-element-dropdown --save
 * npx expo install @react-native-community/datetimepicker
 * npm install native-base
+* npm i react-native-maps
