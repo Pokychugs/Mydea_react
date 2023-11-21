@@ -16,14 +16,14 @@ const Stack = createNativeStackNavigator();
 export default function Navigator() {
     return (
         <NavigationContainer>
-        <Stack.Navigator>
-            <Stack.Screen name="Inicio" component={Inicio}
-            options={{ headerTitle: (props) => <Header {...props} /> }}/>
-            <Stack.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
-            options={{ headerTitle: (props) => <Header {...props} /> }}/>
-            <Stack.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
-            options={{ headerTitle: (props) => <Header {...props} /> }}/>
-        </Stack.Navigator>
+            <Stack.Navigator>
+                <Stack.Screen name="Inicio" component={Inicio}
+                options={{ header: () => <Header />, }}/>
+                <Stack.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
+                options={{ header: () => <Header />, }}/>
+                <Stack.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
+                options={{header: () => <Header />,}}/>
+            </Stack.Navigator>
         </NavigationContainer>
     );
 }

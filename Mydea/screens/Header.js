@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Menu from './Imagenes/Menu.svg'
 import Lupa from './Imagenes/lupa.svg'
-import { TextInput, View, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
+import { TextInput, View, StyleSheet, TouchableOpacity} from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 function Header({ navigation }) {
@@ -17,37 +17,40 @@ function Header({ navigation }) {
 
 
     return (
-            <SafeAreaView style={styles.header_contenedor}>
-                <TouchableOpacity style={styles.logo_icono_contenedor}>
-                    <Menu width={25} height={25}></Menu>
+        <View style={styles.header_contenedor}>
+            <View style={styles.buscar_contenedor}>
+                <TextInput 
+                style={styles.buscar}
+                placeholder="Buscar ... (Cafeterías, Abarrotes, Snacks)"
+                placeholderTextColor="#000" >
+                </TextInput>
+                <TouchableOpacity 
+                style={[styles.boton_buscar, {backgroundColor: isPressed ? '#da5d03' : '#c8a700'}]} 
+                onPress={handlePress}
+                activeOpacity={1}>
+                    <Lupa width={20} height={20}></Lupa>
                 </TouchableOpacity>
-                <View style={styles.buscar_contenedor}>
-                    <TextInput 
-                    style={styles.buscar}
-                    placeholder="Buscar ... (Cafeterías, Abarrotes, Snacks)"
-                    placeholderTextColor="#000" >
-                    </TextInput>
-                    <TouchableOpacity 
-                    style={[styles.boton_buscar, {backgroundColor: isPressed ? '#da5d03' : '#c8a700'}]} 
-                    onPress={handlePress}
-                    activeOpacity={1}>
-                        <Lupa width={20} height={20}></Lupa>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     
     header_contenedor: {
+        width: '100%',
         flexDirection: 'row',
-        alignItems: 'center', 
-        marginRight: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 40,
+        marginTop: 43,
+        marginBottom: 10, 
+        borderColor: '#000',
+        borderStyle:'solid',
     },
     buscar_contenedor: {
-        flex: 10,
+        flex: 1,
+        marginHorizontal: 10,
     },
     buscar: {
         flex: 1,
@@ -69,13 +72,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderTopRightRadius: 20,
         borderBottomRightRadius: 20,
-    },
-    logo_icono_contenedor: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'Red',
-        marginRight: 10,
     },
 });
 

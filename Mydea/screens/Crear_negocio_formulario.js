@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#5B1D63',
         width: '100%',
         height: 150,
-        position: 'absolute', 
+        position: 'absolute',
     },
     container: {
         alignItems: 'center', 
