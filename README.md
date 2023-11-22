@@ -14,3 +14,4 @@
 * npx expo install @react-native-community/datetimepicker
 * npm install native-base
 * npm i react-native-maps
+* npm install @react-navigation/bottom-tabs
