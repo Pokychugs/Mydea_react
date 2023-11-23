@@ -7,12 +7,16 @@ function Perfil({navigation}) {
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
 
+    if (!fontsLoaded) {
+        return undefined;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
                 <Text style={styles.title}>Inicia sesión para obtener la mejor experiencia</Text>
                 <View>
-                    <TouchableOpacity style={[styles.boton, {backgroundColor:'rgba(244, 55, 112, 1)'}]}>
+                    <TouchableOpacity style={[styles.boton, {backgroundColor:'rgba(244, 55, 112, 1)'}]} onPress={() => navigation.navigate('Inicio_sesión')}>
                         <Text style={[styles.texto_boton, {color: '#fff'}]}>Iniciar Sesión</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.boton, styles.boton_crear]}>

@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity,} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
 import { NativeBaseProvider} from "native-base";
 import * as ImagePicker from 'expo-image-picker';
@@ -103,7 +104,7 @@ function Crear_negocio_formulario({navigation}) {
         <NativeBaseProvider>
             <View style={styles.container_morado}></View>
             <ScrollView>
-                <View style={styles.container}>
+                <SafeAreaView style={styles.container}>
                     <Text style={styles.title}>¡EMPECEMOS!</Text>
                     <View style={styles.contenedor_formulario}>
                         <Text style={styles.title_formulario}>Datos del negocio</Text>
@@ -268,7 +269,7 @@ function Crear_negocio_formulario({navigation}) {
                                 <Text style={styles.texto_boton}>Continuar</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </SafeAreaView>
             </ScrollView>
         </NativeBaseProvider>
     );
@@ -284,6 +285,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center', 
         justifyContent: 'center',
+        marginBottom: 10,
     },
     title: {
         fontFamily: 'InriaSans',
