@@ -139,7 +139,7 @@ function Registro({navigation}) {
                         </View>
                     </View>
                     <TouchableOpacity style={styles.boton}>
-                        <Text style={styles.texto_boton}>INICIAR SESIÓN</Text>
+                        <Text style={styles.texto_boton}>REGISTRARSE</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
             </ScrollView>
