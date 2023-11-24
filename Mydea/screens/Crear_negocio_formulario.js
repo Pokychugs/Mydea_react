@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity,} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
-import { NativeBaseProvider, Row} from "native-base";
+import { NativeBaseProvider} from "native-base";
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker } from 'react-native-maps';
 import Horarios from './horarios';

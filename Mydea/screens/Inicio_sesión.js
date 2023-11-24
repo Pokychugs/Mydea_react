@@ -1,6 +1,6 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 function Inicio_sesión({navigation}) {
@@ -49,11 +49,11 @@ function Inicio_sesión({navigation}) {
                             <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Contraseña</Text>
                             <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
                             onFocus={() => handleFocus('input3')}
-                            placeholder='Contraseña'
+                            placeholder='CONTRSEÑA'
                             secureTextEntry={true}></TextInput>
                         </View>
                         <Text style={styles.texto}>¿Aún no tienes una cuenta?</Text><Text style={[styles.texto, {color:'#ad3f26'}]}
-                        onPress={() => navigation.navigate('Inicio_sesión')}>REGISTRATE</Text>
+                        onPress={() => navigation.navigate('Registro')}>REGISTRATE</Text>
                     </View>
                 </View>
                 <TouchableOpacity style={styles.boton}>

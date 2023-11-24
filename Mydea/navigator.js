@@ -8,6 +8,7 @@ import Crear_negocio_info from './screens/Crear_negocio_info';
 import Crear_negocio_formulario from './screens/Crear_negocio_formulario';
 import Perfil from './screens/Perfil';
 import Inicio_sesión from './screens/Inicio_sesión';
+import Registro from './screens/Registro';
 
 
 const Stack = createNativeStackNavigator();
@@ -37,6 +38,8 @@ export default function Navigator() {
                 <Stack.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
                 options={{headerShown: false}}/>
                 <Stack.Screen name="Inicio_sesión" component={Inicio_sesión} 
+                options={{headerShown: false}}/>
+                <Stack.Screen name="Registro" component={Registro} 
                 options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>

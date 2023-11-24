@@ -19,7 +19,7 @@ function Perfil({navigation}) {
                     <TouchableOpacity style={[styles.boton, {backgroundColor:'rgba(244, 55, 112, 1)'}]} onPress={() => navigation.navigate('Inicio_sesión')}>
                         <Text style={[styles.texto_boton, {color: '#fff'}]}>Iniciar Sesión</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.boton, styles.boton_crear]}>
+                    <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={() => navigation.navigate('Registro')}>
                         <Text style={[styles.texto_boton]}>Crear Cuenta</Text>
                     </TouchableOpacity>
                 </View>
