@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity,} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
-import { NativeBaseProvider} from "native-base";
+import { NativeBaseProvider, Row} from "native-base";
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker } from 'react-native-maps';
 import Horarios from './horarios';
@@ -53,6 +53,8 @@ function Crear_negocio_formulario({navigation}) {
     const [image_4, setImage_4] = useState(null);
     const [image_5, setImage_5] = useState(null);
 
+    const [datos_negocio, setDatos_negocio] = useState(true)
+
     const [formData, setFormData] = useState({
         imagen: null,
         productName: '',
@@ -99,6 +101,14 @@ function Crear_negocio_formulario({navigation}) {
         }
     };
 
+    const handle_datos_negocio = () => {
+        setDatos_negocio(true)
+    }
+
+    const handle_producto = () => {
+        setDatos_negocio(false)
+    }
+
 
     return (
         <NativeBaseProvider>
@@ -106,7 +116,16 @@ function Crear_negocio_formulario({navigation}) {
             <ScrollView>
                 <SafeAreaView style={styles.container}>
                     <Text style={styles.title}>¡EMPECEMOS!</Text>
-                    <View style={styles.contenedor_formulario}>
+                    <View style={styles.contenedor_botones_form}>
+                        <TouchableOpacity style={[styles.boton_form, {marginRight: 5}, datos_negocio && styles.boton_form_selected]} onPress={handle_datos_negocio}>
+                            <Text style={[styles.texto_boton_form, datos_negocio && styles.texto_boton_form_selected]}>Datos del negocio</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.boton_form, !datos_negocio && styles.boton_form_selected]} onPress={handle_producto}>
+                            <Text style={[styles.texto_boton_form, !datos_negocio && styles.texto_boton_form_selected]}>Añadir Producto y/o Servicio</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {datos_negocio && (
+                        <View style={styles.contenedor_formulario}>
                         <Text style={styles.title_formulario}>Datos del negocio</Text>
                         <View style={styles.subcontenedor_formulario}>
                             <Text style={styles.subtitulo_formulario}>Nombre del negocio</Text>
@@ -198,7 +217,7 @@ function Crear_negocio_formulario({navigation}) {
                                 {image_4 && <Image source={{ uri: image_4 }} style={styles.Imagen_logo} />}
                             </TouchableOpacity>
                         </View>
-                        <View style={styles.subcontenedor_formulario_Imagenes}>
+                        <View style={styles.subcontenedor_formulario}>
                             <Text style={styles.subtitulo_formulario}>Contactos del local</Text>
                             <View style={styles.contenedor_contacto}>
                                 <Telefono width={40} height={40} style={styles.contacto_icono}></Telefono>
@@ -225,50 +244,55 @@ function Crear_negocio_formulario({navigation}) {
                                 <TextInput style={styles.input_contacto}></TextInput>
                             </View>
                         </View>
-                        <Text style={styles.title_formulario}>Crear y Añadir un Producto o Servicio</Text>
-                        <View style={styles.subcontenedor_formulario_Imagenes}>
-                            <Text style={styles.subtitulo_formulario}>Imagen del producto o servicio</Text>
-                            <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container5')}>
-                                <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                {image_5 && <Image source={{ uri: image_5 }} style={styles.Imagen_logo} />}
-                            </TouchableOpacity>
-                            <Text style={styles.subtitulo_formulario}>Nombre del producto o servicio</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
-                            <Text style={styles.subtitulo_formulario}>Precio del producto o servicio</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
-                            <Text style={styles.subtitulo_formulario}>Descripción del producto o servicio</Text>
-                            <TextInput style={styles.textArea_input} 
-                            multiline
-                            numberOfLines={4}
-                            ></TextInput>
-                            <Text style={styles.subtitulo_formulario}>Disponibilidad del Producto o Servicio </Text>
-                            <Dropdown
-                                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                                placeholderStyle={styles.placeholderStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                iconStyle={styles.iconStyle}
-                                data={data_2}
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={!isFocus ? 'Seleccione la Disponibilidad del Producto o Servicio ' : '...'}
-                                value={value_3}
-                                onFocus={() => setIsFocus(true)}
-                                onBlur={() => setIsFocus(false)}
-                                onChange={item => {
-                                    setValue_3(item.value);
-                                    setIsFocus(false);
-                                }}>
-                            </Dropdown>
-                        </View>
-                        <TouchableOpacity style={styles.boton_agregar_lista}>
-                                <Text style={styles.texto_boton}>Continuar</Text>
-                        </TouchableOpacity>
                     </View>
+                    )}
+                    {!datos_negocio && (
+                        <View style={styles.contenedor_formulario}>
+                            <Text style={styles.title_formulario}>Crear y Añadir un Producto o Servicio</Text>
+                            <View style={styles.subcontenedor_formulario}>
+                                <Text style={styles.subtitulo_formulario}>Imagen del producto o servicio</Text>
+                                <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container5')}>
+                                    <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
+                                    {image_5 && <Image source={{ uri: image_5 }} style={styles.Imagen_logo} />}
+                                </TouchableOpacity>
+                                <Text style={styles.subtitulo_formulario}>Nombre del producto o servicio</Text>
+                                <TextInput
+                                style={styles.text_input}
+                                ></TextInput>
+                                <Text style={styles.subtitulo_formulario}>Precio del producto o servicio</Text>
+                                <TextInput
+                                style={styles.text_input}
+                                ></TextInput>
+                                <Text style={styles.subtitulo_formulario}>Descripción del producto o servicio</Text>
+                                <TextInput style={styles.textArea_input} 
+                                multiline
+                                numberOfLines={4}
+                                ></TextInput>
+                                <Text style={styles.subtitulo_formulario}>Disponibilidad del Producto o Servicio </Text>
+                                <Dropdown
+                                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                                    placeholderStyle={styles.placeholderStyle}
+                                    selectedTextStyle={styles.selectedTextStyle}
+                                    iconStyle={styles.iconStyle}
+                                    data={data_2}
+                                    maxHeight={300}
+                                    labelField="label"
+                                    valueField="value"
+                                    placeholder={!isFocus ? 'Seleccione la Disponibilidad del Producto o Servicio ' : '...'}
+                                    value={value_3}
+                                    onFocus={() => setIsFocus(true)}
+                                    onBlur={() => setIsFocus(false)}
+                                    onChange={item => {
+                                        setValue_3(item.value);
+                                        setIsFocus(false);
+                                    }}>
+                                </Dropdown>
+                            </View>
+                        </View>
+                    )}
+                    <TouchableOpacity style={styles.boton_agregar_lista}>
+                        <Text style={styles.texto_boton}>Continuar</Text>
+                    </TouchableOpacity>
                 </SafeAreaView>
             </ScrollView>
         </NativeBaseProvider>
@@ -299,6 +323,8 @@ const styles = StyleSheet.create({
         borderStyle:'solid',
         borderWidth: 3,
         borderRadius: 7,
+        borderTopRightRadius: 0,
+        borderTopLeftRadius: 0,
         width: '90%',
         alignItems: 'center', 
         justifyContent: 'center',
@@ -462,6 +488,32 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginHorizontal: 5,
     },
+    boton_form: {
+        flex: 1,
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+        borderTopRightRadius: 7,
+        borderTopLeftRadius: 7,
+        height: 50,
+        marginTop: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.503)',
+    },
+    contenedor_botones_form: {
+        width: '90%',
+        flexDirection: 'row',
+    },
+    texto_boton_form: {
+        fontFamily: 'InriaSans',
+        fontSize: 20,
+        marginHorizontal: 5,
+    },
+    boton_form_selected: {
+        backgroundColor: '#000'
+    },
+    texto_boton_form_selected:{
+        color: '#fff'
+    }
 });
 
 export default Crear_negocio_formulario;
