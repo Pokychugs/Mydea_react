@@ -44,24 +44,13 @@ function Crear_negocio_formulario({navigation}) {
     });
 
     const [value, setValue] = useState(null);
-    const [value_3, setValue_3] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
 
     const [image, setImage] = useState(null);
     const [image_2, setImage_2] = useState(null);
     const [image_3, setImage_3] = useState(null);
     const [image_4, setImage_4] = useState(null);
-    const [image_5, setImage_5] = useState(null);
 
-    const [datos_negocio, setDatos_negocio] = useState(true)
-
-    const [formData, setFormData] = useState({
-        imagen: null,
-        productName: '',
-        productPrice: '',
-        productDescription: '',
-        availability: '',
-    });
 
 
     if (!fontsLoaded) {
@@ -75,7 +64,7 @@ function Crear_negocio_formulario({navigation}) {
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
-        });
+    });
     
     
         if (!result.canceled) {
@@ -92,23 +81,11 @@ function Crear_negocio_formulario({navigation}) {
                 case 'container4':
                     setImage_4(result.assets[0].uri);
                     break;
-                case 'container5':
-                    setImage_5(result.assets[0].uri);
-                    break;
                 default:
                     break;
             }
         }
     };
-
-    const handle_datos_negocio = () => {
-        setDatos_negocio(true)
-    }
-
-    const handle_producto = () => {
-        setDatos_negocio(false)
-    }
-
 
     return (
         <NativeBaseProvider>
@@ -116,183 +93,129 @@ function Crear_negocio_formulario({navigation}) {
             <ScrollView>
                 <SafeAreaView style={styles.container}>
                     <Text style={styles.title}>¡EMPECEMOS!</Text>
-                    <View style={styles.contenedor_botones_form}>
-                        <TouchableOpacity style={[styles.boton_form, {marginRight: 5}, datos_negocio && styles.boton_form_selected]} onPress={handle_datos_negocio}>
-                            <Text style={[styles.texto_boton_form, datos_negocio && styles.texto_boton_form_selected]}>Datos del negocio</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton_form, !datos_negocio && styles.boton_form_selected]} onPress={handle_producto}>
-                            <Text style={[styles.texto_boton_form, !datos_negocio && styles.texto_boton_form_selected]}>Añadir Producto y/o Servicio</Text>
+                    <View style={styles.contenedor_formulario}>
+                    <Text style={styles.title_formulario}>Datos del negocio</Text>
+                    <View style={styles.subcontenedor_formulario}>
+                        <Text style={styles.subtitulo_formulario}>Nombre del negocio</Text>
+                        <TextInput
+                        style={styles.text_input}
+                        placeholder="Nombre de su negocio"
+                        ></TextInput>
+                    </View>
+                    <View style={styles.subcontenedor_formulario}>
+                        <Text style={styles.subtitulo_formulario}>Tipo de negocio</Text>
+                        <Dropdown
+                            style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                            placeholderStyle={styles.placeholderStyle}
+                            selectedTextStyle={styles.selectedTextStyle}
+                            iconStyle={styles.iconStyle}
+                            data={data}
+                            maxHeight={300}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={!isFocus ? 'Seleccione su tipo de negocio' : '...'}
+                            value={value}
+                            onFocus={() => setIsFocus(true)}
+                            onBlur={() => setIsFocus(false)}
+                            onChange={item => {
+                            setValue(item.value);
+                            setIsFocus(false);
+                            }}></Dropdown>
+                    </View>
+                    <View style={styles.subcontenedor_formulario}>
+                        <Text style={styles.subtitulo_formulario}>Descripción del negocio</Text>
+                        <TextInput style={styles.textArea_input} 
+                        multiline
+                        numberOfLines={4}
+                        ></TextInput>
+                    </View>
+                    <View style={styles.subcontenedor_formulario}>
+                        <Text style={styles.subtitulo_formulario}>Logo del negocio</Text>
+                        <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container1')}>
+                            <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
+                            {image && <Image source={{ uri: image }} style={styles.Imagen_logo} />}
                         </TouchableOpacity>
                     </View>
-                    {datos_negocio && (
-                        <View style={styles.contenedor_formulario}>
-                        <Text style={styles.title_formulario}>Datos del negocio</Text>
-                        <View style={styles.subcontenedor_formulario}>
-                            <Text style={styles.subtitulo_formulario}>Nombre del negocio</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            placeholder="Nombre de su negocio"
-                            ></TextInput>
+                    <Horarios></Horarios>
+                    <View style={styles.subcontenedor_formulario_Imagenes}>
+                        <Text style={styles.subtitulo_formulario}>Dirección del local</Text>
+                        <MapView 
+                        style={styles.contenedor_mapa}
+                        initialRegion={{
+                            latitude: 19.251111,
+                            longitude: -99.055556,
+                            latitudeDelta: 0.01,
+                            longitudeDelta: 0.01,
+                        }}>
+                            <Marker
+                                coordinate={{ latitude: 19.251111, longitude: -99.055556 }}
+                                title="Negocio"
+                                description="Dirección del negocio"
+                            />
+                        </MapView>
+                        <Text style={styles.texto}>Código postal</Text>
+                        <TextInput
+                        style={styles.text_input}
+                        ></TextInput>
+                        <Text style={styles.texto}>Colonia</Text>
+                        <TextInput
+                        style={styles.text_input}
+                        ></TextInput>
+                        <Text style={styles.texto}>Calle</Text>
+                        <TextInput
+                        style={styles.text_input}
+                        ></TextInput>
+                        <Text style={styles.texto}>Número interior</Text>
+                        <TextInput
+                        style={styles.text_input}
+                        ></TextInput>
+                    </View>
+                    <View style={styles.subcontenedor_formulario_Imagenes}>
+                        <Text style={styles.subtitulo_formulario}>Imagenes del local</Text>
+                        <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container2')}>
+                            <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
+                            {image_2 && <Image source={{ uri: image_2 }} style={styles.Imagen_logo} />}
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container3')}>
+                            <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
+                            {image_3 && <Image source={{ uri: image_3 }} style={styles.Imagen_logo} />}
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container4')}>
+                            <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
+                            {image_4 && <Image source={{ uri: image_4 }} style={styles.Imagen_logo} />}
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.subcontenedor_formulario}>
+                        <Text style={styles.subtitulo_formulario}>Contactos del local</Text>
+                        <View style={styles.contenedor_contacto}>
+                            <Telefono width={40} height={40} style={styles.contacto_icono}></Telefono>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
-                        <View style={styles.subcontenedor_formulario}>
-                            <Text style={styles.subtitulo_formulario}>Tipo de negocio</Text>
-                            <Dropdown
-                                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                                placeholderStyle={styles.placeholderStyle}
-                                selectedTextStyle={styles.selectedTextStyle}
-                                iconStyle={styles.iconStyle}
-                                data={data}
-                                maxHeight={300}
-                                labelField="label"
-                                valueField="value"
-                                placeholder={!isFocus ? 'Seleccione su tipo de negocio' : '...'}
-                                value={value}
-                                onFocus={() => setIsFocus(true)}
-                                onBlur={() => setIsFocus(false)}
-                                onChange={item => {
-                                setValue(item.value);
-                                setIsFocus(false);
-                                }}></Dropdown>
+                        <View style={styles.contenedor_contacto}>
+                            <Correo width={40} height={40} style={styles.contacto_icono}></Correo>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
-                        <View style={styles.subcontenedor_formulario}>
-                            <Text style={styles.subtitulo_formulario}>Descripción del negocio</Text>
-                            <TextInput style={styles.textArea_input} 
-                            multiline
-                            numberOfLines={4}
-                            ></TextInput>
+                        <View style={styles.contenedor_contacto}>
+                            <Facebook width={40} height={40} style={styles.contacto_icono}></Facebook>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
-                        <View style={styles.subcontenedor_formulario}>
-                            <Text style={styles.subtitulo_formulario}>Logo del negocio</Text>
-                            <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container1')}>
-                                <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                {image && <Image source={{ uri: image }} style={styles.Imagen_logo} />}
-                            </TouchableOpacity>
+                        <View style={styles.contenedor_contacto}>
+                            <Instagram width={40} height={40} style={styles.contacto_icono}></Instagram>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
-                        <Horarios></Horarios>
-                        <View style={styles.subcontenedor_formulario_Imagenes}>
-                            <Text style={styles.subtitulo_formulario}>Dirección del local</Text>
-                            <MapView 
-                            style={styles.contenedor_mapa}
-                            initialRegion={{
-                                latitude: 19.251111,
-                                longitude: -99.055556,
-                                latitudeDelta: 0.01,
-                                longitudeDelta: 0.01,
-                            }}>
-                                <Marker
-                                    coordinate={{ latitude: 19.251111, longitude: -99.055556 }}
-                                    title="Negocio"
-                                    description="Dirección del negocio"
-                                />
-                            </MapView>
-                            <Text style={styles.texto}>Código postal</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
-                            <Text style={styles.texto}>Colonia</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
-                            <Text style={styles.texto}>Calle</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
-                            <Text style={styles.texto}>Número interior</Text>
-                            <TextInput
-                            style={styles.text_input}
-                            ></TextInput>
+                        <View style={styles.contenedor_contacto}>
+                            <Twitter width={40} height={40} style={styles.contacto_icono}></Twitter>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
-                        <View style={styles.subcontenedor_formulario_Imagenes}>
-                            <Text style={styles.subtitulo_formulario}>Imagenes del local</Text>
-                            <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container2')}>
-                                <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                {image_2 && <Image source={{ uri: image_2 }} style={styles.Imagen_logo} />}
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container3')}>
-                                <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                {image_3 && <Image source={{ uri: image_3 }} style={styles.Imagen_logo} />}
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.contenedor_mapa} onPress={() => pickImage('container4')}>
-                                <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                {image_4 && <Image source={{ uri: image_4 }} style={styles.Imagen_logo} />}
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.subcontenedor_formulario}>
-                            <Text style={styles.subtitulo_formulario}>Contactos del local</Text>
-                            <View style={styles.contenedor_contacto}>
-                                <Telefono width={40} height={40} style={styles.contacto_icono}></Telefono>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
-                            <View style={styles.contenedor_contacto}>
-                                <Correo width={40} height={40} style={styles.contacto_icono}></Correo>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
-                            <View style={styles.contenedor_contacto}>
-                                <Facebook width={40} height={40} style={styles.contacto_icono}></Facebook>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
-                            <View style={styles.contenedor_contacto}>
-                                <Instagram width={40} height={40} style={styles.contacto_icono}></Instagram>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
-                            <View style={styles.contenedor_contacto}>
-                                <Twitter width={40} height={40} style={styles.contacto_icono}></Twitter>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
-                            <View style={styles.contenedor_contacto}>
-                                <Web width={40} height={40} style={styles.contacto_icono}></Web>
-                                <TextInput style={styles.input_contacto}></TextInput>
-                            </View>
+                        <View style={styles.contenedor_contacto}>
+                            <Web width={40} height={40} style={styles.contacto_icono}></Web>
+                            <TextInput style={styles.input_contacto}></TextInput>
                         </View>
                     </View>
-                    )}
-                    {!datos_negocio && (
-                        <View style={styles.contenedor_formulario}>
-                            <Text style={styles.title_formulario}>Crear y Añadir un Producto o Servicio</Text>
-                            <View style={styles.subcontenedor_formulario}>
-                                <Text style={styles.subtitulo_formulario}>Imagen del producto o servicio</Text>
-                                <TouchableOpacity style={styles.boton_logo} onPress={() => pickImage('container5')}>
-                                    <Imagen width={50} height={50} style={styles.imagen_icono}></Imagen>
-                                    {image_5 && <Image source={{ uri: image_5 }} style={styles.Imagen_logo} />}
-                                </TouchableOpacity>
-                                <Text style={styles.subtitulo_formulario}>Nombre del producto o servicio</Text>
-                                <TextInput
-                                style={styles.text_input}
-                                ></TextInput>
-                                <Text style={styles.subtitulo_formulario}>Precio del producto o servicio</Text>
-                                <TextInput
-                                style={styles.text_input}
-                                ></TextInput>
-                                <Text style={styles.subtitulo_formulario}>Descripción del producto o servicio</Text>
-                                <TextInput style={styles.textArea_input} 
-                                multiline
-                                numberOfLines={4}
-                                ></TextInput>
-                                <Text style={styles.subtitulo_formulario}>Disponibilidad del Producto o Servicio </Text>
-                                <Dropdown
-                                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={data_2}
-                                    maxHeight={300}
-                                    labelField="label"
-                                    valueField="value"
-                                    placeholder={!isFocus ? 'Seleccione la Disponibilidad del Producto o Servicio ' : '...'}
-                                    value={value_3}
-                                    onFocus={() => setIsFocus(true)}
-                                    onBlur={() => setIsFocus(false)}
-                                    onChange={item => {
-                                        setValue_3(item.value);
-                                        setIsFocus(false);
-                                    }}>
-                                </Dropdown>
-                            </View>
-                        </View>
-                    )}
-                    <TouchableOpacity style={styles.boton_agregar_lista}>
-                        <Text style={styles.texto_boton}>Continuar</Text>
-                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity style={styles.boton_agregar_lista} onPress={() => navigation.navigate('Añadir_producto')}>
+                    <Text style={styles.texto_boton}>Continuar</Text>
+                </TouchableOpacity>
                 </SafeAreaView>
             </ScrollView>
         </NativeBaseProvider>
@@ -323,8 +246,6 @@ const styles = StyleSheet.create({
         borderStyle:'solid',
         borderWidth: 3,
         borderRadius: 7,
-        borderTopRightRadius: 0,
-        borderTopLeftRadius: 0,
         width: '90%',
         alignItems: 'center', 
         justifyContent: 'center',
@@ -472,48 +393,23 @@ const styles = StyleSheet.create({
     boton_agregar_lista: {
         alignItems: 'center', 
         justifyContent: 'center',
-        flex: 1, 
-        backgroundColor: '#F43770',
-        borderColor: '#F43770',
+        width: '90%' ,
+        backgroundColor: '#E5E5E5',
+        borderColor: '#000',
         borderStyle:'solid',
         borderWidth: 2,
         borderRadius: 7,
         height: 50,
         marginTop: 6,
         marginBottom: 10,
+        elevation: 4,
     },
     texto_boton: {
-        color: '#fff',
+        color: '#5B1D63',
         fontFamily: 'InriaSans',
         fontSize: 20,
         marginHorizontal: 5,
     },
-    boton_form: {
-        flex: 1,
-        alignItems: 'center', 
-        justifyContent: 'center',
-        backgroundColor: '#fff',
-        borderTopRightRadius: 7,
-        borderTopLeftRadius: 7,
-        height: 50,
-        marginTop: 6,
-        backgroundColor: 'rgba(255, 255, 255, 0.503)',
-    },
-    contenedor_botones_form: {
-        width: '90%',
-        flexDirection: 'row',
-    },
-    texto_boton_form: {
-        fontFamily: 'InriaSans',
-        fontSize: 20,
-        marginHorizontal: 5,
-    },
-    boton_form_selected: {
-        backgroundColor: '#000'
-    },
-    texto_boton_form_selected:{
-        color: '#fff'
-    }
 });
 
 export default Crear_negocio_formulario;
