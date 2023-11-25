@@ -10,6 +10,8 @@ import Perfil from './screens/Perfil';
 import Inicio_sesión from './screens/Inicio_sesión';
 import Registro from './screens/Registro';
 import Añadir_producto from './screens/añadir_producto';
+import Terminos_condiciones from './screens/Terminos_condiciones';
+import Aviso_privacidad from './screens/Aviso_privacidad';
 
 
 const Stack = createNativeStackNavigator();
@@ -43,6 +45,10 @@ export default function Navigator() {
                 <Stack.Screen name="Inicio_sesión" component={Inicio_sesión} 
                 options={{headerShown: false}}/>
                 <Stack.Screen name="Registro" component={Registro} 
+                options={{headerShown: false}}/>
+                <Stack.Screen name="Terminos_condiciones" component={Terminos_condiciones} 
+                options={{headerShown: false}}/>
+                <Stack.Screen name="Aviso_privacidad" component={Aviso_privacidad} 
                 options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>

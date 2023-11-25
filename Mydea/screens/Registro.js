@@ -120,7 +120,8 @@ function Registro({navigation}) {
                                     borderBottomWidth: 2, 
                                     flex: 1, 
                                     fontSize: 17, 
-                                    marginHorizontal: 5}]}>
+                                    marginHorizontal: 5}]}
+                                    onPress={() => navigation.navigate('Terminos_condiciones')}>
                                     Aceptar Términos y Condiciones
                                     </Text>
                                 </View>
@@ -131,7 +132,9 @@ function Registro({navigation}) {
                                     aria-label="Aceptar Aviso de Privacidad"
                                     style={{flex: 1}}>
                                     </Checkbox>
-                                    <Text style={[styles.texto, {borderColor: '#D95538', borderStyle:'solid', borderBottomWidth: 2, flex: 1, fontSize: 17, marginHorizontal: 5}]}>Aceptar Aviso de Privacidad</Text>
+                                    <Text 
+                                    style={[styles.texto, {borderColor: '#D95538', borderStyle:'solid', borderBottomWidth: 2, flex: 1, fontSize: 17, marginHorizontal: 5}]}
+                                    onPress={() => navigation.navigate('Aviso_privacidad')}>Aceptar Aviso de Privacidad</Text>
                                 </View>
                             </View>
                             <Text style={styles.texto}>¿Ya tienes una cuenta?</Text><Text style={[styles.texto, {color:'rgb(224, 177, 23)'}]}
