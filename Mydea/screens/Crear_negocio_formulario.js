@@ -38,7 +38,6 @@ const data_2 = [
 
 
 function Crear_negocio_formulario({navigation}) {
-
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
