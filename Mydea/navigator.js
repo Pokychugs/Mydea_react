@@ -12,45 +12,72 @@ import Registro from './screens/Registro';
 import Añadir_producto from './screens/añadir_producto';
 import Terminos_condiciones from './screens/Terminos_condiciones';
 import Aviso_privacidad from './screens/Aviso_privacidad';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
-const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+const NavInicio = createNativeStackNavigator();
 
-function Footer() {
-    return (
-        <Tab.Navigator>
-            <Tab.Screen name="Inicio" component={Inicio}
-            options={{ header: () => <Header />, }} 
-            />
-            <Tab.Screen name="Perfil" component={Perfil}
-            options={{ header: () => <Header />, }} 
-            />
-        </Tab.Navigator>
+function Nav_Inicio() {
+    return(
+        <NavInicio.Navigator>
+            <NavInicio.Screen name="Inicio" component={Inicio}
+            options={{ header: () => <Header />,}} />
+            <NavInicio.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
+            options={{ header: () => <Header />, }}/>
+            <NavInicio.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
+            options={{headerShown: false}}/>
+            <NavInicio.Screen name="Añadir_producto" component={Añadir_producto} 
+            options={{headerShown: false}}/>
+        </NavInicio.Navigator>
     );
 }
 
+const NavPerfil = createNativeStackNavigator();
+
+function Nav_Perfil() {
+    return(
+        <NavPerfil.Navigator>
+            <NavPerfil.Screen name="Perfil" component={Perfil}
+            options={{headerShown: false}} />
+            <NavPerfil.Screen name="Inicio_sesión" component={Inicio_sesión} 
+            options={{headerShown: false}}/>
+            <NavPerfil.Screen name="Registro" component={Registro} 
+            options={{headerShown: false}}/>
+            <NavPerfil.Screen name="Terminos_condiciones" component={Terminos_condiciones} 
+            options={{headerShown: false}}/>
+            <NavPerfil.Screen name="Aviso_privacidad" component={Aviso_privacidad} 
+            options={{headerShown: false}}/>
+        </NavPerfil.Navigator>
+    );
+}
+
+const Tab = createBottomTabNavigator();
 
 export default function Navigator() {
     return (
         <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen name="Footer" component={Footer} options={{headerShown: false}}/>
-                <Stack.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
-                options={{ header: () => <Header />, }}/>
-                <Stack.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
-                options={{headerShown: false}}/>
-                <Stack.Screen name="Añadir_producto" component={Añadir_producto} 
-                options={{headerShown: false}}/>
-                <Stack.Screen name="Inicio_sesión" component={Inicio_sesión} 
-                options={{headerShown: false}}/>
-                <Stack.Screen name="Registro" component={Registro} 
-                options={{headerShown: false}}/>
-                <Stack.Screen name="Terminos_condiciones" component={Terminos_condiciones} 
-                options={{headerShown: false}}/>
-                <Stack.Screen name="Aviso_privacidad" component={Aviso_privacidad} 
-                options={{headerShown: false}}/>
-            </Stack.Navigator>
+            <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: false,
+                tabBarShowLabel: false,
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    if (route.name === 'Nav_Inicio') {
+                        iconName =  'home';
+                    }else if (route.name === 'Nav_Perfil'){
+                        iconName = focused ? 'user-circle' : 'user-circle-o';
+                    }
+
+                // You can return any component that you like here!
+                    return <FontAwesome name={iconName} size={35} color={color} />;
+                },
+                tabBarActiveTintColor: 'tomato',
+                tabBarInactiveTintColor: 'gray',
+            })}>
+                <Tab.Screen name='Nav_Inicio' component={Nav_Inicio}></Tab.Screen>
+                <Tab.Screen name='Nav_Perfil' component={Nav_Perfil}></Tab.Screen>
+            </Tab.Navigator>
         </NavigationContainer>
     );
 }
