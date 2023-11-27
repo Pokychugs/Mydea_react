@@ -16,3 +16,4 @@
 * npm i react-native-maps
 * npm install @react-navigation/bottom-tabs
 * npm i react-native-vector-icons
+* npx expo install expo-clipboard

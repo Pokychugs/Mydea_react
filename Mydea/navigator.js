@@ -2,6 +2,7 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Inicio from './screens/Inicio';
 import Header from './screens/Header';
 import Crear_negocio_info from './screens/Crear_negocio_info';
@@ -12,7 +13,8 @@ import Registro from './screens/Registro';
 import Añadir_producto from './screens/añadir_producto';
 import Terminos_condiciones from './screens/Terminos_condiciones';
 import Aviso_privacidad from './screens/Aviso_privacidad';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Datos_Contacto from './screens/Datos_contacto';
+import Perfil_usuario from './screens/Perfil_usuario';
 
 
 const NavInicio = createNativeStackNavigator();
@@ -46,6 +48,8 @@ function Nav_Perfil() {
             <NavPerfil.Screen name="Terminos_condiciones" component={Terminos_condiciones} 
             options={{headerShown: false}}/>
             <NavPerfil.Screen name="Aviso_privacidad" component={Aviso_privacidad} 
+            options={{headerShown: false}}/>
+            <NavPerfil.Screen name="Datos_Contacto" component={Datos_Contacto} 
             options={{headerShown: false}}/>
         </NavPerfil.Navigator>
     );

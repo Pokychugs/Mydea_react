@@ -25,8 +25,8 @@ function Perfil({navigation}) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
+        <ScrollView>
+            <SafeAreaView style={styles.container}>
                 {sin_sesion && (
                     <View>
                         <Text style={styles.title}>Inicia sesión para obtener la mejor experiencia</Text>
@@ -46,11 +46,10 @@ function Perfil({navigation}) {
                     </View>
                 )}
                 {sesion_usuario && (
-                    <Perfil_usuario></Perfil_usuario>
+                    <Perfil_usuario navigation={navigation}></Perfil_usuario>
                 )}
-            </ScrollView>
-            
-        </SafeAreaView>
+            </SafeAreaView>
+        </ScrollView>
     );
 }
 
