@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Button} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { useState } from 'react';
@@ -95,7 +95,7 @@ const renderScene = SceneMap({
     second: SecondRoute,
 });
 
-const AnimatedPressable = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function Perfil({navigation}) {
     const [fontsLoaded] = useFonts({
@@ -119,6 +119,7 @@ function Perfil({navigation}) {
 
     const toggleSheet = () => {
         setOpen(!isOpen);
+        offset.value = 0;
     };
 
     const pan = Gesture.Pan()
@@ -196,12 +197,12 @@ function Perfil({navigation}) {
                     {sesion_usuario && (
                         <View>
                             <View style={[styles.container]}>
-                                <AnimatedPressable style={styles.icon_log_out} 
+                                <TouchableOpacity style={styles.icon_log_out} 
                                 entering={FadeIn}
                                 exiting={FadeOut}
                                 onPress={toggleSheet}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
-                                </AnimatedPressable>
+                                </TouchableOpacity>
                                 <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
                                 <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
                                 <Text style={styles.Nombre_real}>Nombre real</Text>
@@ -221,13 +222,21 @@ function Perfil({navigation}) {
                         </View>
                     )}
                 {isOpen && (
+                    <>
+                    <AnimatedPressable
+                    style={styles.backdrop}
+                    entering={FadeIn}
+                    exiting={FadeOut}
+                    onPress={toggleSheet}
+                    />
                     <GestureDetector gesture={pan}>
-                        <Animated.View style={[styles.sheet]} 
+                        <Animated.View style={[styles.sheet, translateY]} 
                         entering={SlideInDown.springify().damping(15)}
                         exiting={SlideOutDown}>
                             <Text>Hola</Text>
                         </Animated.View>
                     </GestureDetector>
+                    </>
                 )}
             </SafeAreaView>
         </GestureHandlerRootView>
@@ -362,6 +371,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     zIndex: 1,
+    },
+    backdrop: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: "rgba(0, 0, 0, 0.3)",
+        zIndex: 1,
     },
 });
 
