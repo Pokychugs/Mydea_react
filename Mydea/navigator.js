@@ -24,12 +24,6 @@ function Nav_Inicio() {
         <NavInicio.Navigator>
             <NavInicio.Screen name="Inicio" component={Inicio}
             options={{ header: () => <Header />,}} />
-            <NavInicio.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
-            options={{ header: () => <Header />, }}/>
-            <NavInicio.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
-            options={{headerShown: false}}/>
-            <NavInicio.Screen name="Añadir_producto" component={Añadir_producto} 
-            options={{headerShown: false}}/>
         </NavInicio.Navigator>
     );
 }
@@ -52,6 +46,12 @@ function Nav_Perfil() {
             <NavPerfil.Screen name="Datos_Contacto" component={Datos_Contacto} 
             options={{headerShown: false}}/>
             <NavPerfil.Screen name="Mis_negocio" component={Mis_negocio} 
+            options={{headerShown: false}}/>
+            <NavInicio.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
+            options={{ header: () => <Header />, }}/>
+            <NavInicio.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
+            options={{headerShown: false}}/>
+            <NavInicio.Screen name="Añadir_producto" component={Añadir_producto} 
             options={{headerShown: false}}/>
         </NavPerfil.Navigator>
     );

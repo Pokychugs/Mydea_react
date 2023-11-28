@@ -31,9 +31,6 @@ const FirstRoute = () => (
             </View>
             <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
             <View>
-                <TouchableOpacity>
-                    <Text></Text>
-                </TouchableOpacity>
             </View>
         </View>
     </ScrollView>
@@ -216,9 +213,12 @@ function Perfil({navigation}) {
                                 <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
                                 <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
                                 <Text style={styles.Nombre_real}>Nombre real</Text>
-                                <View style={styles.contenedor_contacto}>
-                                    <Text style={styles.Contacto} onPress={() => navigation.navigate('Datos_Contacto')}>Datos de contacto<IonIcons style={styles.icon_log_out} name='arrow-forward' size={22}></IonIcons></Text>
-                                </View>
+                                <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
+                                    <Text style={styles.Contacto}>
+                                        Datos de contacto
+                                    </Text>
+                                    <IonIcons name='arrow-forward' size={22} style={{ marginLeft: 'auto' }}></IonIcons>
+                                </TouchableOpacity>
                             </View>
                             <View style={{flexGrow: 1, flex: 1,}}>
                                 <TabView

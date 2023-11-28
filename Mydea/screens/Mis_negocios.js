@@ -56,7 +56,7 @@ function Mis_negocio({navigation}) {
                 <SafeAreaView></SafeAreaView>
                 <IonIcons style={styles.icon_log_out} name='arrow-back' size={35} onPress={() => navigation.goBack()}></IonIcons>
                 <Text style={styles.title}>Mis Negocios</Text>
-                <TouchableOpacity style={[styles.boton, styles.boton_crear]}>
+                <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={() => navigation.navigate('Crear_negocio_info')}>
                     <Text style={[styles.texto_boton]}>Subir Negocio</Text>
                 </TouchableOpacity>
                 <ScrollView>
