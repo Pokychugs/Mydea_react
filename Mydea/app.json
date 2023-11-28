@@ -21,10 +21,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/Logo_Icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.salarconr03.Mydea"
     },
     "web": {
       "favicon": "././assets/Logo_Icon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "52a29a6e-4efd-43eb-801c-681ffd6737c4"
+      }
     }
   }
 }
