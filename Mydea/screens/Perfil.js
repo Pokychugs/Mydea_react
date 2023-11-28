@@ -172,6 +172,13 @@ function Perfil({navigation}) {
         setSesion_vendedor(false);
     };
 
+    const handleCerrarSesion = () => {
+        setSesion_usuario(false);
+        setSin_sesion(true);
+        setSesion_vendedor(false);
+        toggleSheet();
+    };
+
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -198,8 +205,6 @@ function Perfil({navigation}) {
                         <View>
                             <View style={[styles.container]}>
                                 <TouchableOpacity style={styles.icon_log_out} 
-                                entering={FadeIn}
-                                exiting={FadeOut}
                                 onPress={toggleSheet}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
                                 </TouchableOpacity>
@@ -233,7 +238,12 @@ function Perfil({navigation}) {
                         <Animated.View style={[styles.sheet, translateY]} 
                         entering={SlideInDown.springify().damping(15)}
                         exiting={SlideOutDown}>
-                            <Text>Hola</Text>
+                            <TouchableOpacity style={[styles.container, {borderColor: 'rgba(0, 0, 0, 0.1)', borderStyle:'solid', borderBottomWidth: 1,}]}>
+                                <Text style={styles.texto}>Editar Perfil</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.container]} onPress={handleCerrarSesion}>
+                                <Text style={[styles.texto, {color: 'red'}]}>Cerrar Sesión</Text>
+                            </TouchableOpacity>
                         </Animated.View>
                     </GestureDetector>
                     </>
@@ -364,7 +374,7 @@ const styles = StyleSheet.create({
     sheet: {
         backgroundColor: "white",
     padding: 16,
-    height: 220,
+    height: 150,
     width: "100%",
     position: "absolute",
     bottom: -20 * 1.1,
