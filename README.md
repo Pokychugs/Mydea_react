@@ -19,4 +19,3 @@
 * npx expo install expo-clipboard
 * npm install react-native-tab-view
 * expo install react-native-pager-view
-* npm install react-native-scrollable-tab-view --save

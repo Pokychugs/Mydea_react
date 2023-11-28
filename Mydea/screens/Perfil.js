@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Button} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { useState } from 'react';
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import { Gesture, GestureDetector, GestureHandlerRootView,} from "react-native-gesture-handler";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTiming, SlideInDown, SlideOutDown, FadeIn, FadeOut,} from "react-native-reanimated";
 import Imagen_perfil from './Imagenes/perfil_icono.png';
 import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -93,6 +95,8 @@ const renderScene = SceneMap({
     second: SecondRoute,
 });
 
+const AnimatedPressable = Animated.createAnimatedComponent(TouchableOpacity);
+
 function Perfil({navigation}) {
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
@@ -110,6 +114,33 @@ function Perfil({navigation}) {
         { key: 'second', title: 'Guardados' },
     ]);
 
+    const [isOpen, setOpen] = useState(false);
+    const offset = useSharedValue(0);
+
+    const toggleSheet = () => {
+        setOpen(!isOpen);
+    };
+
+    const pan = Gesture.Pan()
+    .onChange((event) => {
+        const offsetDelta = event.changeY + offset.value;
+
+        const clamp = Math.max(-20, offsetDelta);
+        offset.value = offsetDelta > 0 ? offsetDelta : withSpring(clamp);
+    })
+    .onFinalize(() => {
+        if (offset.value < 220 / 3) {
+            offset.value = withSpring(0);
+        } else {
+            offset.value = withTiming(220, {}, () => {
+            runOnJS(toggleSheet)();
+            });
+        }
+    });
+
+    const translateY = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+    }));
 
     if (!fontsLoaded) {
         return undefined;
@@ -140,7 +171,9 @@ function Perfil({navigation}) {
         setSesion_vendedor(false);
     };
 
+
     return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
             <SafeAreaView style={styles.container}>
                 {sin_sesion && (
                     <View>
@@ -163,16 +196,18 @@ function Perfil({navigation}) {
                     {sesion_usuario && (
                         <View>
                             <View style={[styles.container]}>
-                                <TouchableOpacity style={styles.icon_log_out}>
+                                <AnimatedPressable style={styles.icon_log_out} 
+                                entering={FadeIn}
+                                exiting={FadeOut}
+                                onPress={toggleSheet}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
-                                </TouchableOpacity>
+                                </AnimatedPressable>
                                 <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
                                 <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
                                 <Text style={styles.Nombre_real}>Nombre real</Text>
                                 <View style={styles.contenedor_contacto}>
                                     <Text style={styles.Contacto} onPress={() => navigation.navigate('Datos_Contacto')}>Datos de contacto<IonIcons style={styles.icon_log_out} name='arrow-forward' size={22}></IonIcons></Text>
                                 </View>
-                                
                             </View>
                             <View style={{flexGrow: 1, flex: 1,}}>
                                 <TabView
@@ -185,7 +220,17 @@ function Perfil({navigation}) {
                             </View>
                         </View>
                     )}
+                {isOpen && (
+                    <GestureDetector gesture={pan}>
+                        <Animated.View style={[styles.sheet]} 
+                        entering={SlideInDown.springify().damping(15)}
+                        exiting={SlideOutDown}>
+                            <Text>Hola</Text>
+                        </Animated.View>
+                    </GestureDetector>
+                )}
             </SafeAreaView>
+        </GestureHandlerRootView>
     );
 }
 
@@ -306,6 +351,17 @@ const styles = StyleSheet.create({
         right: 5,
         top: 4,
         position: 'absolute',
+    },
+    sheet: {
+        backgroundColor: "white",
+    padding: 16,
+    height: 220,
+    width: "100%",
+    position: "absolute",
+    bottom: -20 * 1.1,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    zIndex: 1,
     },
 });
 
