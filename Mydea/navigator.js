@@ -14,7 +14,7 @@ import Añadir_producto from './screens/añadir_producto';
 import Terminos_condiciones from './screens/Terminos_condiciones';
 import Aviso_privacidad from './screens/Aviso_privacidad';
 import Datos_Contacto from './screens/Datos_contacto';
-import Perfil_usuario from './screens/Perfil_usuario';
+import Mis_negocio from './screens/Mis_negocios';
 
 
 const NavInicio = createNativeStackNavigator();
@@ -50,6 +50,8 @@ function Nav_Perfil() {
             <NavPerfil.Screen name="Aviso_privacidad" component={Aviso_privacidad} 
             options={{headerShown: false}}/>
             <NavPerfil.Screen name="Datos_Contacto" component={Datos_Contacto} 
+            options={{headerShown: false}}/>
+            <NavPerfil.Screen name="Mis_negocio" component={Mis_negocio} 
             options={{headerShown: false}}/>
         </NavPerfil.Navigator>
     );

@@ -171,6 +171,11 @@ function Perfil({navigation}) {
         setSin_sesion(false);
         setSesion_vendedor(false);
     };
+    const handleSesionVendedor = () => {
+        setSesion_usuario(false);
+        setSin_sesion(false);
+        setSesion_vendedor(true);
+    };
 
     const handleCerrarSesion = () => {
         setSesion_usuario(false);
@@ -195,7 +200,7 @@ function Perfil({navigation}) {
                         <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionUsuario}>
                             <Text style={[styles.texto_boton]}>Mostrar Perfil Usuario</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} >
+                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionVendedor}>
                             <Text style={[styles.texto_boton]}>Mostrar Perfil Vendedor</Text>
                         </TouchableOpacity>
                         <Text style={{flex: 1, width: 350}}>Los botones de mostrar perfil estan de a mientras, después se quitan, la idea es que una vez inicie sesión le muestre su perfil, ya sea como usuario o como vendedor</Text>
@@ -214,6 +219,40 @@ function Perfil({navigation}) {
                                 <View style={styles.contenedor_contacto}>
                                     <Text style={styles.Contacto} onPress={() => navigation.navigate('Datos_Contacto')}>Datos de contacto<IonIcons style={styles.icon_log_out} name='arrow-forward' size={22}></IonIcons></Text>
                                 </View>
+                            </View>
+                            <View style={{flexGrow: 1, flex: 1,}}>
+                                <TabView
+                                navigationState={{ index, routes }}
+                                renderScene={renderScene}
+                                onIndexChange={setIndex}
+                                initialLayout={{ width: layout.width, flex: 1}}
+                                renderTabBar={renderTabBar}
+                                />
+                            </View>
+                        </View>
+                    )}
+                    {sesion_vendedor && (
+                        <View>
+                            <View style={[styles.container]}>
+                                <TouchableOpacity style={styles.icon_log_out} 
+                                onPress={toggleSheet}>
+                                    <IonIcons name='settings-sharp' size={35}></IonIcons>
+                                </TouchableOpacity>
+                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
+                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
+                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
+                                    <Text style={styles.Contacto}>
+                                        Datos de contacto
+                                    </Text>
+                                    <IonIcons name='arrow-forward' size={22} style={{ marginLeft: 'auto' }}></IonIcons>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => navigation.navigate('Mis_negocio')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%', marginTop: 10 }]}>
+                                    <Text style={styles.Contacto}>
+                                        Mis negocios
+                                    </Text>
+                                    <IonIcons name='arrow-forward' size={22} style={{ marginLeft: 'auto' }}></IonIcons>
+                                </TouchableOpacity>
                             </View>
                             <View style={{flexGrow: 1, flex: 1,}}>
                                 <TabView
@@ -373,14 +412,14 @@ const styles = StyleSheet.create({
     },
     sheet: {
         backgroundColor: "white",
-    padding: 16,
-    height: 150,
-    width: "100%",
-    position: "absolute",
-    bottom: -20 * 1.1,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
-    zIndex: 1,
+        padding: 16,
+        height: 150,
+        width: "100%",
+        position: "absolute",
+        bottom: -20 * 1.1,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+        zIndex: 1,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
