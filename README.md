@@ -17,3 +17,6 @@
 * npm install @react-navigation/bottom-tabs
 * npm i react-native-vector-icons
 * npx expo install expo-clipboard
+* npm install react-native-tab-view
+* expo install react-native-pager-view
+* npm install react-native-scrollable-tab-view --save

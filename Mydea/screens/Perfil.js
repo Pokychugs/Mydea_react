@@ -1,9 +1,56 @@
 import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { useState } from 'react';
-import Perfil_usuario from './Perfil_usuario';
+import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import Imagen_perfil from './Imagenes/perfil_icono.png';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+
+const FirstRoute = () => (
+    <ScrollView>
+        <View style={styles.container}>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.boton_editar}>
+                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
+            </TouchableOpacity>
+        </View>
+    </ScrollView>
+);
+
+const SecondRoute = () => (
+    <View style={{ flex: 1, backgroundColor: '#673ab7' }}>
+        <Text>Adios</Text>
+    </View>
+);
+
+const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+});
 
 function Perfil({navigation}) {
     const [fontsLoaded] = useFonts({
@@ -14,9 +61,37 @@ function Perfil({navigation}) {
     const [sesion_usuario, setSesion_usuario] = useState(false);
     const [sesion_vendedor, setSesion_vendedor] = useState(false);
 
+    const layout = useWindowDimensions();
+    const [index, setIndex] = useState(0);
+
+    const [routes] = useState([
+        { key: 'first', title: 'Comentarios' },
+        { key: 'second', title: 'Guardados' },
+    ]);
+
+
     if (!fontsLoaded) {
         return undefined;
     }
+
+    const renderTabBar = (props) => (
+        <TabBar
+            {...props}
+            indicatorStyle={{
+                backgroundColor: '#000',
+            }}
+            style={{
+                backgroundColor: '#f2f2f2',
+                height: 44,
+                marginTop: 20,
+            }}
+            renderLabel={({ focused, route }) => (
+                <Text style={[{ fontFamily: 'InriaSans', fontSize: 20,color: focused ? 'black' : 'gray' }]}>
+                {route.title}
+                </Text>
+            )}
+            />
+    );
 
     const handleSesionUsuario = () => {
         setSesion_usuario(true);
@@ -25,7 +100,6 @@ function Perfil({navigation}) {
     };
 
     return (
-        <ScrollView>
             <SafeAreaView style={styles.container}>
                 {sin_sesion && (
                     <View>
@@ -45,11 +119,30 @@ function Perfil({navigation}) {
                         <Text style={{flex: 1, width: 350}}>Los botones de mostrar perfil estan de a mientras, después se quitan, la idea es que una vez inicie sesión le muestre su perfil, ya sea como usuario o como vendedor</Text>
                     </View>
                 )}
-                {sesion_usuario && (
-                    <Perfil_usuario navigation={navigation}></Perfil_usuario>
-                )}
+                    {sesion_usuario && (
+                        <View>
+                            <View style={styles.container}>
+                                <IonIcons style={styles.icon_log_out} name='log-out' size={35}></IonIcons>
+                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
+                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
+                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <View style={styles.contenedor_contacto}>
+                                    <Text style={styles.Contacto} onPress={() => navigation.navigate('Datos_Contacto')}>Datos de contacto<IonIcons style={styles.icon_log_out} name='arrow-forward' size={22}></IonIcons></Text>
+                                </View>
+                                
+                            </View>
+                            <View style={{flexGrow: 1, flex: 1,}}>
+                                <TabView
+                                navigationState={{ index, routes }}
+                                renderScene={renderScene}
+                                onIndexChange={setIndex}
+                                initialLayout={{ width: layout.width, flex: 1}}
+                                renderTabBar={renderTabBar}
+                                />
+                            </View>
+                        </View>
+                    )}
             </SafeAreaView>
-        </ScrollView>
     );
 }
 
@@ -57,6 +150,7 @@ const styles = StyleSheet.create({
     container: {
         alignItems: 'center', 
         justifyContent: 'center',
+        flex: 1,
     },
     title: {
         fontFamily: 'InriaSans',
@@ -66,7 +160,6 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
     },
     boton: {
-        flex: 1,
         alignItems: 'center', 
         justifyContent: 'center',
         height: 50,
@@ -82,6 +175,57 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSans',
         fontSize: 20,
         marginHorizontal: 5,
+    },
+    Imagen_perfil: {
+        width: 150,
+        height: 150,
+        marginTop: 50,
+        borderRadius: 100,
+    },
+    Nombre_usuario: {
+        fontFamily: 'InriaSans',
+        marginTop: 10,
+        fontSize: 35,
+        fontWeight: 'bold',  
+    },
+    Nombre_real: {
+        fontFamily: 'InriaSans',
+        marginTop: 10,
+        fontSize: 25,
+    },
+    contenedor_contacto: {
+        borderColor: '#000',
+        borderStyle: 'solid',
+        borderBottomWidth: 2,
+    },
+    Contacto: {
+        fontFamily: 'InriaSans',
+        marginTop: 10,
+        fontSize: 25,
+    },
+    icon_log_out: {
+        right: 0.5,
+        top: 20,
+        position: 'absolute',
+    },
+    boton_editar:{
+        width: 300,
+        alignItems: 'center', 
+        justifyContent: 'center',
+        height: 50,
+        margin: 6,
+        borderRadius: 10,
+        borderColor: '#000',
+        borderStyle:'solid',
+        borderWidth: 2,
+        marginTop: 20,
+        backgroundColor: '#000',
+    },
+    texto_boton_editar: {
+        fontFamily: 'InriaSans',
+        fontSize: 23,
+        marginHorizontal: 5,
+        color: '#fff',
     },
 });
 

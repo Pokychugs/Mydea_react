@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { SafeAreaView, View, Text, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, useWindowDimensions} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import Imagen_perfil from './Imagenes/perfil_icono.png';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+
 
 function Perfil_usuario({navigation}) {
     const [fontsLoaded] = useFonts({
@@ -14,8 +16,7 @@ function Perfil_usuario({navigation}) {
     }
 
     return(
-        
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <IonIcons style={styles.icon_log_out} name='log-out' size={35}></IonIcons>
             <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
             <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
@@ -26,15 +27,7 @@ function Perfil_usuario({navigation}) {
             <TouchableOpacity style={styles.boton_crear}>
                 <Text style={styles.texto_boton}>Editar Perfil</Text>
             </TouchableOpacity>
-            <View style={{width: '90%',marginTop:10, flexDirection: 'row'}}>
-                <View>
-                    <Text style={[styles.texto_reseñas, styles.texto_reseñas_focused]} >Reseñas hechas</Text>
-                </View>
-                <View>
-                    <Text style={styles.texto_reseñas}>Guardados</Text>
-                </View>
-            </View>
-        </View>
+        </SafeAreaView>
     );
 }
 
