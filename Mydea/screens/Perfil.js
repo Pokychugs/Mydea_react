@@ -5,38 +5,25 @@ import { useFonts } from 'expo-font';
 import { useState } from 'react';
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Imagen_perfil from './Imagenes/perfil_icono.png';
+import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 
 const FirstRoute = () => (
     <ScrollView>
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton_editar}>
-                <Text style={styles.texto_boton_editar}>Editar Perfil</Text>
-            </TouchableOpacity>
+        <View style={[styles.container, styles.contenedor_reseña]}>
+            <View style={{flexDirection: 'row'}}>
+                <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
+                    <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
+                </View>
+                <View style={{flex: 3, marginLeft: 10}}>
+                    <Text style={styles.Nombre_negocio}>Nombre del Negocio</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
+                        <Text style={styles.Nombre_real}>Te gustó</Text>
+                    </View>
+                </View>
+            </View>
+            <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
         </View>
     </ScrollView>
 );
@@ -226,6 +213,37 @@ const styles = StyleSheet.create({
         fontSize: 23,
         marginHorizontal: 5,
         color: '#fff',
+    },
+    contenedor_reseña: {
+        borderColor: '#000',
+        borderStyle:'solid',
+        borderWidth: 3,
+        borderRadius: 10,
+        marginTop: 20,
+        padding: 10,
+    },
+    Imagen_negocio: {
+        width: 70,
+        height: 70,
+        borderRadius: 10,
+    },
+    Nombre_negocio: {
+        fontFamily: 'InriaSans',
+        marginTop: 10,
+        fontSize: 20,
+        fontWeight: 'bold',  
+    },
+    Nombre_real: {
+        fontFamily: 'InriaSans',
+        fontSize: 20,
+    },
+    icon_heart: {
+        marginRight: 5,
+    },
+    texto_reseña: {
+        fontFamily: 'InriaSans',
+        marginTop: 10,
+        fontSize: 15,
     },
 });
 
