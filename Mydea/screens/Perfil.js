@@ -7,11 +7,15 @@ import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import Imagen_perfil from './Imagenes/perfil_icono.png';
 import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const FirstRoute = () => (
     <ScrollView>
         <View style={[styles.container, styles.contenedor_reseña]}>
-            <View style={{flexDirection: 'row'}}>
+            <TouchableOpacity style={styles.icon_dots}>
+                <MaterialCommunityIcons name='dots-horizontal' size={30}></MaterialCommunityIcons>
+            </TouchableOpacity>
+            <View style={{flexDirection: 'row', marginTop: 10,}}>
                 <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
                     <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
                 </View>
@@ -19,19 +23,69 @@ const FirstRoute = () => (
                     <Text style={styles.Nombre_negocio}>Nombre del Negocio</Text>
                     <View style={{flexDirection: 'row'}}>
                         <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                        <Text style={styles.Nombre_real}>Te gustó</Text>
+                        <Text style={styles.texto}>Te gustó</Text>
                     </View>
                 </View>
             </View>
             <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
+            <View>
+                <TouchableOpacity>
+                    <Text></Text>
+                </TouchableOpacity>
+            </View>
         </View>
     </ScrollView>
 );
 
 const SecondRoute = () => (
-    <View style={{ flex: 1, backgroundColor: '#673ab7' }}>
-        <Text>Adios</Text>
-    </View>
+    <ScrollView>
+        <View style={[styles.container, styles.contenedor_reseña]}>
+            <TouchableOpacity style={styles.icon_dots}>
+                <MaterialCommunityIcons name='dots-horizontal' size={30}></MaterialCommunityIcons>
+            </TouchableOpacity>
+            <View style={{flexDirection: 'row', marginTop: 10,}}>
+                <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
+                    <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
+                </View>
+                <View style={{flex: 3, marginLeft: 10}}>
+                    <Text style={styles.Nombre_negocio}>Nombre del Negocio</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
+                        <Text style={styles.texto}>Te gustó</Text>
+                    </View>
+                </View>
+            </View>
+            <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
+            <View>
+                <TouchableOpacity>
+                    <Text></Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+        <View style={[styles.container, styles.contenedor_reseña]}>
+            <TouchableOpacity style={styles.icon_dots}>
+                <MaterialCommunityIcons name='dots-horizontal' size={30}></MaterialCommunityIcons>
+            </TouchableOpacity>
+            <View style={{flexDirection: 'row', marginTop: 10,}}>
+                <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5, marginTop: 10}}>
+                    <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
+                </View>
+                <View style={{flex: 3, marginLeft: 10}}>
+                    <Text style={styles.Nombre_negocio}>Nombre del Producto</Text>
+                    <View style={{flexDirection: 'column'}}>
+                        <Text style={styles.texto}>$00.00</Text>
+                        <Text style={styles.texto}>Disponibilidad:</Text>
+                    </View>
+                </View>
+            </View>
+            <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
+            <View>
+                <TouchableOpacity>
+                    <Text></Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    </ScrollView>
 );
 
 const renderScene = SceneMap({
@@ -108,8 +162,10 @@ function Perfil({navigation}) {
                 )}
                     {sesion_usuario && (
                         <View>
-                            <View style={styles.container}>
-                                <IonIcons style={styles.icon_log_out} name='log-out' size={35}></IonIcons>
+                            <View style={[styles.container]}>
+                                <TouchableOpacity style={styles.icon_log_out}>
+                                    <IonIcons name='settings-sharp' size={35}></IonIcons>
+                                </TouchableOpacity>
                                 <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
                                 <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
                                 <Text style={styles.Nombre_real}>Nombre real</Text>
@@ -191,7 +247,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
     },
     icon_log_out: {
-        right: 0.5,
+        right: 1,
         top: 20,
         position: 'absolute',
     },
@@ -221,6 +277,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 20,
         padding: 10,
+        marginHorizontal: 2,
     },
     Imagen_negocio: {
         width: 70,
@@ -233,7 +290,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',  
     },
-    Nombre_real: {
+    texto: {
         fontFamily: 'InriaSans',
         fontSize: 20,
     },
@@ -244,6 +301,11 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSans',
         marginTop: 10,
         fontSize: 15,
+    },
+    icon_dots: {
+        right: 5,
+        top: 4,
+        position: 'absolute',
     },
 });
 
