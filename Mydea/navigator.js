@@ -6,7 +6,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Inicio from './screens/Inicio';
 import Header from './screens/Header';
 import Crear_negocio_info from './screens/Crear_negocio_info';
-import Crear_negocio_formulario from './screens/Crear_negocio_formulario';
 import Perfil from './screens/Perfil';
 import Inicio_sesión from './screens/Inicio_sesión';
 import Registro from './screens/Registro';
@@ -49,8 +48,6 @@ function Nav_Perfil() {
             options={{headerShown: false}}/>
             <NavInicio.Screen name="Crear_negocio_info" component={Crear_negocio_info} 
             options={{ header: () => <Header />, }}/>
-            <NavInicio.Screen name="Crear_negocio_formulario" component={Crear_negocio_formulario} 
-            options={{headerShown: false}}/>
             <NavInicio.Screen name="Añadir_producto" component={Añadir_producto} 
             options={{headerShown: false}}/>
         </NavPerfil.Navigator>

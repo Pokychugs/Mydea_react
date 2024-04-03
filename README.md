@@ -19,3 +19,6 @@
 * npx expo install expo-clipboard
 * npm install react-native-tab-view
 * expo install react-native-pager-view
+
+* Para inciar después de descargar del repositorio
+* npm i
