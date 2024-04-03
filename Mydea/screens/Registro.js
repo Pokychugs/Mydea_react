@@ -1,31 +1,131 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
 import { NativeBaseProvider} from "native-base";
 import { Checkbox } from "native-base";
+import { useNavigation } from '@react-navigation/native';
 
 const data = [
     { label: 'Cuenta Normal', value: '1' },
     { label: 'Cuenta Vendedor', value: '2' },
 ];
 
+function Registro({navigation}) {   
 
-function Registro({navigation}) {
-    const [fontsLoaded] = useFonts({
-        'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
-    });
-
+    //Back
     const [focusedInput, setFocusedInput] = useState(null);
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
+    const [usuario, setUsuario] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [contra, setContra] = useState('');
+    const [confirmarcontra, setConfirmarContra] = useState('');
+    const [nombre, setNombre] = useState('');
+
+    const handleRegistro = () => {
+
+        //Nombre
+        if (nombre.length > 50) {
+            Alert.alert("Se permite un maximo de 50 caracteres");
+            return false;
+        }
+    
+        if (nombre.length < 10){
+            Alert.alert("Termine de escribir su nombre")
+            return false;
+        }
+
+        // Usuario
+        if (usuario.length === 0 || usuario.length > 20) {
+            Alert.alert('El nombre de usuario debe tener entre 1 y 20 caracteres.');
+            return;
+        }
+
+        //Correo
+        const emailRegex = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
+        if (!emailRegex.test(correo)) {
+            Alert.alert('Por favor ingresa un correo electrónico válido.');
+            return;
+        }
+
+        // Número de teléfono
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(telefono)) {
+            Alert.alert('Por favor ingresa un número telefónico válido.');
+            return;
+        }
+
+        // Contraseña y Confirmar
+        if (contra.length < 8 || contra.length > 25) {
+            Alert.alert('La contraseña debe tener entre 8 y 25 caracteres.');
+            return;
+        }
+
+        if (confirmarcontra.length < 8 || confirmarcontra.length > 25) {
+            Alert.alert('La contraseña debe tener entre 8 y 25 caracteres.');
+            return;
+        }
+
+        if (contra != confirmarcontra) {
+            Alert.alert("Las claves no coinciden");
+            return false;
+        }
+
+        // Tipo de cuenta
+        if (!value) {
+            Alert.alert('Por favor selecciona un tipo de cuenta.');
+            return;
+        }
+
+        const userData = {
+            nombre : nombre,
+            usuario: usuario,
+            correo: correo,
+            telefono: telefono,
+            contra: contra,
+            tipo: value,
+        };
+    
+        const userDataJson = JSON.stringify(userData);
+    
+        fetch("http://192.168.0.223:3000/usuario", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: userDataJson,
+        })
+
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la solicitud');
+            }
+            return response.json();
+        })
+
+        .then(data => {
+            Alert.alert('¡Registro exitoso!'); 
+        })
+        
+        .catch(error => {
+            Alert.alert('Error en el registro: ' + error.message);
+        });
+        
+    };
+    
+    
+    //Front
+    const [fontsLoaded] = useFonts({
+        'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
+    });
 
     if (!fontsLoaded) {
         return undefined;
     }
 
-    
     const handleFocus = (inputName) => {
         setFocusedInput(inputName);
     };
@@ -43,12 +143,23 @@ function Registro({navigation}) {
                         <Text style={styles.title}>Bienvenido</Text>
                         <Text style={styles.texto}>Ya esta a un paso más cerca de formar parte de la enorme comunidad de MYDEA.
     Por favor complete los campos solicitados para terminar su registro.</Text>
-                        <View style={styles.subcontenedor_formulario}>
+                        <View style={styles.subcontenedor_formulario} testID='CrearUsuario'>
+                            <View style={{marginBottom: 20}}>
+                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre Completo</Text>                            
+                                <TextInput style={[styles.textinput,  focusedInput === 'input7' ? styles.inputFocused : null]}
+                                onFocus={() => handleFocus('input7')}
+                                onBlur={handleBlur}
+                                onChangeText={text => setNombre(text)}
+                                value={nombre}
+                                placeholder='NOMBRE COMPLETO' ></TextInput>
+                            </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre de usuario</Text>                            
                                 <TextInput style={[styles.textinput,  focusedInput === 'input1' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input1')}
                                 onBlur={handleBlur}
+                                onChangeText={text => setUsuario(text)}
+                                value={usuario}
                                 placeholder='NOMBRE DE USUARIO' ></TextInput>
                             </View>
                             <View style={{marginBottom: 20}}>
@@ -56,6 +167,8 @@ function Registro({navigation}) {
                                 <TextInput style={[styles.textinput, focusedInput === 'input2' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input2')}
                                 onBlur={handleBlur}
+                                onChangeText={text => setCorreo(text)}
+                                value={correo}
                                 placeholder='CORREO ELECTRÓNICO'></TextInput>
                             </View>
                             <View style={{marginBottom: 20}}>
@@ -63,19 +176,16 @@ function Registro({navigation}) {
                                 <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input3')}
                                 onBlur={handleBlur}
+                                onChangeText={text => setTelefono(text)}
+                                value={telefono}
                                 placeholder='NÚMERO TELEFÓNICO'></TextInput>
-                            </View>
-                            <View style={{marginBottom: 20}}>
-                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Correo electrónico</Text>
-                                <TextInput style={[styles.textinput, focusedInput === 'input4' ? styles.inputFocused : null]}
-                                onFocus={() => handleFocus('input4')}
-                                onBlur={handleBlur}
-                                placeholder='CORREO ELECTRÓNICO'></TextInput>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Contraseña</Text>
                                 <TextInput style={[styles.textinput, focusedInput === 'input5' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input5')}
+                                onChangeText={text => setContra(text)}
+                                value={contra}
                                 placeholder='CONTRASEÑA'
                                 secureTextEntry={true}></TextInput>
                             </View>
@@ -83,6 +193,8 @@ function Registro({navigation}) {
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Confirmar Contraseña</Text>
                                 <TextInput style={[styles.textinput, focusedInput === 'input6' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input6')}
+                                onChangeText={text => setConfirmarContra(text)}
+                                value={confirmarcontra}
                                 placeholder='CONFIRMAR'
                                 secureTextEntry={true}></TextInput>
                             </View>
@@ -108,7 +220,7 @@ function Registro({navigation}) {
                             </View>
                             <View style={{marginBottom: 20, alignItems: 'center', justifyContent: 'center',}}>
                                 <View style={{flexDirection: 'row', marginVertical: 5}}>
-                                    <Checkbox 
+                                    <Checkbox
                                     colorScheme="danger" 
                                     size="md"
                                     aria-label="Aceptar Términos y Condiciones"
@@ -126,7 +238,7 @@ function Registro({navigation}) {
                                     </Text>
                                 </View>
                                 <View style={{flexDirection: 'row', marginVertical: 5}}>
-                                    <Checkbox 
+                                    <Checkbox
                                     colorScheme="danger" 
                                     size="md"
                                     aria-label="Aceptar Aviso de Privacidad"
@@ -141,7 +253,7 @@ function Registro({navigation}) {
                             onPress={() => navigation.navigate('Inicio_sesión')}>INICIA SESIÓN</Text>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.boton}>
+                    <TouchableOpacity style={styles.boton} onPress={handleRegistro}>
                         <Text style={styles.texto_boton}>REGISTRARSE</Text>
                     </TouchableOpacity>
                 </SafeAreaView>
