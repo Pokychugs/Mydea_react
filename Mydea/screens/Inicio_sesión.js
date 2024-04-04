@@ -1,9 +1,49 @@
 import { useFonts } from 'expo-font';
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 function Inicio_sesión({navigation}) {
+
+    //Back
+    const [usuario, setUsuario] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [contra, setContra] = useState('');
+
+    const handleInicioSesion = async () => {
+        try {
+
+            const userData = {
+                usuario: usuario,
+                correo: correo,
+                contra: contra,
+            };
+
+            const userDataJson = JSON.stringify(userData);
+
+            const response = await fetch("http://192.168.0.223:3000/iniciosesion", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: userDataJson,
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud');
+            }
+
+            const data = await response.json();
+            Alert.alert('Inicio de sesión exitoso');
+            navigation.navigate('Inicio');
+
+        } catch (error) {
+            Alert.alert('Error en el inicio de sesión: ' + error.message);
+        }
+    };
+
+    //Front
     const [fontsLoaded] = useFonts({
         'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
     });
@@ -26,42 +66,46 @@ function Inicio_sesión({navigation}) {
     return (
         <View>
             <View style={styles.container_amarillo}></View>
-            <SafeAreaView style={styles.container}>
-                <View style={styles.contenedor_formulario}>
-                    <Text style={styles.title}>INICIAR SESIÓN</Text>
-                    <Text style={styles.texto}>Bienvenido de vuelta!! {'\n'} Por favor complete los campos solicitados para Iniciar Sesión.</Text>
-                    <View style={styles.subcontenedor_formulario}>
-                        <View style={{marginBottom: 20}}>
-                            <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre de usuario</Text>                            
-                            <TextInput style={[styles.textinput,  focusedInput === 'input1' ? styles.inputFocused : null]}
-                            onFocus={() => handleFocus('input1')}
-                            onBlur={handleBlur}
-                            placeholder='NOMBRE DE USUARIO' ></TextInput>
+            <ScrollView>
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.contenedor_formulario}>
+                        <Text style={styles.title}>INICIAR SESIÓN</Text>
+                        <Text style={styles.texto}>Bienvenido de vuelta!! {'\n'} Por favor complete los campos solicitados para Iniciar Sesión.</Text>
+                        <View style={styles.subcontenedor_formulario}>
+                            <View style={{marginBottom: 20}}>
+                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre de usuario</Text>                            
+                                <TextInput style={[styles.textinput,  focusedInput === 'input1' ? styles.inputFocused : null]}
+                                onFocus={() => handleFocus('input1')}
+                                onBlur={handleBlur}
+                                onChangeText={text => setUsuario(text)}
+                                placeholder='NOMBRE DE USUARIO' ></TextInput>
+                            </View>
+                            <View style={{marginBottom: 20}}>
+                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Correo electrónico</Text>
+                                <TextInput style={[styles.textinput, focusedInput === 'input2' ? styles.inputFocused : null]}
+                                onFocus={() => handleFocus('input2')}
+                                onBlur={handleBlur}
+                                onChangeText={text => setCorreo(text)}
+                                placeholder='CORREO ELECTRÓNICO'></TextInput>
+                            </View>
+                            <View style={{marginBottom: 20}}>
+                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Contraseña</Text>
+                                <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
+                                onFocus={() => handleFocus('input3')}
+                                onChangeText={text => setContra(text)}
+                                placeholder='CONTRSEÑA'
+                                secureTextEntry={true}></TextInput>
+                            </View>
+                            <Text style={styles.texto}>¿Aún no tienes una cuenta?</Text><Text style={[styles.texto, {color:'#ad3f26'}]}
+                            onPress={() => navigation.navigate('Registro')}>REGISTRATE</Text>
                         </View>
-                        <View style={{marginBottom: 20}}>
-                            <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Correo electrónico</Text>
-                            <TextInput style={[styles.textinput, focusedInput === 'input2' ? styles.inputFocused : null]}
-                            onFocus={() => handleFocus('input2')}
-                            onBlur={handleBlur}
-                            placeholder='CORREO ELECTRÓNICO'></TextInput>
-                        </View>
-                        <View style={{marginBottom: 20}}>
-                            <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Contraseña</Text>
-                            <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
-                            onFocus={() => handleFocus('input3')}
-                            placeholder='CONTRSEÑA'
-                            secureTextEntry={true}></TextInput>
-                        </View>
-                        <Text style={styles.texto}>¿Aún no tienes una cuenta?</Text><Text style={[styles.texto, {color:'#ad3f26'}]}
-                        onPress={() => navigation.navigate('Registro')}>REGISTRATE</Text>
                     </View>
-                </View>
-                <TouchableOpacity style={styles.boton}>
-                    <Text style={styles.texto_boton}>INICIAR SESIÓN</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        </View>
-        
+                    <TouchableOpacity style={styles.boton} onPress={handleInicioSesion}>
+                        <Text style={styles.texto_boton}>INICIAR SESIÓN</Text>
+                    </TouchableOpacity>
+                </SafeAreaView>
+            </ScrollView>
+        </View> 
     );
 }
 
@@ -129,7 +173,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         height: 50,
         marginTop: 6,
-        marginBottom: 10,
+        marginBottom: 50,
         elevation: 4,
     },
     texto_boton: {
