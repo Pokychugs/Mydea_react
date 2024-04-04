@@ -91,7 +91,7 @@ function Registro({navigation}) {
     
         const userDataJson = JSON.stringify(userData);
     
-        fetch("http://192.168.0.223:3000/usuario", {
+        fetch("http://192.168.0.223:3000/registro", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -108,6 +108,7 @@ function Registro({navigation}) {
 
         .then(data => {
             Alert.alert('¡Registro exitoso!'); 
+            navigation.navigate('Inicio_sesión');
         })
         
         .catch(error => {

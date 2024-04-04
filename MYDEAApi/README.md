@@ -5,6 +5,7 @@
 * npm install nodemon
 * npm i cors
 * npm install @react-navigation/native
+* npm install bcrypt
 
 * Poder ver negocios y buscar negocios
 * Añadir a la base el usuario (crear cuenta)
