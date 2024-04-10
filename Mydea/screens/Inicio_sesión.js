@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 function Inicio_sesión({navigation}) {
 
-    //Back
+    //BACK
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [contra, setContra] = useState('');
@@ -43,7 +43,7 @@ function Inicio_sesión({navigation}) {
         }
     };
 
-    //Front
+    //FRONT
     const [fontsLoaded] = useFonts({
         'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
     });
