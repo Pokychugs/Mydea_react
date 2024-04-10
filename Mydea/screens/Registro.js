@@ -16,7 +16,7 @@ const data = [
 
 function Registro({navigation}) {   
 
-    //Back
+    //BACK
     const [focusedInput, setFocusedInput] = useState(null);
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
@@ -36,9 +36,9 @@ function Registro({navigation}) {
     const [errorConfirmar, setErrorConfirmar] = useState(false);
     const [errorTipo, setErrorTipo] = useState(false);
 
-    const handleRegistro = () => {
+    const handleRegistro = async () => {
 
-        //Nombre
+        // NOMBRE COMPLETO
         if (nombre.length > 50) {
             setErrorNombre_2(true);
         }else{
@@ -51,14 +51,14 @@ function Registro({navigation}) {
             setErrorNombre(false);
         }
 
-        // Usuario
+        // USUARIO
         if (usuario.length === 0 || usuario.length > 20) {
             setErrorUsuario(true);
         }else{
             setErrorUsuario(false);
         }
 
-        //Correo
+        // CORREO
         const emailRegex = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
         if (!emailRegex.test(correo)) {
             setErrorCorreo(true);
@@ -66,15 +66,16 @@ function Registro({navigation}) {
             setCorreo(false);
         }
 
-        // Número de teléfono
-       const phoneRegex = /^[0-9]{10}$/;
+        // NÚMERO DE TELÉFONO
+        const phoneRegex = /^[0-9]{10}$/;
+
         if (!phoneRegex.test(telefono)) {
             setErrorTelefono(true);
         }else{
             setErrorTelefono(false);
         }
 
-        // Contraseña y Confirmar
+        // CONTRASEÑA Y CONFIRMAR
         if (contra.length < 8 || contra.length > 25) {
             setErrorContra(true);
         }else{
@@ -87,7 +88,7 @@ function Registro({navigation}) {
             setErrorConfirmar(false);
         }
 
-        // Tipo de cuenta
+        // TIPO DE CUENTA
         if (!value) {
             setErrorTipo(true);
         }else{
@@ -109,35 +110,35 @@ function Registro({navigation}) {
         };
     
         const userDataJson = JSON.stringify(userData);
+        
+        let response;
+        try {
+            response = await fetch("http://192.168.0.223:3000/registro", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: userDataJson,
+            });
     
-        fetch("http://192.168.0.223:3000/registro", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: userDataJson,
-        })
-
-        .then(response => {
             if (!response.ok) {
-                throw new Error('Error en la solicitud');
+                throw new Error('Error en la solicitud: ' + response.status);
             }
-            return response.json();
-        })
-
-        .then(data => {
+    
+            const data = await response.json();
             Alert.alert('¡Registro exitoso!'); 
             navigation.navigate('Inicio_sesión');
-        })
-        
-        .catch(error => {
+            
+        } catch (error) {
             Alert.alert('Error en el registro: ' + error.message);
-        });
-        
+            if (error.message.includes('400')) {
+                const responseBody = await response.json(); 
+                Alert.alert('Error en el registro', responseBody.error); 
+            }
+        }
     };
     
-    
-    //Front
+    //FRONT
     const [fontsLoaded] = useFonts({
         'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
     });
