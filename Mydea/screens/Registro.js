@@ -5,7 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
 import { NativeBaseProvider} from "native-base";
 import { Checkbox } from "native-base";
-import { useNavigation } from '@react-navigation/native';
+import IonIcons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const data = [
     { label: 'Cuenta Normal', value: '1' },
@@ -25,59 +27,77 @@ function Registro({navigation}) {
     const [confirmarcontra, setConfirmarContra] = useState('');
     const [nombre, setNombre] = useState('');
 
+    const [errorNombre, setErrorNombre] = useState(false);
+    const [errorNombre_2, setErrorNombre_2] = useState(false);
+    const [errorCorreo, setErrorCorreo] = useState(false);
+    const [errorUsuario, setErrorUsuario] = useState(false);
+    const [errorTelefono, setErrorTelefono] = useState(false);
+    const [errorContra, setErrorContra] = useState(false);
+    const [errorConfirmar, setErrorConfirmar] = useState(false);
+    const [errorTipo, setErrorTipo] = useState(false);
+
     const handleRegistro = async () => {
 
         // NOMBRE COMPLETO
         if (nombre.length > 50) {
-            Alert.alert("Se permite un maximo de 50 caracteres");
-            return false;
+            setErrorNombre_2(true);
+        }else{
+            setErrorNombre_2(false);
         }
     
         if (nombre.length < 10){
-            Alert.alert("Termine de escribir su nombre")
-            return false;
+            setErrorNombre(true);
+        }else{
+            setErrorNombre(false);
         }
 
         // USUARIO
         if (usuario.length === 0 || usuario.length > 20) {
-            Alert.alert('El nombre de usuario debe tener entre 1 y 20 caracteres.');
-            return;
+            setErrorUsuario(true);
+        }else{
+            setErrorUsuario(false);
         }
 
         // CORREO
         const emailRegex = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w{2,3})+$/;
         if (!emailRegex.test(correo)) {
-            Alert.alert('Por favor ingresa un correo electrónico válido.');
-            return;
+            setErrorCorreo(true);
+        }else{
+            setCorreo(false);
         }
 
         // NÚMERO DE TELÉFONO
         const phoneRegex = /^[0-9]{10}$/;
+
         if (!phoneRegex.test(telefono)) {
-            Alert.alert('Por favor ingresa un número telefónico válido.');
-            return;
+            setErrorTelefono(true);
+        }else{
+            setErrorTelefono(false);
         }
 
         // CONTRASEÑA Y CONFIRMAR
         if (contra.length < 8 || contra.length > 25) {
-            Alert.alert('La contraseña debe tener entre 8 y 25 caracteres.');
-            return;
-        }
-
-        if (confirmarcontra.length < 8 || confirmarcontra.length > 25) {
-            Alert.alert('La contraseña debe tener entre 8 y 25 caracteres.');
-            return;
+            setErrorContra(true);
+        }else{
+            setErrorContra(false);
         }
 
         if (contra != confirmarcontra) {
-            Alert.alert("Las claves no coinciden");
-            return false;
+            setErrorConfirmar(true);
+        }else{
+            setErrorConfirmar(false);
         }
 
         // TIPO DE CUENTA
         if (!value) {
-            Alert.alert('Por favor selecciona un tipo de cuenta.');
-            return;
+            setErrorTipo(true);
+        }else{
+            setErrorTipo(false);
+        }
+
+        if(errorNombre || errorNombre_2 || errorCorreo || errorUsuario || errorTelefono || errorContra || errorConfirmar || errorTipo){
+            console.log('hola');
+            return false;
         }
 
         const userData = {
@@ -147,57 +167,99 @@ function Registro({navigation}) {
                         <View style={styles.subcontenedor_formulario} testID='CrearUsuario'>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre Completo</Text>                            
-                                <TextInput style={[styles.textinput,  focusedInput === 'input7' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorNombre && styles.textinputError, errorNombre_2 && styles.textinputError,, focusedInput === 'input7' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input7')}
                                 onBlur={handleBlur}
                                 onChangeText={text => setNombre(text)}
                                 value={nombre}
                                 placeholder='NOMBRE COMPLETO' ></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorNombre_2 && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Se permite un maximo de 50 caracteres</Text>
+                                    </View>
+                                </View>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorNombre && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Termine de escribir su nombre</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre de usuario</Text>                            
-                                <TextInput style={[styles.textinput,  focusedInput === 'input1' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorUsuario && styles.textinputError, focusedInput === 'input1' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input1')}
                                 onBlur={handleBlur}
                                 onChangeText={text => setUsuario(text)}
                                 value={usuario}
                                 placeholder='NOMBRE DE USUARIO' ></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorUsuario && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>El nombre de usuario debe tener entre 1 y 20 caracteres</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Correo electrónico</Text>
-                                <TextInput style={[styles.textinput, focusedInput === 'input2' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorCorreo&& styles.textinputError, focusedInput === 'input2' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input2')}
                                 onBlur={handleBlur}
                                 onChangeText={text => setCorreo(text)}
                                 value={correo}
                                 placeholder='CORREO ELECTRÓNICO'></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorCorreo && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Por favor ingresa un correo electrónico válido</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
-                                <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Número Telefónico</Text>
-                                <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
+                                <Text style={[styles.texto, {fontWeight: 'bold',  textAlign: 'left'}]}>Número Telefónico</Text>
+                                <TextInput style={[styles.textinput, errorTelefono && styles.textinputError, focusedInput === 'input3' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input3')}
                                 onBlur={handleBlur}
                                 onChangeText={text => setTelefono(text)}
                                 value={telefono}
                                 placeholder='NÚMERO TELEFÓNICO'></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorTelefono && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Por favor ingresa un número telefónico válido</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Contraseña</Text>
-                                <TextInput style={[styles.textinput, focusedInput === 'input5' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorContra && styles.textinputError, focusedInput === 'input5' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input5')}
                                 onChangeText={text => setContra(text)}
                                 value={contra}
                                 placeholder='CONTRASEÑA'
                                 secureTextEntry={true}></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorContra && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>La contraseña debe tener entre 8 y 25 caracteres</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Confirmar Contraseña</Text>
-                                <TextInput style={[styles.textinput, focusedInput === 'input6' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorConfirmar && styles.textinputError, focusedInput === 'input6' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input6')}
                                 onChangeText={text => setConfirmarContra(text)}
                                 value={confirmarcontra}
                                 placeholder='CONFIRMAR'
                                 secureTextEntry={true}></TextInput>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorConfirmar && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Las claves no coinciden</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20}}>
                                 <Dropdown
@@ -218,6 +280,12 @@ function Registro({navigation}) {
                                 setIsFocus(false);
                                 }}>
                                 </Dropdown>
+                                <View>
+                                    <View style={[styles.containerAlerta, errorTipo && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Por favor selecciona un tipo de cuenta</Text>
+                                    </View>
+                                </View>
                             </View>
                             <View style={{marginBottom: 20, alignItems: 'center', justifyContent: 'center',}}>
                                 <View style={{flexDirection: 'row', marginVertical: 5}}>
@@ -254,6 +322,7 @@ function Registro({navigation}) {
                             onPress={() => navigation.navigate('Inicio_sesión')}>INICIA SESIÓN</Text>
                         </View>
                     </View>
+                    
                     <TouchableOpacity style={styles.boton} onPress={handleRegistro}>
                         <Text style={styles.texto_boton}>REGISTRARSE</Text>
                     </TouchableOpacity>
@@ -307,9 +376,10 @@ const styles = StyleSheet.create({
     textinput: {
         backgroundColor: 'rgba(217, 217, 217, 0.5)',
         borderColor: '#727272',
+        //borderColor: '#FF3333',
         borderStyle:'solid',
         borderWidth: 2,
-        borderRadius: 320,
+        borderRadius: 10,
         height: 50,
         paddingHorizontal: 20,
         fontSize: 20,
@@ -356,6 +426,25 @@ const styles = StyleSheet.create({
         fontSize: 16,
         margin: 6,
     },
+    textoAlertas: {
+        fontSize: 16,
+        color: '#FF3333',
+        marginHorizontal: 5,
+    },
+    containerAlerta: {
+        flexDirection: 'row',
+        marginTop: 5,
+        display: 'none',
+    },
+    iconoAlerta: {
+        color: '#FF3333',
+    },
+    textinputError: {
+        borderColor: '#FF3333',
+    },
+    containerAlertaError: {
+        display: 'block',
+    }
 });
 
 export default Registro;
