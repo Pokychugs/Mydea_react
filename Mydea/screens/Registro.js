@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -36,8 +36,7 @@ function Registro({navigation}) {
     const [errorConfirmar, setErrorConfirmar] = useState(false);
     const [errorTipo, setErrorTipo] = useState(false);
 
-    const handleRegistro = async () => {
-
+    useEffect(() => {
         // NOMBRE COMPLETO
         if (nombre.length > 50) {
             setErrorNombre_2(true);
@@ -63,7 +62,7 @@ function Registro({navigation}) {
         if (!emailRegex.test(correo)) {
             setErrorCorreo(true);
         }else{
-            setCorreo(false);
+            setErrorCorreo(false);
         }
 
         // NÚMERO DE TELÉFONO
@@ -94,50 +93,57 @@ function Registro({navigation}) {
         }else{
             setErrorTipo(false);
         }
+    }, [nombre, correo, usuario, telefono, contra, confirmarcontra, value]);
+
+    const handleRegistro = async () => {
+
+        
 
         if(errorNombre || errorNombre_2 || errorCorreo || errorUsuario || errorTelefono || errorContra || errorConfirmar || errorTipo){
-            console.log('hola');
+            console.log('hay errores');
+            //console.log('Errores:', { errorNombre, errorNombre_2, errorCorreo, errorUsuario, errorTelefono, errorContra, errorConfirmar, errorTipo });
             return false;
-        }
-
-        const userData = {
-            nombre : nombre,
-            usuario: usuario,
-            correo: correo,
-            telefono: telefono,
-            contra: contra,
-            tipo: value,
-        };
-    
-        const userDataJson = JSON.stringify(userData);
+        }else{
+            const userData = {
+                nombre : nombre,
+                usuario: usuario,
+                correo: correo,
+                telefono: telefono,
+                contra: contra,
+                tipo: value,
+            };
         
-        let response;
-        try {
-            response = await fetch("http://192.168.0.223:3000/registro", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: userDataJson,
-            });
-    
-            if (!response.ok) {
-                throw new Error('Error en la solicitud: ' + response.status);
-            }
-    
-            const data = await response.json();
-            Alert.alert('¡Registro exitoso!'); 
-            navigation.navigate('Inicio_sesión');
+            const userDataJson = JSON.stringify(userData);
             
-        } catch (error) {
-            Alert.alert('Error en el registro: ' + error.message);
-            if (error.message.includes('400')) {
-                const responseBody = await response.json(); 
-                Alert.alert('Error en el registro', responseBody.error); 
+            let response;
+            try {
+                console.log('hola');
+                response = await fetch("http://192.168.0.223:3000/registro", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: userDataJson,
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+        
+                const data = await response.json();
+                Alert.alert('¡Registro exitoso!'); 
+                navigation.navigate('Inicio_sesión');
+                
+            } catch (error) {
+                Alert.alert('Error en el registro: ' + error.message);
+                if (error.message.includes('400')) {
+                    const responseBody = await response.json(); 
+                    Alert.alert('Error en el registro', responseBody.error); 
+                }
             }
-        }
+        }  
     };
-    
+
     //FRONT
     const [fontsLoaded] = useFonts({
         'poppins-regular': require('./fonts/Poppins/Poppins-Regular.ttf'),
@@ -167,7 +173,7 @@ function Registro({navigation}) {
                         <View style={styles.subcontenedor_formulario} testID='CrearUsuario'>
                             <View style={{marginBottom: 20}}>
                                 <Text style={[styles.texto, {fontWeight: 'bold', textAlign: 'left'}]}>Nombre Completo</Text>                            
-                                <TextInput style={[styles.textinput, errorNombre && styles.textinputError, errorNombre_2 && styles.textinputError,, focusedInput === 'input7' ? styles.inputFocused : null]}
+                                <TextInput style={[styles.textinput, errorNombre && styles.textinputError, errorNombre_2 && styles.textinputError, focusedInput === 'input7' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input7')}
                                 onBlur={handleBlur}
                                 onChangeText={text => setNombre(text)}
@@ -376,7 +382,6 @@ const styles = StyleSheet.create({
     textinput: {
         backgroundColor: 'rgba(217, 217, 217, 0.5)',
         borderColor: '#727272',
-        //borderColor: '#FF3333',
         borderStyle:'solid',
         borderWidth: 2,
         borderRadius: 10,
