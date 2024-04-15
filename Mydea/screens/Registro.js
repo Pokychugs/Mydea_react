@@ -6,8 +6,6 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { NativeBaseProvider} from "native-base";
 import { Checkbox } from "native-base";
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const data = [
     { label: 'Cuenta Normal', value: '1' },
@@ -35,6 +33,8 @@ function Registro({navigation}) {
     const [errorContra, setErrorContra] = useState(false);
     const [errorConfirmar, setErrorConfirmar] = useState(false);
     const [errorTipo, setErrorTipo] = useState(false);
+    const [aceptarTerminos, setAceptarTerminos] = useState(true);
+    const [aceptarPrivacidad, setAceptarPrivacidad] = useState(true);
 
     useEffect(() => {
         // NOMBRE COMPLETO
@@ -99,7 +99,7 @@ function Registro({navigation}) {
 
         
 
-        if(errorNombre || errorNombre_2 || errorCorreo || errorUsuario || errorTelefono || errorContra || errorConfirmar || errorTipo){
+        if(errorNombre || errorNombre_2 || errorCorreo || errorUsuario || errorTelefono || errorContra || errorConfirmar || errorTipo || aceptarPrivacidad || aceptarTerminos){
             console.log('hay errores');
             //console.log('Errores:', { errorNombre, errorNombre_2, errorCorreo, errorUsuario, errorTelefono, errorContra, errorConfirmar, errorTipo });
             return false;
@@ -299,7 +299,9 @@ function Registro({navigation}) {
                                     colorScheme="danger" 
                                     size="md"
                                     aria-label="Aceptar Términos y Condiciones"
-                                    style={{flex: 1}}>
+                                    style={{flex: 1}}
+                                    //isChecked={aceptarTerminos}
+                                    onChange={() => setAceptarTerminos(!aceptarTerminos)}>
                                     </Checkbox>
                                     <Text 
                                     style={[styles.texto, {borderColor: '#D95538', 
@@ -317,11 +319,18 @@ function Registro({navigation}) {
                                     colorScheme="danger" 
                                     size="md"
                                     aria-label="Aceptar Aviso de Privacidad"
-                                    style={{flex: 1}}>
+                                    style={{flex: 1}}
+                                    onChange={() => setAceptarPrivacidad(!aceptarPrivacidad)}>
                                     </Checkbox>
                                     <Text 
                                     style={[styles.texto, {borderColor: '#D95538', borderStyle:'solid', borderBottomWidth: 2, flex: 1, fontSize: 17, marginHorizontal: 5}]}
                                     onPress={() => navigation.navigate('Aviso_privacidad')}>Aceptar Aviso de Privacidad</Text>
+                                </View>
+                                <View>
+                                    <View style={[styles.containerAlerta, aceptarTerminos && styles.containerAlertaError, aceptarPrivacidad && styles.containerAlertaError]}>
+                                        <IonIcons style={styles.iconoAlerta} name='close-circle' size={18}></IonIcons>
+                                        <Text style={styles.textoAlertas}>Acepta los términos y condiciones y el aviso de privacidad</Text>
+                                    </View>
                                 </View>
                             </View>
                             <Text style={styles.texto}>¿Ya tienes una cuenta?</Text><Text style={[styles.texto, {color:'rgb(224, 177, 23)'}]}
