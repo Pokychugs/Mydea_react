@@ -6,6 +6,7 @@ import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Negocio from './Negocio';
 
 function Inicio({navigation}) {
 
@@ -50,7 +51,7 @@ function Inicio({navigation}) {
                     <Text style={styles.subtitle}>Los mejores negocios</Text>
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <TouchableOpacity style={styles.contenedor_negocio}>
+                    <TouchableOpacity style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
                         <View>
                             <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
                         </View>
@@ -68,7 +69,7 @@ function Inicio({navigation}) {
                             </View>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.contenedor_negocio}>
+                    <TouchableOpacity style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
                         <View>
                             <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
                         </View>

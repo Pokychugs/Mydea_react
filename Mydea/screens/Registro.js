@@ -141,7 +141,7 @@ function Registro({navigation}) {
             let response;
             try {
                 console.log('hola');
-                response = await fetch("http://192.168.1.79:3000/registro", {
+                response = await fetch("http://192.168.0.223:3000/registro", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -416,7 +416,7 @@ function Registro({navigation}) {
                             zIndex: 1000,
                         }}
                         >
-                        <Alert style={{marginLeft: '5%'}} h="100%" w="90%" status={tipoAlerta}>
+                        <Alert style={{marginLeft: '5%'}} h="85%" w="90%" status={tipoAlerta}>
                             <VStack space={2} flexShrink={1} w="80%">
                             <HStack flexShrink={1} space={2} justifyContent="center">
                                 <HStack space={2} flexShrink={1} alignItems="center">

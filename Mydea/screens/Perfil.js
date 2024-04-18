@@ -265,7 +265,9 @@ function Perfil({navigation}) {
                             </View>
                         </View>
                     )}
-                {isOpen && (
+                
+            </SafeAreaView>
+            {isOpen && (
                     <>
                     <AnimatedPressable
                     style={styles.backdrop}
@@ -287,7 +289,6 @@ function Perfil({navigation}) {
                     </GestureDetector>
                     </>
                 )}
-            </SafeAreaView>
         </GestureHandlerRootView>
     );
 }
