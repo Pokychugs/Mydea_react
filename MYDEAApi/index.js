@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Client } = require("pg");
 const bcrypt = require('bcrypt'); //Ya no utilizo
+const moment = require('moment');
 
 const port = 3000;
 const app = express();
@@ -143,6 +144,8 @@ async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_co
             throw new Error('Tipo de usuario inválido');
         }
 
+        const per_fecha = moment().format('YYYY-MM-DD');
+
         const queryUsuario = `
             INSERT INTO Usuario(usu_nombre, usu_password, tip_id) 
             VALUES($1, $2, $3)
@@ -154,10 +157,10 @@ async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_co
         const usu_id = resultUsuario.rows[0].usu_id;
 
         const queryPersona = `
-            INSERT INTO Persona(usu_id, per_correo, per_telefono, per_nombrecompleto) 
-            VALUES($1, $2, $3, $4)`;
+            INSERT INTO Persona(usu_id, per_correo, per_telefono, per_nombrecompleto, per_fecha) 
+            VALUES($1, $2, $3, $4, $5)`;
 
-        const valuesPersona = [usu_id, per_correo, per_telefono, per_nombrereal];
+        const valuesPersona = [usu_id, per_correo, per_telefono, per_nombrereal, per_fecha];
         await client.query(queryPersona, valuesPersona);
 
         console.log('Usuario y Persona guardados correctamente');
