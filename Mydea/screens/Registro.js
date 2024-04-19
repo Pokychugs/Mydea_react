@@ -8,6 +8,7 @@ import { Checkbox, Alert, VStack, HStack, IconButton, CloseIcon } from "native-b
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import { Animated } from 'react-native';
 import { PanGestureHandler, State, GestureHandlerRootView } from 'react-native-gesture-handler';
+import moment from 'moment';
 
 
 const data = [
@@ -27,6 +28,7 @@ function Registro({navigation}) {
     const [contra, setContra] = useState('');
     const [confirmarcontra, setConfirmarContra] = useState('');
     const [nombre, setNombre] = useState('');
+    const [fecha, setFecha] = useState('');
 
     const [errorNombre, setErrorNombre] = useState(false);
     const [errorNombre_2, setErrorNombre_2] = useState(false);
@@ -60,6 +62,10 @@ function Registro({navigation}) {
       );
 
     useEffect(() => {
+
+        const fechaActual = moment().format('YYYY-MM-DD HH:mm:ss');
+        setFecha(fechaActual);
+
         // NOMBRE COMPLETO
         if (nombre.length > 50) {
             setErrorNombre_2(true);
@@ -116,11 +122,10 @@ function Registro({navigation}) {
         }else{
             setErrorTipo(false);
         }
+
     }, [nombre, correo, usuario, telefono, contra, confirmarcontra, value]);
 
     const handleRegistro = async () => {
-
-        
 
         if(errorNombre || errorNombre_2 || errorCorreo || errorUsuario || errorTelefono || errorContra || errorConfirmar || errorTipo || aceptarPrivacidad || aceptarTerminos){
             console.log('hay errores');
@@ -141,7 +146,7 @@ function Registro({navigation}) {
             let response;
             try {
                 console.log('hola');
-                response = await fetch("http://192.168.0.223:3000/registro", {
+                response = await fetch("http://192.168.41.70:3000/registro", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

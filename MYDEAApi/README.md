@@ -6,8 +6,8 @@
 * npm i cors
 * npm install @react-navigation/native
 * npm install bcrypt
+* npm install moment
 
 * Poder ver negocios y buscar negocios
-* Añadir a la base el usuario (crear cuenta)
-* iniciar sesión
+
 
