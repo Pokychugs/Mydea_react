@@ -4,8 +4,10 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTi
 import { ScrollView, GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import MapView, { Marker } from 'react-native-maps';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import imagen_perfil from './Imagenes/asa.jpg'
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -106,8 +108,48 @@ function Negocio({navigation}) {
                     <Text style={styles.textoSub}>Horarios</Text> 
                     <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
                 </TouchableOpacity>
-                <View style={styles.contenedorHorUb}>
-
+                <View style={styles.contenedorInfo}>
+                    <Text style={styles.textoSub}>Ubicación</Text>
+                    <Text style={styles.textoDescripcion}>Dirección del negocio</Text>
+                </View>
+                <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
+                    <MapView style={styles.map} 
+                        initialRegion={{
+                            latitude: 19.25437953360486,
+                            longitude: -99.05461822161988, 
+                            latitudeDelta: 0.003,
+                            longitudeDelta: 0.00421,
+                        }}
+                        scrollEnabled={false}
+                        zoomEnabled={false}
+                        pitchEnabled={false}
+                        rotateEnabled={false}
+                        pointerEvents="none"
+                    >
+                        <Marker
+                            coordinate={{latitude: 19.25437953360486, longitude: -99.05461822161988}}
+                            title='Negocio'
+                            description="Esta es la descripción de mi marcador"
+                        />
+                    </MapView>
+                </View>
+                <View style={styles.contenedorInfo}>
+                    <Text style={[styles.textoSub, {marginBottom: 10}]}>Propietario</Text>
+                    <View style={styles.contenedor_perfil}>
+                        <View style={styles.contenedor_amarillo}></View>
+                        <Image source={imagen_perfil} style={styles.imagen_perfil}></Image>
+                        <Text style={[styles.nombre_propietario, {marginTop: 70}]}>Nombre</Text>
+                        <View style={styles.contenedor_datos}>
+                            <View style={[styles.info_perfil, styles.borde_medio]}>
+                                <Text style={styles.nombre_propietario}>1</Text>
+                                <Text style={styles.texto_info_perfil}>Número de negocios</Text>
+                            </View>
+                            <View style={styles.info_perfil}>
+                                <Text style={styles.nombre_propietario}>1</Text>
+                                <Text style={styles.texto_info_perfil}>Reseñas de otros usuarios</Text>
+                            </View>
+                        </View>
+                    </View>
                 </View>
             </ScrollView>
             {isOpen && (
@@ -177,6 +219,7 @@ const styles = StyleSheet.create({
     },
     contenedorInfo: {
         margin: '5%',
+        marginBottom: 6,
     },
     textoDescripcion: {
         fontSize: 23,
@@ -207,7 +250,7 @@ const styles = StyleSheet.create({
         bottom: -20 * 1.1,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
-        zIndex: 1,
+        zIndex: 100,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
@@ -221,6 +264,68 @@ const styles = StyleSheet.create({
     textoHora: {
         right: 20,
         position: 'absolute',
+    },
+    map: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10, 
+    },
+    contenedor_perfil: {
+        width: '90%,',
+        height: 'auto',
+        borderRadius: 10,
+        border: 'solid',
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderWidth: 2,
+        borderRadius: 10,
+        padding: 5,
+        alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    contenedor_amarillo: {
+        backgroundColor: 'rgba(255, 196, 0, 0.8)',
+        width: '100%',
+        height: 75,
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+    },
+    imagen_perfil: {
+        width: 150,
+        height: 150,
+        borderRadius: 100,
+        position: 'absolute',
+        top: 7,
+        borderColor: 'rgba(231, 220, 226, 0.8)',
+        borderWidth: 4,
+    },
+    nombre_propietario: {
+        fontSize: 33,
+        fontFamily: 'InriaSans',
+        fontWeight: '600',
+    },
+    contenedor_datos: {
+        flexDirection: 'row',
+        border: 'solid',
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderTopWidth: 2,
+    },
+    info_perfil: {
+        alignItems: 'center',
+        marginHorizontal: 5,
+        width: '48%',
+    },
+    texto_info_perfil: {
+        fontSize: 15,
+        fontFamily: 'InriaSans',
+        fontWeight: '600',
+    },
+    borde_medio: {
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderRightWidth: 2,
+        paddingRight: 5,
     },
 });
 

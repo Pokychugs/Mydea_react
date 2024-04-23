@@ -54,12 +54,12 @@ function Registro({navigation}) {
         }).start(() => {
           setShowAlert(false);
         });
-      };
+    };
     
-      const onGestureEvent = Animated.event(
-        [{ nativeEvent: { translationY: translateY } }],
-        { useNativeDriver: true }
-      );
+    const onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationY: translateY } }],
+    { useNativeDriver: true }
+    );
 
     useEffect(() => {
 
