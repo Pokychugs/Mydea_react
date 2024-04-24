@@ -1,13 +1,16 @@
 import React, {useState} from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Pressable, Alert, Linking, TextInput, Button} from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTiming, SlideInDown, SlideOutDown, FadeIn, FadeOut,} from "react-native-reanimated";
 import { ScrollView, GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker } from 'react-native-maps';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Feather from 'react-native-vector-icons/Feather'
 import imagen_perfil from './Imagenes/asa.jpg'
+import * as Clipboard from 'expo-clipboard';
+import Modal from "react-native-modal";
+import { Center } from 'native-base';
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -41,6 +44,9 @@ function Negocio({navigation}) {
 
     const [isOpen, setOpen] = useState(false);
     const offset = useSharedValue(0);
+    const [isFocused, setIsFocused] = useState(false);
+
+    const [isModalVisible, setModalVisible] = useState(false);
 
     const toggleSheet = () => {
         setOpen(!isOpen);
@@ -68,9 +74,6 @@ function Negocio({navigation}) {
         transform: [{ translateY: offset.value }],
     }));
 
-    
-
-
     if (!fontsLoaded) {
         return undefined;
     }
@@ -84,6 +87,73 @@ function Negocio({navigation}) {
     );
 
     const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+    const handleOpenLink = async () => {
+        const url = 'https://www.facebook.com'; // URL externa que deseas abrir
+    
+        const supported = await Linking.canOpenURL(url);
+    
+        if (supported) {
+            await Linking.openURL(url);
+        } else {
+            console.log(`No se puede abrir el enlace: ${url}`);
+        }
+    };
+    const handleOpenLink_2 = async () => {
+        const url = 'https://www.instagram.com'; // URL externa que deseas abrir
+    
+        const supported = await Linking.canOpenURL(url);
+    
+        if (supported) {
+            await Linking.openURL(url);
+        } else {
+            console.log(`No se puede abrir el enlace: ${url}`);
+        }
+    };
+    const handleOpenLink_3 = async () => {
+        const url = 'https://twitter.com'; // URL externa que deseas abrir
+    
+        const supported = await Linking.canOpenURL(url);
+    
+        if (supported) {
+            await Linking.openURL(url);
+        } else {
+            console.log(`No se puede abrir el enlace: ${url}`);
+        }
+    };
+    const handleOpenLink_4 = async () => {
+        const url = 'https://www.google.com'; // URL externa que deseas abrir
+    
+        const supported = await Linking.canOpenURL(url);
+    
+        if (supported) {
+            await Linking.openURL(url);
+        } else {
+            console.log(`No se puede abrir el enlace: ${url}`);
+        }
+    };
+
+    const copyToClipboard = async () => {
+        await Clipboard.setStringAsync('55 1689 3694');
+        Alert.alert('Mensaje', 'Número copiado al portapapeles');
+    };
+    const copyToClipboard_2 = async () => {
+        await Clipboard.setStringAsync('ejemplo@gmail.com');
+        Alert.alert('Mensaje', 'Correo copiado al portapapeles');
+    };
+
+    const handleFocus = () => {
+        setIsFocused(true);
+    };
+    
+    const handleBlur = () => {
+        setIsFocused(false);
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+    
 
     return(
         <GestureHandlerRootView style={styles.container}>
@@ -151,6 +221,51 @@ function Negocio({navigation}) {
                         </View>
                     </View>
                 </View>
+                <View style={styles.contenedorInfo}>
+                    <Text style={[styles.textoSub, {marginBottom: 10}]}>Contactos del negocio</Text>
+                    <View style={[styles.contenedor_perfil, styles.contenedor_contactos]}>
+                        <View style={styles.info_perfil}>
+                            <Feather name='phone' size={35} onPress={copyToClipboard}></Feather>
+                        </View>
+                        <View style={styles.info_perfil}>
+                            <IonIcons name='mail' size={40} onPress={copyToClipboard_2}></IonIcons>
+                        </View>
+                        <View style={styles.info_perfil}>
+                            <MaterialCommunityIcons name='facebook' size={40} onPress={handleOpenLink}></MaterialCommunityIcons>
+                        </View>
+                        <View style={styles.info_perfil}>
+                            <MaterialCommunityIcons name='instagram' size={40} onPress={handleOpenLink_2}></MaterialCommunityIcons>
+                        </View>
+                        <View style={styles.info_perfil}>
+                            <MaterialCommunityIcons name='twitter' size={40} onPress={handleOpenLink_3}></MaterialCommunityIcons>
+                        </View>
+                        <View style={styles.info_perfil}>
+                            <MaterialCommunityIcons name='web' size={40} onPress={handleOpenLink_4}></MaterialCommunityIcons>
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.contenedorInfo}>
+                    <Text style={[styles.textoSub, {marginBottom: 10}, styles.borde_bajo]}>Productos</Text>
+                    <TextInput placeholder='Buscar un producto especifico' 
+                    style={[styles.buscador_productos, {borderColor: isFocused ? '#000': 'rgba(139, 137, 138, 0.8) ', backgroundColor: isFocused ? '#fff' : '#f2f2f2'}]}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}></TextInput>
+                    <ScrollView style={styles.contenedor_filtros} horizontal showsHorizontalScrollIndicator={false}>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>General</Text></Pressable>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>Menor a mayor precio</Text></Pressable>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>Mayor a menor precio</Text></Pressable>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>Nuevos productos</Text></Pressable>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>Productos antiguos</Text></Pressable>
+                        <Pressable style={styles.filtro}><Text style={styles.textoFiltro}>Disponibilidad</Text></Pressable>
+                    </ScrollView>
+                    <View style={styles.productos}>
+                        <Pressable style={styles.contenedor_producto} onPress={toggleModal}>
+                            <Image style={styles.imagen_producto} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
+                            <Text style={styles.textoPrecio}>$00.00</Text>
+                            <Text style={styles.texto_nombrepro}>Nombre</Text>
+                        </Pressable>
+                    </View>
+                </View>
             </ScrollView>
             {isOpen && (
                 <>
@@ -194,6 +309,20 @@ function Negocio({navigation}) {
                 </GestureDetector>
                 </>
             )}
+            <Modal isVisible={isModalVisible} 
+            style={{alignItems: 'center', justifyContent: 'center'}}
+            onBackdropPress={() => setModalVisible(false)}
+            useNativeDriverForBackdrop = 'false'
+            animationIn={'fadeIn'}
+            animationOut={'fadeOut'}>
+                <View style={styles.contenedor_producto_modal}>
+                    <Image style={styles.imagen_producto_modal} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
+                    <Text style={styles.texto_nombrepro_modal}>Nombre</Text>
+                    <Text style={styles.textoPrecioModal}>$00.00</Text>
+                    <Text style={[styles.textoDescripcion, {textAlign: 'center'}]}>Descrición del producto</Text>
+                    <Text style={styles.textoDisponibilidad}>Disponible en todo momento</Text>
+                </View>
+            </Modal>
         </GestureHandlerRootView>
     );
 };
@@ -314,7 +443,7 @@ const styles = StyleSheet.create({
     info_perfil: {
         alignItems: 'center',
         marginHorizontal: 5,
-        width: '48%',
+        flex: 1,
     },
     texto_info_perfil: {
         fontSize: 15,
@@ -326,6 +455,119 @@ const styles = StyleSheet.create({
         borderStyle:'solid',
         borderRightWidth: 2,
         paddingRight: 5,
+    },
+    borde_bajo: {
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderBottomWidth: 2,
+    },
+    contenedor_contactos: {
+        flexDirection: 'row',
+    },
+    buscador_productos: {
+        borderStyle:'solid',
+        borderWidth: 2,
+        borderRadius: 10,
+        height: 50,
+        fontSize: 20,
+        paddingHorizontal: 10,
+        fontFamily: 'InriaSans',
+        marginBottom: 10,
+    },
+    contenedor_filtros: {
+        marginBottom: 10,
+    },
+    filtro: {
+        backgroundColor: '#fff',
+        borderRadius: 18,
+        marginHorizontal: 10,
+        padding: 10,
+    },
+    textoFiltro: {
+        fontSize: 16,
+        fontFamily: 'InriaSans',
+    },
+    contenedor_producto: {
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderWidth: 2,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        width: '47%',
+        margin: 5,
+    },
+    imagen_producto: {
+        width: '100%,',
+        height: 170,
+        borderRadius: 10,
+    },
+    textoPrecio: {
+        position: 'absolute',
+        top: 15,
+        left: 0,
+        backgroundColor: '#fff',
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        padding: 5,
+        fontSize: 16,
+        fontFamily: 'InriaSans',
+    },
+    texto_nombrepro: {
+        fontSize: 20,
+        fontFamily: 'InriaSans',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    productos: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    contenedor_producto_modal: {
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderStyle:'solid',
+        borderWidth: 2,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 10,
+        margin: 5,
+        width: '100%',
+        height: '70%',
+    },
+    texto_nombrepro_modal: {
+        fontSize: 40,
+        fontFamily: 'InriaSans',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 10,
+        color: '#ffb62e',
+        textShadowColor: '#000',
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 1,
+    },
+    textoPrecioModal: {
+        fontSize: 40,
+        fontFamily: 'InriaSans',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 10,
+    },
+    textoDisponibilidad: {
+        fontSize: 24,
+        fontFamily: 'InriaSans',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginTop: 10,
+        backgroundColor: '#ffb62e',
+        borderRadius: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+    },
+    imagen_producto_modal: {
+        width: '100%,',
+        height: 250,
+        borderRadius: 10,
     },
 });
 
