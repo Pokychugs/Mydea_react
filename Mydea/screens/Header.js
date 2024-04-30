@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Lupa from './Imagenes/lupa.svg'
 import { TextInput, View, StyleSheet, TouchableOpacity} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Busqueda from './Busqueda';
 
 
 function Header({ navigation }) {
@@ -13,6 +14,7 @@ function Header({ navigation }) {
         setTimeout(() => {
             setIsPressed(false);
         }, 200);
+        navigation.navigate('Busqueda');
     };
 
 

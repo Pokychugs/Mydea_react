@@ -6,7 +6,6 @@ import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Negocio from './Negocio';
 
 function Inicio({navigation}) {
 

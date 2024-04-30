@@ -15,6 +15,7 @@ import Aviso_privacidad from './screens/Aviso_privacidad';
 import Datos_Contacto from './screens/Datos_contacto';
 import Mis_negocio from './screens/Mis_negocios';
 import Negocio from './screens/Negocio';
+import Busqueda from './screens/Busqueda';
 
 
 const NavInicio = createNativeStackNavigator();
@@ -22,10 +23,24 @@ const NavInicio = createNativeStackNavigator();
 function Nav_Inicio() {
     return(
         <NavInicio.Navigator>
-            <NavInicio.Screen name="Inicio" component={Inicio}
-            options={{ header: () => <Header />,}} />
-            <NavInicio.Screen name="Negocio" component={Negocio}
-            options={{ header: () => <Header />,}} />
+            <NavInicio.Screen 
+            name="Inicio" 
+            component={Inicio}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })}/>
+            <NavInicio.Screen 
+            name="Negocio" 
+            component={Negocio}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })} />
+            <NavInicio.Screen 
+            name="Busqueda" 
+            component={Busqueda}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })} />
         </NavInicio.Navigator>
     );
 }
