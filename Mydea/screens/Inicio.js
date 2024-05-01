@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import { ScrollView, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
@@ -6,19 +6,41 @@ import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Negocio from './Negocio';
 
 function Inicio({navigation}) {
 
-    //BACK
+    // BACK
+    const [negocio, setNegocio] = useState(null);
 
-    //FRONT
+    useEffect(() => {
+        const obtenerDatosNegocio = async () => {
+            try {
+                const response = await fetch("http://192.168.0.223:3000/inicionegocio");
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+                const negocioData = await response.json();
+                setNegocio(negocioData);
+            } catch (error) {
+                console.error('Error al obtener datos del negocio:', error.message);
+            }
+        };
+    
+        obtenerDatosNegocio();
+    
+    }, []);
+
+    if (!negocio) {
+        return <Text>Cargando...</Text>;
+    }
+
+    // FRONT
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
 
     if (!fontsLoaded) {
-        return undefined;
+        return <Text>Cargando fuentes...</Text>;
     }
 
     return (
@@ -53,73 +75,20 @@ function Inicio({navigation}) {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <TouchableOpacity style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
                         <View>
-                            <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
+                            <Image style={styles.Imagen_negocio} source={{uri : negocio.imagen}}></Image>
                         </View>
                         <View>
-                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>Nombre del negocio</Text>
+                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>{negocio.nombre}</Text>
                             <View style={{flexDirection: 'row'}}>
                                 <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
+                                <Text style={styles.texto_negocio}></Text>
                                 <MaterialCommunityIcons style={[styles.icon_heart, {marginLeft: 10}]} name='comment-processing' size={25}></MaterialCommunityIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
+                                <Text style={styles.texto_negocio}></Text>
                             </View>
                             <View style={{flexDirection: 'row', width: '100%'}}>
                                 <FontAwesome style={[styles.icon_heart, {marginLeft: 5, flex: 1}]} name='map-marker' size={30}></FontAwesome>
-                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>Manzana 013, Delegación San Gregorio Atlapulco, 1600, Méx.</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
-                        <View>
-                            <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
-                        </View>
-                        <View>
-                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>Nombre del negocio</Text>
-                            <View style={{flexDirection: 'row'}}>
-                                <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                                <MaterialCommunityIcons style={[styles.icon_heart, {marginLeft: 10}]} name='comment-processing' size={25}></MaterialCommunityIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                            </View>
-                            <View style={{flexDirection: 'row', width: '100%'}}>
-                                <FontAwesome style={[styles.icon_heart, {marginLeft: 5, flex: 1}]} name='map-marker' size={30}></FontAwesome>
-                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>Manzana 013, Delegación San Gregorio Atlapulco, 1600, Méx.</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.contenedor_negocio}>
-                        <View>
-                            <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
-                        </View>
-                        <View>
-                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>Nombre del negocio</Text>
-                            <View style={{flexDirection: 'row'}}>
-                                <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                                <MaterialCommunityIcons style={[styles.icon_heart, {marginLeft: 10}]} name='comment-processing' size={25}></MaterialCommunityIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                            </View>
-                            <View style={{flexDirection: 'row', width: '100%'}}>
-                                <FontAwesome style={[styles.icon_heart, {marginLeft: 5, flex: 1}]} name='map-marker' size={30}></FontAwesome>
-                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>Manzana 013, Delegación San Gregorio Atlapulco, 1600, Méx.</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.contenedor_negocio}>
-                        <View>
-                            <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
-                        </View>
-                        <View>
-                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>Nombre del negocio</Text>
-                            <View style={{flexDirection: 'row'}}>
-                                <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                                <MaterialCommunityIcons style={[styles.icon_heart, {marginLeft: 10}]} name='comment-processing' size={25}></MaterialCommunityIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                            </View>
-                            <View style={{flexDirection: 'row', width: '100%'}}>
-                                <FontAwesome style={[styles.icon_heart, {marginLeft: 5, flex: 1}]} name='map-marker' size={30}></FontAwesome>
-                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>Manzana 013, Delegación San Gregorio Atlapulco, 1600, Méx.</Text>
+                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>
+                                </Text>
                             </View>
                         </View>
                     </TouchableOpacity>

@@ -246,4 +246,67 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     }
 }
 
-//VISUALIZAR NEGOCIOS
+//VISUALIZAR NEGOCIOS INICIO
+app.get('/inicionegocio', async (req, res) => {
+    try {
+        const negocioData = await obtenerDatosNegocio();
+        res.json(negocioData);
+    } catch (error) {
+        console.error('Error al obtener datos del negocio:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerDatosNegocio() {
+    let client;
+    try {
+
+        /*const client = new Client({
+            user: 'ipsrpxvnaqxiwm',
+            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
+            database: 'db3v6hean6n35q',
+            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+            port: 5432,
+            ssl: {
+                rejectUnauthorized: false,
+            },
+            });
+            */
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryNegocio = `
+            SELECT neg_logo, neg_nombre
+            FROM Negocio
+        `;
+
+        const resultNegocio = await client.query(queryNegocio);
+        if (resultNegocio.rows.length === 0) {
+            throw new Error('No se encontraron datos del negocio');
+        }
+
+        const negocio = resultNegocio.rows[0];
+
+        const negocioData = {
+            imagen: negocio.neg_logo,
+            nombre: negocio.neg_nombre,
+        };
+
+        return negocioData;
+    } catch (error) {
+        console.error('Error al obtener datos del negocio:', error);
+        throw error;
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
