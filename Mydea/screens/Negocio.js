@@ -34,8 +34,36 @@ const data = [
 
 function Negocio({navigation}) {
 
+    /*
     //BACK
+    const [negocios, setNegocios] = useState([]);
 
+    useEffect(() => {
+        obtenerNegocios();
+    }, []);
+
+    const obtenerNegocios = async () => {
+        try {
+            const response = await fetch('http://192.168.41.70:3000/negocios');
+            if (!response.ok) {
+                throw new Error('Error al obtener los datos de los negocios');
+            }
+            const data = await response.json();
+            setNegocios(data);
+        } catch (error) {
+            console.error('Error al obtener los datos de los negocios:', error);
+        }
+    };
+    */
+    //const renderItem = ({ item }) => (
+      //  <View>
+        //    <Text>{item.nombre}</Text>
+          //  <Text>{item.descripcion}</Text>
+            //<Text>{item.direccion}</Text>
+           // {/* Agrega aquí cualquier otra información que desees mostrar */}
+      //  </View>
+    //);
+    
     //FRONT
     
     const [fontsLoaded] = useFonts({

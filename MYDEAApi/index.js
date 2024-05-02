@@ -246,4 +246,145 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     }
 }
 
-//VISUALIZAR NEGOCIOS
+//VISUALIZAR NEGOCIOS INICIO
+app.get('/inicionegocio', async (req, res) => {
+    try {
+        const negocioData = await obtenerDatosNegocios();
+        res.json(negocioData);
+    } catch (error) {
+        console.error('Error al obtener datos del negocio:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerDatosNegocios() {
+    let client;
+    try {
+
+        /*const client = new Client({
+            user: 'ipsrpxvnaqxiwm',
+            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
+            database: 'db3v6hean6n35q',
+            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+            port: 5432,
+            ssl: {
+                rejectUnauthorized: false,
+            },
+            });*/
+
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryNegocios = `
+        SELECT n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp, 
+        COUNT(f.fed_like) AS likes, COUNT(f.fed_comentario) AS comentarios
+        FROM Negocio n
+        LEFT JOIN Direccion d ON n.dir_id = d.dir_id
+        LEFT JOIN Feedback f ON n.neg_id = f.neg_id
+        GROUP BY n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp
+        LIMIT 5;
+        `;
+
+        const resultNegocios = await client.query(queryNegocios);
+        if (resultNegocios.rows.length === 0) {
+            throw new Error('No se encontraron datos de negocios');
+        }
+
+        const negociosData = resultNegocios.rows.map(negocio => ({
+            imagen: negocio.neg_logo,
+            nombre: negocio.neg_nombre,
+            direccion: {
+                colonia: negocio.dir_colonia,
+                calle: negocio.dir_calle,
+                numero: negocio.dir_numero,
+                cp: negocio.dir_cp
+            },
+            likes: parseInt(negocio.likes),
+            comentarios: parseInt(negocio.comentarios),
+        }));
+        
+        return negociosData;
+    } catch (error) {
+        console.error('Error al obtener datos de los negocios:', error);
+        throw error;
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
+
+//VISUALIZAR PRODUCTOS INICIO
+app.get('/inicioproducto', async (req, res) => {
+    try {
+        const productoData = await obtenerDatosProductos();
+        res.json(productoData);
+    } catch (error) {
+        console.error('Error al obtener datos de los productos:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerDatosProductos() {
+    let client;
+    try {
+
+        /*const client = new Client({
+            user: 'ipsrpxvnaqxiwm',
+            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
+            database: 'db3v6hean6n35q',
+            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+            port: 5432,
+            ssl: {
+                rejectUnauthorized: false,
+            },
+            });*/
+
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryProductos = `
+        SELECT p.pro_imagen, p.pro_nombre, p.pro_precio, p.pro_descripcion
+        FROM Producto p
+        GROUP BY p.pro_imagen, p.pro_nombre, p.pro_precio, p.pro_descripcion
+        LIMIT 5;
+        `;
+
+        const resultProductos = await client.query(queryProductos);
+        if (resultProductos.rows.length === 0) {
+            throw new Error('No se encontraron datos del productos');
+        }
+
+        const productosData = resultProductos.rows.map(producto => ({
+            imagen: producto.pro_imagen,
+            nombre: producto.pro_nombre,
+            precio: producto.pro_precio,
+            descripcion: producto.pro_descripcion,
+        }));
+        
+        return productosData;
+    } catch (error) {
+        console.error('Error al obtener datos de los productos:', error);
+        throw error;
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
