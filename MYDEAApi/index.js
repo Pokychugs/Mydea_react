@@ -88,15 +88,6 @@ async function verificarCorreoExistente(per_correo) {
         },
     });
 
-    /*const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'MydeaLocal',
-        password: 'FunnyValentine4',
-        port: 5432,
-        ssl: false,
-    });*/
-
     await client.connect();
 
     try {
@@ -126,15 +117,6 @@ async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_co
             rejectUnauthorized: false,
         },
     });
-
-    /*const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'MydeaLocal',
-        password: 'FunnyValentine4',
-        port: 5432,
-        ssl: false,
-    });*/
 
     await client.connect();
 
@@ -197,15 +179,6 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
         },
         });
 
-        /*const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'FunnyValentine4',
-            port: 5432,
-            ssl: false,
-        });*/
-
         await client.connect();
 
         const query = `
@@ -260,18 +233,6 @@ app.get('/inicionegocio', async (req, res) => {
 async function obtenerDatosNegocios() {
     let client;
     try {
-
-        /*const client = new Client({
-            user: 'ipsrpxvnaqxiwm',
-            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-            database: 'db3v6hean6n35q',
-            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
-            port: 5432,
-            ssl: {
-                rejectUnauthorized: false,
-            },
-            });*/
-
         const client = new Client({
             user: 'postgres',
             host: 'localhost',
@@ -284,12 +245,12 @@ async function obtenerDatosNegocios() {
         await client.connect();
 
         const queryNegocios = `
-        SELECT n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp, 
+        SELECT n.neg_id, n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp, 
         COUNT(f.fed_like) AS likes, COUNT(f.fed_comentario) AS comentarios
         FROM Negocio n
         LEFT JOIN Direccion d ON n.dir_id = d.dir_id
         LEFT JOIN Feedback f ON n.neg_id = f.neg_id
-        GROUP BY n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp
+        GROUP BY n.neg_id, n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp
         LIMIT 5;
         `;
 
@@ -337,17 +298,6 @@ async function obtenerDatosProductos() {
     let client;
     try {
 
-        /*const client = new Client({
-            user: 'ipsrpxvnaqxiwm',
-            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-            database: 'db3v6hean6n35q',
-            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
-            port: 5432,
-            ssl: {
-                rejectUnauthorized: false,
-            },
-            });*/
-
         const client = new Client({
             user: 'postgres',
             host: 'localhost',
@@ -381,6 +331,113 @@ async function obtenerDatosProductos() {
         return productosData;
     } catch (error) {
         console.error('Error al obtener datos de los productos:', error);
+        throw error;
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
+
+//VISUALIZAR NOVEDADES INICIO
+app.get('/inicionovedad', async (req, res) => {
+    try {
+        const novedadData = await obtenerDatosNovedades();
+        res.json(novedadData);
+    } catch (error) {
+        console.error('Error al obtener datos de las novedades:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerDatosNovedades() {
+    let client;
+    try {
+
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryNovedad = `
+        SELECT n.nov_nombre, n.nov_foto, n.nov_descripcion
+        FROM Novedad n
+        GROUP BY n.nov_nombre, n.nov_foto, n.nov_descripcion
+        LIMIT 5;
+        `;
+
+        const resultNovedad = await client.query(queryNovedad);
+        if (resultNovedad.rows.length === 0) {
+            throw new Error('No se encontraron datos de la novedad');
+        }
+
+        const novedadData = resultNovedad.rows.map(novedad => ({
+            imagen: novedad.nov_foto,
+            nombre: novedad.nov_nombre,
+            descripcion: novedad.nov_descripcion,
+        }));
+        
+        return novedadData;
+    } catch (error) {
+        console.error('Error al obtener datos de las novedades:', error);
+        throw error;
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
+
+//VISUALIZAR NEGOCIO ESPECÍFICO
+app.get('/negocioesp', async (req, res) => {
+    try {
+        const negocioData = await obtenerNegocioEspecifico();
+        res.json(negocioData);
+    } catch (error) {
+        console.error('Error al obtener datos del negocio:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerNegocioEspecifico() {
+    let client;
+    try {
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryNegocios = `
+        SELECT n.neg_descripcion, n.neg_imagen1, n.neg_imagen2, n.neg_imagen3
+        FROM Negocio n
+        WHERE n.neg_nombre = $1
+        GROUP BY n.neg_descripcion, n.neg_imagen1, n.neg_imagen2, n.neg_imagen3
+        `;
+
+        const resultNegocios = await client.query(queryNegocios);
+        if (resultNegocios.rows.length === 0) {
+            throw new Error('No se encontraron datos de negocios');
+        }
+
+        const negociosData = resultNegocios.rows.map(negocio => ({
+            descripcion: negocio.neg_descripcion,
+        }));
+        
+        return negociosData;
+    } catch (error) {
+        console.error('Error al obtener datos de los negocios:', error);
         throw error;
     } finally {
         if (client) {

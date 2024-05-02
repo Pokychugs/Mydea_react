@@ -16,6 +16,7 @@ function Inicio({navigation}) {
     // BACK
     const [negocios, setNegocios] = useState([]);
     const [productos, setProductos] = useState([]);
+    const [novedades, setNovedades] = useState([]);
 
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
@@ -53,11 +54,33 @@ function Inicio({navigation}) {
 
     }, []);
 
+    useEffect(() => {
+        const obtenerDatosNovedades = async () => {
+            try {
+                const response = await fetch("http://192.168.0.223:3000/inicionovedad");
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+                const novedadesData = await response.json();
+                setNovedades(novedadesData);
+            } catch (error) {
+                console.error('Error al obtener datos de los productos:', error.message);
+            }
+        };
+
+        obtenerDatosNovedades();
+
+    }, []);
+
     if (negocios.length === 0) {
         return <Text>Cargando...</Text>;
     }
 
     if (productos.length === 0) {
+        return <Text>Cargando productos...</Text>;
+    }
+
+    if (novedades.length === 0) {
         return <Text>Cargando productos...</Text>;
     }
 
@@ -96,7 +119,7 @@ function Inicio({navigation}) {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {negocios.slice(0, 5).map((negocio, index) => (
-                    <TouchableOpacity key={index} style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
+                    <TouchableOpacity key={index} style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio', {negocioSeleccionado : negocio})}>
                         <View>
                             <Image style={styles.Imagen_negocio} source={{uri : negocio.imagen}}></Image>
                         </View>
@@ -142,31 +165,25 @@ function Inicio({navigation}) {
                     ))}
                 </ScrollView>
                 <View>
-                    <Text style={styles.subtitle}>Los mejores negocios</Text>
+                    <Text style={styles.subtitle}>Novedades recientes</Text>
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: 20}}>
-                    <TouchableOpacity style={styles.contenedor_negocio}>
+                {novedades.slice(0, 5).map((novedad, index) => (
+                    <TouchableOpacity key={index} style={styles.contenedor_negocio}>
                         <View>
-                            <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
+                            <Image style={styles.Imagen_negocio} source={{uri : novedad.imagen}}></Image>
                         </View>
                         <View>
-                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>Nombre del negocio</Text>
-                            <View style={{flexDirection: 'row'}}>
-                                <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                                <MaterialCommunityIcons style={[styles.icon_heart, {marginLeft: 10}]} name='comment-processing' size={25}></MaterialCommunityIcons>
-                                <Text style={styles.texto_negocio}>00.00</Text>
-                            </View>
+                            <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>{novedad.nombre}</Text>
                             <View style={{flexDirection: 'row', width: '100%'}}>
-                                <FontAwesome style={[styles.icon_heart, {marginLeft: 5, flex: 1}]} name='map-marker' size={30}></FontAwesome>
-                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>Manzana 013, Delegación San Gregorio Atlapulco, 1600, Méx.</Text>
+                                <Text style={[styles.texto_negocio, {width: 170, fontSize:15}]}>{novedad.descripcion}</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
+                    ))}
                 </ScrollView>
             </ScrollView>
         </GestureHandlerRootView>
-        
     );
 }
 

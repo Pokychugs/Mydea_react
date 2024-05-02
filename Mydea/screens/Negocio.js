@@ -32,40 +32,17 @@ const data = [
 ];
 
 
-function Negocio({navigation}) {
+function Negocio({route, navigation}) {
 
-    /*
     //BACK
-    const [negocios, setNegocios] = useState([]);
+    const {negocioSeleccionado} = route.params;
+    const [negocio, setNegocio] = useState(null);
 
     useEffect(() => {
-        obtenerNegocios();
-    }, []);
+        setNegocio(negocioSeleccionado);
+    }, [negocioSeleccionado]);
 
-    const obtenerNegocios = async () => {
-        try {
-            const response = await fetch('http://192.168.41.70:3000/negocios');
-            if (!response.ok) {
-                throw new Error('Error al obtener los datos de los negocios');
-            }
-            const data = await response.json();
-            setNegocios(data);
-        } catch (error) {
-            console.error('Error al obtener los datos de los negocios:', error);
-        }
-    };
-    */
-    //const renderItem = ({ item }) => (
-      //  <View>
-        //    <Text>{item.nombre}</Text>
-          //  <Text>{item.descripcion}</Text>
-            //<Text>{item.direccion}</Text>
-           // {/* Agrega aquí cualquier otra información que desees mostrar */}
-      //  </View>
-    //);
-    
-    //FRONT
-    
+    //FRONT 
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
@@ -180,7 +157,7 @@ function Negocio({navigation}) {
 
 
     const handleOpenLink = async () => {
-        const url = 'https://www.facebook.com'; // URL externa que deseas abrir
+        const url = 'https://www.facebook.com';
     
         const supported = await Linking.canOpenURL(url);
     
@@ -191,7 +168,7 @@ function Negocio({navigation}) {
         }
     };
     const handleOpenLink_2 = async () => {
-        const url = 'https://www.instagram.com'; // URL externa que deseas abrir
+        const url = 'https://www.instagram.com';
     
         const supported = await Linking.canOpenURL(url);
     
@@ -202,7 +179,7 @@ function Negocio({navigation}) {
         }
     };
     const handleOpenLink_3 = async () => {
-        const url = 'https://twitter.com'; // URL externa que deseas abrir
+        const url = 'https://twitter.com';
     
         const supported = await Linking.canOpenURL(url);
     
@@ -213,7 +190,7 @@ function Negocio({navigation}) {
         }
     };
     const handleOpenLink_4 = async () => {
-        const url = 'https://www.google.com'; // URL externa que deseas abrir
+        const url = 'https://www.google.com';
     
         const supported = await Linking.canOpenURL(url);
     
@@ -268,23 +245,31 @@ function Negocio({navigation}) {
                     <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/3</Text>
                 </View>
                 <View style={styles.contenedorInfo}>
-                    <Text style={styles.textoNombre}>Nombre del negocio</Text>
-                    <View style={styles.contenedorLikes}> 
-                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                        <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
-                    </View>
-                    <Text style={styles.textoDescripcion}>Descrición del negocio</Text>
-                </View>
-                <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
-                    <Text style={styles.textoSub}>Horarios</Text> 
-                    <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
-                </TouchableOpacity>
-                <View style={{marginHorizontal: '5%'}}>
-                    <Text style={styles.textoDescripcion}>Hoy: {horario[moment().format('dddd')]}</Text>
-                </View>
-                <View style={styles.contenedorInfo}>
-                    <Text style={styles.textoSub}>Ubicación</Text>
-                    <Text style={styles.textoDescripcion}>Dirección del negocio</Text>
+                    {negocio ? (
+                        <>
+                        <Text style={styles.textoNombre}>{negocio.nombre}</Text>
+                        <View style={styles.contenedorLikes}> 
+                            <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
+                            <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>{negocio.likes}</Text>
+                        </View>
+                        <Text style={styles.textoDescripcion}>Descrición del negocio</Text>
+                        <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
+                            <Text style={styles.textoSub}>Horarios</Text> 
+                            <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
+                        </TouchableOpacity>
+                        <View style={{marginHorizontal: '5%'}}>
+                            <Text style={styles.textoDescripcion}>Hoy: {horario[moment().format('dddd')]}</Text>
+                        </View>
+                        <View style={styles.contenedorInfo}>
+                            <Text style={styles.textoSub}>Ubicación</Text>
+                            <Text style={styles.textoDescripcion}>
+                            {`${negocio.direccion && negocio.direccion.colonia}, ${negocio.direccion && negocio.direccion.calle} ${negocio.direccion && negocio.direccion.numero}, CP: ${negocio.direccion && negocio.direccion.cp}`}
+                            </Text>
+                        </View>
+                        </>
+                    ) : (
+                        <Text>Cargando...</Text>
+                    )}
                 </View>
                 <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
