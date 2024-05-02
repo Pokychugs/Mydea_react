@@ -63,7 +63,8 @@ function Registro({navigation}) {
 
     useEffect(() => {
 
-        const fechaActual = moment().format('YYYY-MM-DD HH:mm:ss');
+        //FECHA AÑO/MES/DIA.
+        const fechaActual = moment().format('YYYY-MM-DD');
         setFecha(fechaActual);
 
         // NOMBRE COMPLETO
