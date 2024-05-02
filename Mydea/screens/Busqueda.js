@@ -95,7 +95,7 @@ function Busqueda({navigation}) {
                     </View>
                 ): null}
                 {general || usuarios ? (
-                    <View style={styles.contenedorInfo}>
+                    <View style={[ {marginHorizontal: '5%'}]}>
                         <Image style={styles.ImgUsuVendedor} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
                         <View style={styles.ContUsuVendedor}>
                             <Text style={styles.textoNombreUsuario}>Nombre de usuario</Text>
@@ -107,6 +107,20 @@ function Busqueda({navigation}) {
                             <Text style={styles.textoNombreUsuario}>Nombre de usuario</Text>
                             <Text style={styles.TextoDescNeg}>Descripción</Text>
                             <FontAwesome style={[styles.iconoVendedor, styles.iconoUsuario]} name='user' size={150}></FontAwesome>
+                        </View>
+                    </View>
+                ): null}
+                {general || productos ? (
+                    <View style={styles.contenedorInfo}>
+                        <View style={styles.contProducto}>
+                            <View style={{flex: 1}}>
+                                <Image style={styles.imgProducto} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
+                            </View>
+                            <View style={{flex: 2, alignItems: 'center',}}>
+                                <Text style={[styles.textoNombreNegocio, {textAlign: 'center', marginVertical: 5}]}>Nombre del producto</Text>
+                                <Text style={[styles.TextoDescNeg, {textAlign: 'center', marginVertical: 5, paddingVertical: 10, width: '90%'}, styles.bordeProducto]}>Descripción del producto</Text>
+                                <Text style={[styles.TextoDescNeg, {textAlign: 'center', marginVertical: 5, paddingVertical: 10, fontWeight: 'bold'},]}>$00.00</Text>
+                            </View>
                         </View>
                     </View>
                 ): null}
@@ -181,7 +195,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 10,
     },
     TextoDescNeg: {
-        fontSize: 22,
+        fontSize: 20,
         fontFamily: 'InriaSans',
     },
     containerIcon: {
@@ -256,6 +270,31 @@ const styles = StyleSheet.create({
     iconoUsuario: {
         color: 'rgba(217, 85, 56, 0.5)',
         right: -40,
+    },
+    contProducto: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        padding: 10,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        borderColor: '#f58b4f',
+        borderWidth: 4,
+        borderStyle: 'solid',
+        borderLeftWidth: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    imgProducto: {
+        width: 120,
+        height: 120,
+        borderRadius: 100,
+        borderColor: '#000',
+        borderWidth: 4,
+    },
+    bordeProducto: {
+        borderColor: 'rgba(139, 137, 138, 0.8)',
+        borderBottomWidth: 3,
+        borderStyle: 'solid',
     },
 });
 
