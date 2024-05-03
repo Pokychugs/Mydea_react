@@ -103,11 +103,11 @@ function Busqueda({navigation}) {
                             <Entypo style={styles.iconoVendedor} name='shop' size={150}></Entypo>
                         </Pressable>
                         <Image style={[styles.ImgUsuVendedor, styles.ImgUsuNormal]} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
-                        <View style={[styles.ContUsuVendedor, styles.ContUsuNormal]}>
+                        <Pressable style={[styles.ContUsuVendedor, styles.ContUsuNormal]} onPress={() => navigation.navigate('Visitar_Cuenta_Usuario')}>
                             <Text style={styles.textoNombreUsuario}>Nombre de usuario</Text>
                             <Text style={styles.TextoDescNeg}>Descripción</Text>
                             <FontAwesome style={[styles.iconoVendedor, styles.iconoUsuario]} name='user' size={150}></FontAwesome>
-                        </View>
+                        </Pressable>
                     </View>
                 ): null}
                 {general || productos ? (

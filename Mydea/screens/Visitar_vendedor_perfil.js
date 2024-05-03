@@ -4,8 +4,6 @@ import { ScrollView, GestureHandlerRootView, Gesture, GestureDetector } from 're
 import { useFonts } from 'expo-font';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
 import * as Clipboard from 'expo-clipboard';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,6 +12,10 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
 function Visitar_vendedor_perfil({navigation}) {
+
+    const [fontsLoaded] = useFonts({
+        'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
+    });
 
     const handleOpenLink = async () => {
         const url = 'https://www.facebook.com'; // URL externa que deseas abrir
@@ -68,6 +70,10 @@ function Visitar_vendedor_perfil({navigation}) {
         await Clipboard.setStringAsync('ejemplo@gmail.com');
         Alert.alert('Mensaje', 'Correo copiado al portapapeles');
     };
+
+    if (!fontsLoaded) {
+        return undefined;
+    }
 
     return (
         <GestureHandlerRootView style={styles.container}>

@@ -20,7 +20,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
             try {
-                const response = await fetch("http://192.168.1.75:3000/inicionegocio");
+                const response = await fetch("http://192.168.0.223:3000/inicionegocio");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -38,7 +38,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosProductos = async () => {
             try {
-                const response = await fetch("http://192.168.1.75:3000/inicioproducto");
+                const response = await fetch("http://192.168.0.223:3000/inicioproducto");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -53,13 +53,13 @@ function Inicio({navigation}) {
 
     }, []);
 
-    /*if (negocios.length === 0) {
+    if (negocios.length === 0) {
         return <Text>Cargando...</Text>;
     }
 
     if (productos.length === 0) {
         return <Text>Cargando productos...</Text>;
-    }*/
+    }
 
     if (!fontsLoaded) {
         return <Text>Cargando fuentes...</Text>;
@@ -131,7 +131,7 @@ function Inicio({navigation}) {
                             <Text style={[styles.texto_negocio, {fontWeight: 'bold'}]}>{producto.nombre}</Text>
                             <View style={{flexDirection: 'row'}}>
                                 <View style={styles.contenedor_precio}>
-                                    <Text style={[styles.texto_negocio, {marginHorizontal: 10}]}>{`$ ${producto.precio}`}</Text>
+                                    <Text style={[styles.texto_negocio, {marginHorizontal: 10}]}>{`$: ${producto.precio}`}</Text>
                                 </View>
                             </View>
                             <View style={{flexDirection: 'row', width: '100%'}}>

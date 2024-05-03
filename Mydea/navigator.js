@@ -17,6 +17,8 @@ import Mis_negocio from './screens/Mis_negocios';
 import Negocio from './screens/Negocio';
 import Busqueda from './screens/Busqueda';
 import Visitar_vendedor_perfil from './screens/Visitar_vendedor_perfil';
+import Visitar_Cuenta_Usuario from './screens/Visitar_Cuenta_Usuario';
+import Resenas_hechas from './screens/Resenas_hechas';
 
 
 const NavInicio = createNativeStackNavigator();
@@ -45,6 +47,18 @@ function Nav_Inicio() {
             <NavInicio.Screen 
             name="Visitar_vendedor_perfil" 
             component={Visitar_vendedor_perfil}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })} />
+            <NavInicio.Screen 
+            name="Visitar_Cuenta_Usuario" 
+            component={Visitar_Cuenta_Usuario}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })} />
+            <NavInicio.Screen 
+            name="Resenas_hechas" 
+            component={Resenas_hechas}
             options={({ navigation }) => ({
                 header: () => <Header navigation={navigation} />,
             })} />
