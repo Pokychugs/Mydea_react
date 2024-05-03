@@ -16,6 +16,7 @@ import Datos_Contacto from './screens/Datos_contacto';
 import Mis_negocio from './screens/Mis_negocios';
 import Negocio from './screens/Negocio';
 import Busqueda from './screens/Busqueda';
+import Visitar_vendedor_perfil from './screens/Visitar_vendedor_perfil';
 
 
 const NavInicio = createNativeStackNavigator();
@@ -38,6 +39,12 @@ function Nav_Inicio() {
             <NavInicio.Screen 
             name="Busqueda" 
             component={Busqueda}
+            options={({ navigation }) => ({
+                header: () => <Header navigation={navigation} />,
+            })} />
+            <NavInicio.Screen 
+            name="Visitar_vendedor_perfil" 
+            component={Visitar_vendedor_perfil}
             options={({ navigation }) => ({
                 header: () => <Header navigation={navigation} />,
             })} />

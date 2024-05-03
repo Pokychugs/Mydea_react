@@ -38,6 +38,7 @@ app.post('/registro', async (req, res) => {
 });
 
 async function verificarUsuarioExistente(usu_nombre) {
+    /*
     const client = new Client({
         user: 'ipsrpxvnaqxiwm',
         host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
@@ -48,15 +49,18 @@ async function verificarUsuarioExistente(usu_nombre) {
             rejectUnauthorized: false,
         },
     });
+    */
 
-    /*const client = new Client({
+    //
+    const client = new Client({
         user: 'postgres',
         host: 'localhost',
         database: 'MydeaLocal',
         password: 'FunnyValentine4',
         port: 5432,
         ssl: false,
-    });*/
+    });
+    //
 
     await client.connect();
 
@@ -276,7 +280,7 @@ async function obtenerDatosNegocios() {
             user: 'postgres',
             host: 'localhost',
             database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
+            password: 'FunnyValentine4',
             port: 5432,
             ssl: false,
         });
@@ -352,7 +356,7 @@ async function obtenerDatosProductos() {
             user: 'postgres',
             host: 'localhost',
             database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
+            password: 'FunnyValentine4',
             port: 5432,
             ssl: false,
         });

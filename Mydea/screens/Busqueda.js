@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Pressable, Alert, Linking, TextInput, Button} from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTiming, SlideInDown, SlideOutDown, FadeIn, FadeOut,} from "react-native-reanimated";
 import { ScrollView, GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -59,6 +58,7 @@ function Busqueda({navigation}) {
         <GestureHandlerRootView style={styles.container}>
             <ScrollView>
                 <View style={styles.contenedorInfo}>
+                    <Text style={styles.textoBusqueda}>""</Text>
                     <ScrollView style={styles.contenedor_filtros} horizontal showsHorizontalScrollIndicator={false}>
                         <Pressable style={[styles.filtro, general && styles.filtro_activo]} onPress={pressGeneral}><Text style={[styles.textoFiltro, general && styles.textoFiltro_activo]}>General</Text></Pressable>
                         <Pressable style={[styles.filtro, productos && styles.filtro_activo]} onPress={pressProductos}><Text style={[styles.textoFiltro, productos && styles.textoFiltro_activo]}>Productos</Text></Pressable>
@@ -68,7 +68,7 @@ function Busqueda({navigation}) {
                 </View>
                 {general || negocios ? (
                     <View style={styles.contenedorInfo}>
-                        <View style={styles.contenedor_negocio}>
+                        <Pressable style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio')}>
                             <View style={styles.contImgNom}>
                                 <Image style={styles.imagen_negocio} source={{uri: 'https://ih1.redbubble.net/image.3015036228.4538/flat,750x,075,f-pad,750x1000,f8f8f8.jpg'}}></Image>
                             </View>
@@ -91,18 +91,18 @@ function Busqueda({navigation}) {
                                     <Text style={styles.textoinfo}>00</Text>
                                 </View>
                             </View>
-                        </View>
+                        </Pressable>
                     </View>
                 ): null}
                 {general || usuarios ? (
                     <View style={[ {marginHorizontal: '5%'}]}>
-                        <Image style={styles.ImgUsuVendedor} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
-                        <View style={styles.ContUsuVendedor}>
+                        <Image style={styles.ImgUsuVendedor} source={{uri: 'https://i.pinimg.com/736x/36/73/84/367384f863f1df569d20e3ec1c7c37ac--diego-brando-text-posts.jpg'}}></Image>
+                        <Pressable style={styles.ContUsuVendedor} onPress={() => navigation.navigate('Visitar_vendedor_perfil')}>
                             <Text style={styles.textoNombreUsuario}>Nombre de usuario</Text>
                             <Text style={styles.TextoDescNeg}>Descripción</Text>
                             <Entypo style={styles.iconoVendedor} name='shop' size={150}></Entypo>
-                        </View>
-                        <Image style={[styles.ImgUsuVendedor, styles.ImgUsuNormal]} source={{uri: 'https://i.pinimg.com/736x/36/73/84/367384f863f1df569d20e3ec1c7c37ac--diego-brando-text-posts.jpg'}}></Image>
+                        </Pressable>
+                        <Image style={[styles.ImgUsuVendedor, styles.ImgUsuNormal]} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
                         <View style={[styles.ContUsuVendedor, styles.ContUsuNormal]}>
                             <Text style={styles.textoNombreUsuario}>Nombre de usuario</Text>
                             <Text style={styles.TextoDescNeg}>Descripción</Text>
@@ -111,7 +111,7 @@ function Busqueda({navigation}) {
                     </View>
                 ): null}
                 {general || productos ? (
-                    <View style={styles.contenedorInfo}>
+                    <Pressable style={styles.contenedorInfo} onPress={() => navigation.navigate('Negocio')}>
                         <View style={styles.contProducto}>
                             <View style={{flex: 1}}>
                                 <Image style={styles.imgProducto} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
@@ -122,7 +122,7 @@ function Busqueda({navigation}) {
                                 <Text style={[styles.TextoDescNeg, {textAlign: 'center', marginVertical: 5, paddingVertical: 10, fontWeight: 'bold'},]}>$00.00</Text>
                             </View>
                         </View>
-                    </View>
+                    </Pressable>
                 ): null}
             </ScrollView>
         </GestureHandlerRootView>
@@ -134,6 +134,12 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    textoBusqueda: {
+        fontSize: 45,
+        fontFamily: 'InriaSans',
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
     contenedorInfo: {
         margin: '5%',
