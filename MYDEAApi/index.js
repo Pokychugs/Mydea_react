@@ -180,7 +180,8 @@ app.post('/iniciosesion', async (req, res) => {
     try {
         const userData = req.body;
         await IniciarSesion(userData.usuario, userData.correo, userData.contra);
-        res.json({ message: 'Inicio de sesión exitoso' });
+        const usuarioData = await obtenerDatosUsuario(userData.usuario);
+        res.json({ message: 'Inicio de sesión exitoso', usuario: usuarioData });
     } catch (error) {
         console.error('Error en el inicio de sesión:', error);
         res.status(401).json({ error: 'Error interno del servidor' });
@@ -190,6 +191,7 @@ app.post('/iniciosesion', async (req, res) => {
 async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     let client;
     try {
+        /*
         const client = new Client({
         user: 'ipsrpxvnaqxiwm',
         host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
@@ -200,15 +202,18 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
             rejectUnauthorized: false,
         },
         });
+        */
 
-        /*const client = new Client({
+        //
+        const client = new Client({
             user: 'postgres',
             host: 'localhost',
             database: 'MydeaLocal',
             password: 'FunnyValentine4',
             port: 5432,
             ssl: false,
-        });*/
+        });
+        //
 
         await client.connect();
 
@@ -243,6 +248,89 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     } catch (error) {
         console.error('Credenciales inválidas', error);
         throw new Error('Credenciales inválidas');
+    } finally {
+        if (client) {
+            await client.end();
+        }
+    }
+}
+
+async function obtenerDatosUsuario(usu_nombre) {
+    let client;
+    try {
+
+        /*const client = new Client({
+            user: 'ipsrpxvnaqxiwm',
+            host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
+            database: 'db3v6hean6n35q',
+            password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+            port: 5432,
+            ssl: {
+                rejectUnauthorized: false,
+            },
+            });*/
+
+        const client = new Client({
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'FunnyValentine4',
+            port: 5432,
+            ssl: false,
+        });
+
+        await client.connect();
+
+        const queryUsuario = `SELECT 
+            u.usu_id,
+            u.usu_nombre,
+            u.usu_password,
+            u.usu_activo,
+            u.tip_id,
+            p.per_id,
+            p.usu_id AS persona_usu_id,
+            p.per_correo,
+            p.per_telefono,
+            p.per_foto,
+            p.per_nombrecompleto,
+            p.per_facebook,
+            p.per_instagram,
+            p.per_twitter,
+            p.per_web,
+            p.per_fecha,
+            p.per_descripcion
+        FROM 
+            Usuario u
+        JOIN 
+            Persona p ON u.usu_id = p.usu_id
+        WHERE 
+            u.usu_nombre = $1;`;
+
+            const resUsuario = await client.query(queryUsuario, [usu_nombre]);
+            const usuarioData = {
+                id: resUsuario.rows[0].usu_id,
+                nombre: resUsuario.rows[0].usu_nombre,
+                password: resUsuario.rows[0].usu_password,
+                activo: resUsuario.rows[0].usu_activo,
+                tipoId: resUsuario.rows[0].tip_id,
+                personaId: resUsuario.rows[0].per_id,
+                personaUsuId: resUsuario.rows[0].persona_usu_id,
+                correo: resUsuario.rows[0].per_correo,
+                telefono: resUsuario.rows[0].per_telefono,
+                foto: resUsuario.rows[0].per_foto,
+                nombreCompleto: resUsuario.rows[0].per_nombrecompleto,
+                facebook: resUsuario.rows[0].per_facebook,
+                instagram: resUsuario.rows[0].per_instagram,
+                twitter: resUsuario.rows[0].per_twitter,
+                web: resUsuario.rows[0].per_web,
+                fecha: resUsuario.rows[0].per_fecha,
+                descripcion: resUsuario.rows[0].per_descripcion
+            };
+            console.log(usuarioData.nombre, usuarioData.correo);
+            return  usuarioData ;
+    } catch (error) {
+        console.error('Error al obtener datos de los negocios:', error);
+        throw error;
     } finally {
         if (client) {
             await client.end();

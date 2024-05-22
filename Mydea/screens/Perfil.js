@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
@@ -10,6 +10,7 @@ import Imagen_perfil from './Imagenes/perfil_icono.png';
 import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { AuthContext } from './AuthContext';
 
 const FirstRoute = () => (
     <ScrollView>
@@ -95,6 +96,11 @@ const renderScene = SceneMap({
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function Perfil({navigation}) {
+
+    const { usuarioContext } = useContext(AuthContext);
+
+    const { user } = useContext(AuthContext);
+
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
@@ -140,9 +146,7 @@ function Perfil({navigation}) {
     transform: [{ translateY: offset.value }],
     }));
 
-    if (!fontsLoaded) {
-        return undefined;
-    }
+    const [Usuario, setUsuario] = useState([]);
 
     const renderTabBar = (props) => (
         <TabBar
@@ -181,6 +185,33 @@ function Perfil({navigation}) {
         toggleSheet();
     };
 
+    
+
+    useEffect(() => {
+        if (usuarioContext) {
+            if (usuarioContext.tipoId === 1) {
+                setSin_sesion(false);
+                setSesion_usuario(true);
+                setSesion_vendedor(false);
+            } else if (usuarioContext.tipoId === 2) {
+                setSin_sesion(false);
+                setSesion_usuario(false);
+                setSesion_vendedor(true);
+            } else {
+                setSin_sesion(true);
+                setSesion_usuario(false);
+                setSesion_vendedor(false);
+            }
+        } else {
+            setSin_sesion(true);
+            setSesion_usuario(false);
+            setSesion_vendedor(false);
+        }
+    }, [usuarioContext]);
+
+    if (!fontsLoaded) {
+        return undefined;
+    }
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -194,13 +225,6 @@ function Perfil({navigation}) {
                         <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={() => navigation.navigate('Registro')}>
                             <Text style={[styles.texto_boton]}>Crear Cuenta</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionUsuario}>
-                            <Text style={[styles.texto_boton]}>Mostrar Perfil Usuario</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionVendedor}>
-                            <Text style={[styles.texto_boton]}>Mostrar Perfil Vendedor</Text>
-                        </TouchableOpacity>
-                        <Text style={{flex: 1, width: 350}}>Los botones de mostrar perfil estan de a mientras, después se quitan, la idea es que una vez inicie sesión le muestre su perfil, ya sea como usuario o como vendedor</Text>
                     </View>
                 )}
                     {sesion_usuario && (
@@ -210,9 +234,9 @@ function Perfil({navigation}) {
                                 onPress={toggleSheet}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
                                 </TouchableOpacity>
-                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
-                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
-                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <Image style={styles.Imagen_perfil} source={{ uri: usuarioContext.foto }}></Image>
+                                <Text style={styles.Nombre_usuario}>{usuarioContext.nombre}</Text>
+                                <Text style={styles.Nombre_real}>{usuarioContext.nombreCompleto}</Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
                                     <Text style={styles.Contacto}>
                                         Datos de contacto
@@ -238,9 +262,9 @@ function Perfil({navigation}) {
                                 onPress={toggleSheet}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
                                 </TouchableOpacity>
-                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
-                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
-                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <Image style={styles.Imagen_perfil} source={{ uri: usuarioContext.foto }}></Image>
+                                <Text style={styles.Nombre_usuario}>{usuarioContext.nombre}</Text>
+                                <Text style={styles.Nombre_real}>{usuarioContext.nombreCompleto}</Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
                                     <Text style={styles.Contacto}>
                                         Datos de contacto
