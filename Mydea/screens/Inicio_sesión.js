@@ -14,6 +14,7 @@ function Inicio_sesión({navigation}) {
     const [contra, setContra] = useState('');
 
     const { setUsuarioContext } = useContext(AuthContext);
+    const { setGuardadosContext } = useContext(AuthContext);
 
     const handleInicioSesion = async () => {
         try {
@@ -26,7 +27,7 @@ function Inicio_sesión({navigation}) {
 
             const userDataJson = JSON.stringify(userData);
 
-            const response = await fetch("http://192.168.1.74:3000/iniciosesion", {
+            const response = await fetch("http://192.168.1.81:3000/iniciosesion", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -38,9 +39,10 @@ function Inicio_sesión({navigation}) {
                 throw new Error('Error en la solicitud');
             }
 
-            const {usuario: usuarioData } = await response.json();
+            const {usuario: usuarioData, guardados: guardadosData } = await response.json();
             setUsuarioContext(usuarioData);
-            console.log(usuarioData);
+            setGuardadosContext(guardadosData)
+            console.log(usuarioData, guardadosData);
             Alert.alert('Inicio de sesión exitoso');
             navigation.navigate('Perfil');
 

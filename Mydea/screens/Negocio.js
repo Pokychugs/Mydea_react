@@ -16,55 +16,13 @@ const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
 
-const data = [
-    {
-        id: '1',
-        source: require('./Imagenes/neg1.jpg'),
-    },
-    {
-        id: '2',
-        source: require('./Imagenes/asa.jpg'),
-    },
-    {
-        id: '3',
-        source: require('./Imagenes/neg1.jpg'),
-    },
-];
 
+function Negocio({navigation, route}) {
 
-function Negocio({navigation}) {
-
-    /*
-    //BACK
-    const [negocios, setNegocios] = useState([]);
-
-    useEffect(() => {
-        obtenerNegocios();
-    }, []);
-
-    const obtenerNegocios = async () => {
-        try {
-            const response = await fetch('http://192.168.41.70:3000/negocios');
-            if (!response.ok) {
-                throw new Error('Error al obtener los datos de los negocios');
-            }
-            const data = await response.json();
-            setNegocios(data);
-        } catch (error) {
-            console.error('Error al obtener los datos de los negocios:', error);
-        }
-    };
-    */
-    //const renderItem = ({ item }) => (
-      //  <View>
-        //    <Text>{item.nombre}</Text>
-          //  <Text>{item.descripcion}</Text>
-            //<Text>{item.direccion}</Text>
-           // {/* Agrega aquí cualquier otra información que desees mostrar */}
-      //  </View>
-    //);
     
-    //FRONT
+
+    const { negocioId } = route.params;
+    const [negocio, setNegocio] = useState([]);
     
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
@@ -95,6 +53,49 @@ function Negocio({navigation}) {
     const [nuevos, setNuevos] = useState(false);
     const [antiguos, setAntiguos] = useState(false);
     const [disponibilidad, setDisponiblidad] = useState(false);
+
+
+    useEffect(() => {
+        const DatosNegocioIndividual = async () => {
+            try {
+                const response = await fetch(`http://192.168.1.81:3000/negocio/${negocioId}`);
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+                const negocioData = await response.json();
+                console.log(typeof negocioData);
+                //console.log(negocioData);
+                setNegocio(negocioData);
+                console.log(negocio);
+            } catch (error) {
+                console.error('Error al obtener datos del negocio:', error.message);
+            }
+        };
+        DatosNegocioIndividual();
+    }, []);
+
+    useEffect(() => {
+        console.log("Datos del negocio actualizados:", negocio);
+    }, [negocio]);
+
+    const data = negocio.length > 0 ? [
+        {
+            id: '1',
+            source: { uri: negocio[0].logo },
+        },
+        {
+            id: '2',
+            source: { uri: negocio[0].imagen_1 },
+        },
+        {
+            id: '3',
+            source: { uri: negocio[0].imagen_2 },
+        },
+        {
+            id: '4',
+            source: { uri: negocio[0].imagen_3 },
+        },
+    ] : [];
 
     useEffect(() => {
         const fechaActual = moment().format('dddd');
@@ -265,10 +266,10 @@ function Negocio({navigation}) {
                     }}
                 />
                 <View style={styles.fondo_numero_img}>
-                    <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/3</Text>
+                    <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/4</Text>
                 </View>
                 <View style={styles.contenedorInfo}>
-                    <Text style={styles.textoNombre}>Nombre del negocio</Text>
+                    <Text style={styles.textoNombre}>{negocio.length > 0 && negocio[0].nombre}</Text>
                     <View style={styles.contenedorLikes}> 
                         <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
                         <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
