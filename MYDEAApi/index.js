@@ -260,7 +260,6 @@ async function obtenerDatosGuardados(personaId) {
             WHERE g.per_id = $1;
         `;
         const resGuardados = await client.query(queryGuardados, [personaId]);
-        // Mapear los resultados y devolverlos
         const guardadosData = resGuardados.rows.map(row => ({
             id: row.neg_id,
             logo: row.neg_logo,
@@ -380,8 +379,10 @@ app.get('/negocio/:id', async (req, res) => {
     const negocioId = req.params.id;
     try {
         const negocioData = await DatosNegocioIndividual(negocioId);
-        console.log(negocioData);
-        res.json(negocioData);
+        const horarioData = await Horarios(negocioId);
+        const direccionData = await Direccion(negocioId);
+        const productoData = await ProductosNegocio(negocioId);
+        res.json({negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData});
     } catch (error) {
         console.error('Error al obtener datos del negocio:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -413,9 +414,91 @@ async function DatosNegocioIndividual(neg_id) {
             imagen_1: row.neg_imagen1,
             imagen_2: row.neg_imagen2,
             imagen_3: row.neg_imagen3,
-            foto: row.per_foto
+            foto: row.per_foto,
+            usuario: row.usu_nombre,
         }));
         return negocioData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function Horarios (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryHorario = `
+            select nh.*, h.* 
+            from Negocio_Horario nh 
+            inner join Horario h 
+            on nh.hor_id=h.hor_id 
+            where nh.neg_id =$1;
+        `;
+        const resHorario = await client.query(queryHorario, [neg_id]);
+        const horarioData = resHorario.rows.map(row => ({
+            abierto: row.hor_abierto,
+            cerrado: row.hor_cerrado,
+            especial: row.hor_especial,
+            dia: row.hor_dia,
+        }));
+        return horarioData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function Direccion (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryDireccion = `
+            select d.* 
+            from direccion d 
+            inner join negocio n 
+            on d.dir_id = n.dir_id 
+            where n.neg_id = $1;
+        `;
+        const resDireccion = await client.query(queryDireccion, [neg_id]);
+        const direccionData = resDireccion.rows.map(row => ({
+            calle: row.dir_calle,
+            numero: row.dir_numero,
+            colonia: row.dir_colonia,
+            cp: row.dir_cp,
+        }));
+        return direccionData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function ProductosNegocio (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryProducto = `
+            select p.*, d.* 
+            from producto p 
+            inner join disponibilidad d 
+            on d.dis_id = p.dis_id 
+            inner join negocio n 
+            on p.neg_id = n.neg_id 
+            where n.neg_id = $1;
+        `;
+        const resProducto = await client.query(queryProducto, [neg_id]);
+        const productoData = resProducto.rows.map(row => ({
+            nombre: row.pro_nombre,
+            descripcion: row.pro_descripcion,
+            precio: row.pro_precio,
+            imagen: row.pro_imagen,
+            disponibilidad: row.dis_nombre,
+        }));
+        return productoData;
     } catch (error) {
         console.error('Error al obtener datos guardados:', error);
         throw error;

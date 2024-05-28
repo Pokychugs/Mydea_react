@@ -11,6 +11,9 @@ import imagen_perfil from './Imagenes/asa.jpg'
 import * as Clipboard from 'expo-clipboard';
 import Modal from "react-native-modal";
 import moment from 'moment';
+import 'moment/locale/es';
+
+moment.locale('es');
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
@@ -23,6 +26,9 @@ function Negocio({navigation, route}) {
 
     const { negocioId } = route.params;
     const [negocio, setNegocio] = useState([]);
+    const [horarios, setHorarios] = useState([]);
+    const [direccion, setDireccion] = useState([]);
+    const [productos, setProductos] = useState([]);
     
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
@@ -32,6 +38,7 @@ function Negocio({navigation, route}) {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [isModalVisible_2, setModalVisible_2] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
@@ -58,15 +65,15 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.81:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.1.74:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
-                const negocioData = await response.json();
-                console.log(typeof negocioData);
-                //console.log(negocioData);
+                const {negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData} = await response.json();
                 setNegocio(negocioData);
-                console.log(negocio);
+                setHorarios(horarioData);
+                setDireccion(direccionData);
+                setProductos(productoData);
             } catch (error) {
                 console.error('Error al obtener datos del negocio:', error.message);
             }
@@ -76,42 +83,40 @@ function Negocio({navigation, route}) {
 
     useEffect(() => {
         console.log("Datos del negocio actualizados:", negocio);
-    }, [negocio]);
+        console.log("Horario actualizados:", horarios); 
+        console.log("Direccion actualizados:", direccion);
+        console.log("Productos actualizados:", productos);
+    }, [negocio, horarios, direccion, productos]);
 
     const data = negocio.length > 0 ? [
         {
             id: '1',
-            source: { uri: negocio[0].logo },
+            source: { uri: negocio[0]?.logo },
         },
         {
             id: '2',
-            source: { uri: negocio[0].imagen_1 },
+            source: { uri: negocio[0]?.imagen_1 },
         },
         {
             id: '3',
-            source: { uri: negocio[0].imagen_2 },
+            source: { uri: negocio[0]?.imagen_2 },
         },
         {
             id: '4',
-            source: { uri: negocio[0].imagen_3 },
+            source: { uri: negocio[0]?.imagen_3 },
         },
     ] : [];
 
-    useEffect(() => {
-        const fechaActual = moment().format('dddd');
-
-        const horarioEjemplo = {
-            Monday: lunes,
-            Tuesday: martes,
-            Wednesday: miercoles,
-            Thursday: jueves,
-            Friday: viernes,
-            Saturday: sabado,
-            Sunday: domingo,
-        };
-        setFecha(fechaActual);
-        setHorario(horarioEjemplo);
-    }, []);
+    const renderHorario = (horario) => {
+        if (horario.especial !== 'No') {
+            return <Text style={styles.textoEspecial}>{horario.especial}</Text>;
+        }
+        return (
+            <Text style={styles.textoHorario}>
+            {horario.abierto} - {horario.cerrado}
+            </Text>
+        );
+    };
 
     const pressGeneral = async () => {
         setGeneral(true);
@@ -181,7 +186,7 @@ function Negocio({navigation, route}) {
 
 
     const handleOpenLink = async () => {
-        const url = 'https://www.facebook.com'; // URL externa que deseas abrir
+        const url = negocio.length > 0 && negocio[0].facebook;
     
         const supported = await Linking.canOpenURL(url);
     
@@ -192,7 +197,7 @@ function Negocio({navigation, route}) {
         }
     };
     const handleOpenLink_2 = async () => {
-        const url = 'https://www.instagram.com'; // URL externa que deseas abrir
+        const url = negocio.length > 0 && negocio[0].instagram;
     
         const supported = await Linking.canOpenURL(url);
     
@@ -203,7 +208,7 @@ function Negocio({navigation, route}) {
         }
     };
     const handleOpenLink_3 = async () => {
-        const url = 'https://twitter.com'; // URL externa que deseas abrir
+        const url = negocio.length > 0 && negocio[0].twitter;
     
         const supported = await Linking.canOpenURL(url);
     
@@ -214,7 +219,7 @@ function Negocio({navigation, route}) {
         }
     };
     const handleOpenLink_4 = async () => {
-        const url = 'https://www.google.com'; // URL externa que deseas abrir
+        const url = negocio.length > 0 && negocio[0].web;
     
         const supported = await Linking.canOpenURL(url);
     
@@ -226,12 +231,12 @@ function Negocio({navigation, route}) {
     };
 
     const copyToClipboard = async () => {
-        await Clipboard.setStringAsync('55 1689 3694');
-        Alert.alert('Mensaje', 'Número copiado al portapapeles');
+        await Clipboard.setStringAsync(negocio.length > 0 && negocio[0].telefono);
+        Alert.alert(negocio.length > 0 && negocio[0].telefono, 'Número copiado al portapapeles');
     };
     const copyToClipboard_2 = async () => {
-        await Clipboard.setStringAsync('ejemplo@gmail.com');
-        Alert.alert('Mensaje', 'Correo copiado al portapapeles');
+        await Clipboard.setStringAsync(negocio.length > 0 && negocio[0].correo);
+        Alert.alert(negocio.length > 0 && negocio[0].correo, 'Correo copiado al portapapeles');
     };
 
     const handleFocus = () => {
@@ -249,6 +254,16 @@ function Negocio({navigation, route}) {
     const toggleModal_2 = () => {
         setModalVisible_2(!isModalVisible_2);
     };
+
+    const getHorarioHoy = () => {
+        const diaHoy = moment().format('dddd');
+        const horarioHoy = horarios.find(
+            (horario) => horario.dia.toLowerCase() === diaHoy.toLowerCase()
+        );
+        console.log('Horario de hoy:', horarioHoy);
+        return horarioHoy ? renderHorario(horarioHoy) : <Text style={styles.textoHorario}>No disponible</Text>;
+    };
+    
 
     return(
         <GestureHandlerRootView style={styles.container}>
@@ -274,18 +289,18 @@ function Negocio({navigation, route}) {
                         <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
                         <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
                     </View>
-                    <Text style={styles.textoDescripcion}>Descrición del negocio</Text>
+                    <Text style={styles.textoDescripcion}>{negocio.length > 0 && negocio[0].descripcion}</Text>
                 </View>
                 <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
                     <Text style={styles.textoSub}>Horarios</Text> 
                     <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
                 </TouchableOpacity>
                 <View style={{marginHorizontal: '5%'}}>
-                    <Text style={styles.textoDescripcion}>Hoy: {horario[moment().format('dddd')]}</Text>
+                    <Text style={styles.textoDescripcion}>Hoy: {getHorarioHoy()}</Text>
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={styles.textoSub}>Ubicación</Text>
-                    <Text style={styles.textoDescripcion}>Dirección del negocio</Text>
+                    <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>
                 </View>
                 <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
@@ -312,8 +327,8 @@ function Negocio({navigation, route}) {
                     <Text style={[styles.textoSub, {marginBottom: 10}]}>Propietario</Text>
                     <View style={styles.contenedor_perfil}>
                         <View style={styles.contenedor_amarillo}></View>
-                        <Image source={imagen_perfil} style={styles.imagen_perfil}></Image>
-                        <Text style={[styles.nombre_propietario, {marginTop: 70}]}>Nombre</Text>
+                        <Image source={{ uri: negocio[0]?.foto }} style={styles.imagen_perfil}></Image>
+                        <Text style={[styles.nombre_propietario, {marginTop: 70}]}>{negocio.length > 0 && negocio[0].usuario}</Text>
                         <View style={styles.contenedor_datos}>
                             <View style={[styles.info_perfil, styles.borde_medio]}>
                                 <Text style={styles.nombre_propietario}>1</Text>
@@ -364,11 +379,20 @@ function Negocio({navigation, route}) {
                         <Pressable style={[styles.filtro, disponibilidad && styles.filtro_activo]} onPress={pressDisponibilidad}><Text style={[styles.textoFiltro, disponibilidad && styles.textoFiltro_activo]}>Disponibilidad</Text></Pressable>
                     </ScrollView>
                     <View style={styles.productos}>
-                        <Pressable style={styles.contenedor_producto} onPress={toggleModal}>
-                            <Image style={styles.imagen_producto} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
-                            <Text style={styles.textoPrecio}>$00.00</Text>
-                            <Text style={styles.texto_nombrepro}>Nombre</Text>
+                    {productos.map(producto => (
+                        <Pressable 
+                            key={producto.id} 
+                            style={styles.contenedor_producto} 
+                            onPress={() => {
+                                setSelectedProduct(producto);
+                                setModalVisible(true);
+                            }}
+                        >
+                            <Image style={styles.imagen_producto} source={{ uri: producto.imagen }} />
+                            <Text style={styles.textoPrecio}>${producto.precio}</Text>
+                            <Text style={styles.texto_nombrepro}>{producto.nombre}</Text>
                         </Pressable>
+                    ))}
                     </View>
                 </View>
                 <View style={styles.contenedorInfo}>
@@ -388,20 +412,24 @@ function Negocio({navigation, route}) {
                     </View>
                 </View>
             </ScrollView>
-            <Modal isVisible={isModalVisible} 
-            style={{alignItems: 'center', justifyContent: 'center'}}
-            onBackdropPress={() => setModalVisible(false)}
-            onBackButtonPress={() => setModalVisible(false)}
-            useNativeDriverForBackdrop = {true}
-            animationIn={'fadeIn'}
-            animationOut={'fadeOut'}>
-                <View style={styles.contenedor_producto_modal}>
-                    <Image style={styles.imagen_producto_modal} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
-                    <Text style={styles.texto_nombrepro_modal}>Nombre</Text>
-                    <Text style={styles.textoPrecioModal}>$00.00</Text>
-                    <Text style={[styles.textoDescripcion, {textAlign: 'center'}]}>Descrición del producto</Text>
-                    <Text style={styles.textoDisponibilidad}>Disponible en todo momento</Text>
-                </View>
+            <Modal 
+                isVisible={isModalVisible} 
+                style={{ alignItems: 'center', justifyContent: 'center' }}
+                onBackdropPress={() => setModalVisible(false)}
+                onBackButtonPress={() => setModalVisible(false)}
+                useNativeDriverForBackdrop={true}
+                animationIn={'fadeIn'}
+                animationOut={'fadeOut'}
+            >
+                {selectedProduct && (
+                    <View style={styles.contenedor_producto_modal}>
+                        <Image style={styles.imagen_producto_modal} source={{ uri: selectedProduct.imagen }} />
+                        <Text style={styles.texto_nombrepro_modal}>{selectedProduct.nombre}</Text>
+                        <Text style={styles.textoPrecioModal}>${selectedProduct.precio}</Text>
+                        <Text style={[styles.textoDescripcion, { textAlign: 'center' }]}>{selectedProduct.descripcion}</Text>
+                        <Text style={styles.textoDisponibilidad}>{selectedProduct.disponibilidad}</Text>
+                    </View>
+                )}
             </Modal>
 
             <Modal isVisible={isModalVisible_2} 
@@ -421,29 +449,11 @@ function Negocio({navigation, route}) {
                         <View>
                             <Text style={styles.textoSub}>Horarios</Text>
                         </View>
-                        <View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Lunes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{lunes}</Text>
+                        {horarios.map((horario, index) => (
+                            <View key={index} style={styles.contenedorHorario}>
+                                <Text style={styles.textoDescripcion}>{horario.dia}</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{renderHorario(horario)}</Text>
                             </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Martes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{martes}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Miércoles</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{miercoles}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Jueves</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{jueves}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Viernes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{viernes}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Sábado</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{sabado}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Domingo</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{domingo}</Text>
-                            </View>
-                        </View>
+                        ))}
                 </View>
             </Modal>
         </GestureHandlerRootView>
@@ -473,6 +483,7 @@ const styles = StyleSheet.create({
     textoDescripcion: {
         fontSize: 23,
         fontFamily: 'InriaSans',
+        textAlign: 'justify',
     },
     contenedorLikes: {
         flexDirection: 'row',

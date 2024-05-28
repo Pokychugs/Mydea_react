@@ -20,7 +20,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
             try {
-                const response = await fetch("http://192.168.1.81:3000/inicionegocio");
+                const response = await fetch("http://192.168.1.74:3000/inicionegocio");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -39,7 +39,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosProductos = async () => {
             try {
-                const response = await fetch("http://192.168.1.81:3000/inicioproducto");
+                const response = await fetch("http://192.168.1.74:3000/inicioproducto");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
