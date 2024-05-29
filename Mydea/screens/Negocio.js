@@ -29,6 +29,7 @@ function Negocio({navigation, route}) {
     const [horarios, setHorarios] = useState([]);
     const [direccion, setDireccion] = useState([]);
     const [productos, setProductos] = useState([]);
+    const [resenas, setResenas] = useState([]);
     
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
@@ -42,18 +43,6 @@ function Negocio({navigation, route}) {
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
-    const [fecha, setFecha] = useState('');
-
-    const [lunes, setLunes] = useState('9:00 - 17:00');
-    const [martes, setMartes] = useState('9:00 - 17:00');
-    const [miercoles, setMiercoles] = useState('9:00 - 17:00');
-    const [jueves, setJueves] = useState('9:00 - 17:00');
-    const [viernes, setViernes] = useState('9:00 - 17:00');
-    const [sabado, setSabado] = useState('Cerrado');
-    const [domingo, setDomingo] = useState('Cerrado');
-
-    const [horario, setHorario] = useState({});
-
     const [general, setGeneral] = useState(false);
     const [menor_mayor, setMenor_mayor] = useState(false);
     const [mayor_menor, setMayor_menor] = useState(false);
@@ -65,15 +54,16 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.74:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.1.77:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
-                const {negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData} = await response.json();
+                const {negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData, resena: resenaData} = await response.json();
                 setNegocio(negocioData);
                 setHorarios(horarioData);
                 setDireccion(direccionData);
                 setProductos(productoData);
+                setResenas(resenaData);
             } catch (error) {
                 console.error('Error al obtener datos del negocio:', error.message);
             }
@@ -82,11 +72,12 @@ function Negocio({navigation, route}) {
     }, []);
 
     useEffect(() => {
-        console.log("Datos del negocio actualizados:", negocio);
+        /*console.log("Datos del negocio actualizados:", negocio);
         console.log("Horario actualizados:", horarios); 
         console.log("Direccion actualizados:", direccion);
-        console.log("Productos actualizados:", productos);
-    }, [negocio, horarios, direccion, productos]);
+        console.log("Productos actualizados:", productos);*/
+        console.log("Reseñas actualizadas:", resenas);
+    }, [negocio, horarios, direccion, productos, resenas]);
 
     const data = negocio.length > 0 ? [
         {
@@ -260,8 +251,8 @@ function Negocio({navigation, route}) {
         const horarioHoy = horarios.find(
             (horario) => horario.dia.toLowerCase() === diaHoy.toLowerCase()
         );
-        console.log('Horario de hoy:', horarioHoy);
-        return horarioHoy ? renderHorario(horarioHoy) : <Text style={styles.textoHorario}>No disponible</Text>;
+        //console.log('Horario de hoy:', horarioHoy);
+        return horarioHoy ? renderHorario(horarioHoy) : <Text>No disponible</Text>;
     };
     
 
@@ -397,19 +388,23 @@ function Negocio({navigation, route}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={[styles.textoSub, {marginBottom: 10}, styles.borde_bajo]}>Reseñas</Text>
-                    <View style={styles.resena}>
-                        <View style={styles.fondo_nombre_resena}>
-                            <Text style={styles.nombre_usuario}>Nombre de usuario</Text>
+                    {resenas.map(resena => (
+                        <View key={resena.id} style={styles.resena}>
+                            <View style={styles.fondo_nombre_resena}>
+                                <Text style={styles.nombre_usuario}>{resena.nombre}</Text>
+                            </View>
+                            <View style={styles.border_imagen_usuario}>
+                                <Image style={styles.imagen_usuario} source={{uri: resena.foto}}></Image>
+                            </View>
+                            {resena.like && (
+                                <View style={styles.Container_slider}>
+                                    <MaterialCommunityIcons style={styles.corazon_resena} name='heart' size={30}></MaterialCommunityIcons>
+                                    <Text style={styles.texto_like}>Le gustó este negocio</Text>
+                                </View>
+                            )}
+                            <Text style={styles.texto_resena}>{resena.comentario}</Text>
                         </View>
-                        <View style={styles.border_imagen_usuario}>
-                            <Image style={styles.imagen_usuario} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
-                        </View>
-                        <View style={styles.Container_slider}>
-                            <MaterialCommunityIcons style={styles.corazon_resena} name='heart' size={30}></MaterialCommunityIcons>
-                            <Text style={styles.texto_like}>Le gustó este negocio</Text>
-                        </View>
-                        <Text style={styles.texto_resena}>Contenido de la reseña</Text>
-                    </View>
+                    ))}
                 </View>
             </ScrollView>
             <Modal 
@@ -421,13 +416,17 @@ function Negocio({navigation, route}) {
                 animationIn={'fadeIn'}
                 animationOut={'fadeOut'}
             >
-                {selectedProduct && (
+                {selectedProduct ? (
                     <View style={styles.contenedor_producto_modal}>
                         <Image style={styles.imagen_producto_modal} source={{ uri: selectedProduct.imagen }} />
                         <Text style={styles.texto_nombrepro_modal}>{selectedProduct.nombre}</Text>
                         <Text style={styles.textoPrecioModal}>${selectedProduct.precio}</Text>
                         <Text style={[styles.textoDescripcion, { textAlign: 'center' }]}>{selectedProduct.descripcion}</Text>
                         <Text style={styles.textoDisponibilidad}>{selectedProduct.disponibilidad}</Text>
+                    </View>
+                ) : (
+                    <View style={styles.contenedor_producto_modal}>
+                        <Text style={styles.texto_nombrepro_modal}>No se ha seleccionado ningún producto.</Text>
                     </View>
                 )}
             </Modal>
@@ -714,6 +713,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         backgroundColor: '#fff',
         height: 250,
+        marginVertical: 5,
     },
     fondo_nombre_resena: {
         backgroundColor: 'rgb(151, 26, 64)',

@@ -382,7 +382,8 @@ app.get('/negocio/:id', async (req, res) => {
         const horarioData = await Horarios(negocioId);
         const direccionData = await Direccion(negocioId);
         const productoData = await ProductosNegocio(negocioId);
-        res.json({negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData});
+        const resenaData = await ResenasNegocio(negocioId);
+        res.json({negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData, resena: resenaData});
     } catch (error) {
         console.error('Error al obtener datos del negocio:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
@@ -492,6 +493,7 @@ async function ProductosNegocio (neg_id) {
         `;
         const resProducto = await client.query(queryProducto, [neg_id]);
         const productoData = resProducto.rows.map(row => ({
+            id: row.pro_id,
             nombre: row.pro_nombre,
             descripcion: row.pro_descripcion,
             precio: row.pro_precio,
@@ -499,6 +501,36 @@ async function ProductosNegocio (neg_id) {
             disponibilidad: row.dis_nombre,
         }));
         return productoData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function ResenasNegocio (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryResena = `
+            select f.fed_id ,f.fed_comentario, f.fed_like, fed_activo, p.per_foto, u.usu_nombre
+            from feedback f 
+            inner join persona p 
+            on f.per_id = p.per_id
+            inner join usuario u
+            on p.usu_id = u.usu_id
+            where f.neg_id = $1;
+        `;
+        const resResena = await client.query(queryResena, [neg_id]);
+        const resenaData = resResena.rows.map(row => ({
+            id: row.fed_id,
+            comentario: row.fed_comentario,
+            like: row.fed_like,
+            foto: row.per_foto,
+            nombre: row.usu_nombre,
+        }));
+        console.log(resenaData);
+        return resenaData;
     } catch (error) {
         console.error('Error al obtener datos guardados:', error);
         throw error;
