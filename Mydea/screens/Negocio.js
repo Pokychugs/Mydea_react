@@ -630,7 +630,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 10,
-        width: '47%',
+        width: WIDTH * 0.42,
         margin: 5,
     },
     imagen_producto: {
@@ -669,7 +669,7 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: 5,
         width: '100%',
-        height: '70%',
+        height: 'auto',
     },
     texto_nombrepro_modal: {
         fontSize: 40,

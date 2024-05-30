@@ -235,7 +235,7 @@ function Perfil({navigation}) {
                                 <Text style={[styles.Nombre_usuario, styles.textoGuardados]}>Negocios guardados</Text>
                                 {guardadosContext.map((negocio, index) => (
                                     <View key={index} style={[styles.container, styles.contenedor_reseña]}>
-                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio')}>
+                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio',{ negocioId: negocio.id })}>
                                             <AntDesign name='export' size={30}></AntDesign>
                                         </TouchableOpacity>
                                         <View style={{flexDirection: 'row', marginTop: 10,}}>
@@ -281,7 +281,7 @@ function Perfil({navigation}) {
                                 <Text style={[styles.Nombre_usuario, styles.textoGuardados]}>Negocios guardados</Text>
                                 {guardadosContext.map((negocio, index) => (
                                     <View key={index} style={[styles.container, styles.contenedor_reseña]}>
-                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio')}>
+                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio',{ negocioId: negocio.id })}>
                                             <AntDesign name='export' size={30}></AntDesign>
                                         </TouchableOpacity>
                                         <View style={{flexDirection: 'row', marginTop: 10,}}>

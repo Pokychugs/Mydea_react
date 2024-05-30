@@ -26,7 +26,7 @@ const pool = new Pool({
     },
 });
 */
-
+//
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -35,7 +35,7 @@ const pool = new Pool({
     port: 5432,
     ssl: false,
 });
-
+//
 //REGISTRO
 app.post('/registro', async (req, res) => {
     try {
