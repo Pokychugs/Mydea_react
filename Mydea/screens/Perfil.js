@@ -1,21 +1,25 @@
-import * as React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, useWindowDimensions, Pressable} from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, Dimensions,TouchableOpacity, ScrollView, useWindowDimensions, Pressable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import { useState } from 'react';
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
 import { Gesture, GestureDetector, GestureHandlerRootView,} from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTiming, SlideInDown, SlideOutDown, FadeIn, FadeOut,} from "react-native-reanimated";
-import Imagen_perfil from './Imagenes/perfil_icono.png';
 import Imagen_negocio from './Imagenes/neg1.jpg'
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { AuthContext } from './AuthContext';
+import Modal from "react-native-modal";
+
+const WIDTH = Dimensions.get('window').width;
 
 const FirstRoute = () => (
     <ScrollView>
         <View style={[styles.container, styles.contenedor_reseña]}>
-            <TouchableOpacity style={styles.icon_dots}>
-                <MaterialCommunityIcons name='dots-horizontal' size={30}></MaterialCommunityIcons>
+            <TouchableOpacity style={styles.icon_dots} >
+                <AntDesign name='export' size={30}></AntDesign>
             </TouchableOpacity>
             <View style={{flexDirection: 'row', marginTop: 10,}}>
                 <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
@@ -61,29 +65,6 @@ const SecondRoute = () => (
                 </TouchableOpacity>
             </View>
         </View>
-        <View style={[styles.container, styles.contenedor_reseña]}>
-            <TouchableOpacity style={styles.icon_dots}>
-                <MaterialCommunityIcons name='dots-horizontal' size={30}></MaterialCommunityIcons>
-            </TouchableOpacity>
-            <View style={{flexDirection: 'row', marginTop: 10,}}>
-                <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5, marginTop: 10}}>
-                    <Image style={styles.Imagen_negocio} source={Imagen_negocio}></Image>
-                </View>
-                <View style={{flex: 3, marginLeft: 10}}>
-                    <Text style={styles.Nombre_negocio}>Nombre del Producto</Text>
-                    <View style={{flexDirection: 'column'}}>
-                        <Text style={styles.texto}>$00.00</Text>
-                        <Text style={styles.texto}>Disponibilidad:</Text>
-                    </View>
-                </View>
-            </View>
-            <Text style={styles.texto_reseña}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
-            <View>
-                <TouchableOpacity>
-                    <Text></Text>
-                </TouchableOpacity>
-            </View>
-        </View>
     </ScrollView>
 );
 
@@ -95,6 +76,14 @@ const renderScene = SceneMap({
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function Perfil({navigation}) {
+
+    const { usuarioContext } = useContext(AuthContext);
+    const { guardadosContext } = useContext(AuthContext);
+
+    const { user } = useContext(AuthContext);
+
+    const [isModalVisible, setModalVisible] = useState(false);
+
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
@@ -140,9 +129,7 @@ function Perfil({navigation}) {
     transform: [{ translateY: offset.value }],
     }));
 
-    if (!fontsLoaded) {
-        return undefined;
-    }
+    const [Usuario, setUsuario] = useState([]);
 
     const renderTabBar = (props) => (
         <TabBar
@@ -178,9 +165,40 @@ function Perfil({navigation}) {
         setSesion_usuario(false);
         setSin_sesion(true);
         setSesion_vendedor(false);
-        toggleSheet();
+        setModalVisible(false)
     };
 
+    
+
+    useEffect(() => {
+        if (usuarioContext) {
+            if (usuarioContext.tipoId === 1) {
+                setSin_sesion(false);
+                setSesion_usuario(true);
+                setSesion_vendedor(false);
+            } else if (usuarioContext.tipoId === 2) {
+                setSin_sesion(false);
+                setSesion_usuario(false);
+                setSesion_vendedor(true);
+            } else {
+                setSin_sesion(true);
+                setSesion_usuario(false);
+                setSesion_vendedor(false);
+            }
+        } else {
+            setSin_sesion(true);
+            setSesion_usuario(false);
+            setSesion_vendedor(false);
+        }
+    }, [usuarioContext]);
+
+    if (!fontsLoaded) {
+        return undefined;
+    }
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -194,25 +212,18 @@ function Perfil({navigation}) {
                         <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={() => navigation.navigate('Registro')}>
                             <Text style={[styles.texto_boton]}>Crear Cuenta</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionUsuario}>
-                            <Text style={[styles.texto_boton]}>Mostrar Perfil Usuario</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleSesionVendedor}>
-                            <Text style={[styles.texto_boton]}>Mostrar Perfil Vendedor</Text>
-                        </TouchableOpacity>
-                        <Text style={{flex: 1, width: 350}}>Los botones de mostrar perfil estan de a mientras, después se quitan, la idea es que una vez inicie sesión le muestre su perfil, ya sea como usuario o como vendedor</Text>
                     </View>
                 )}
                     {sesion_usuario && (
-                        <View>
+                        <ScrollView showsVerticalScrollIndicator = {false}>
                             <View style={[styles.container]}>
                                 <TouchableOpacity style={styles.icon_log_out} 
-                                onPress={toggleSheet}>
+                                onPress={toggleModal}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
                                 </TouchableOpacity>
-                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
-                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
-                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <Image style={styles.Imagen_perfil} source={{ uri: usuarioContext.foto }}></Image>
+                                <Text style={styles.Nombre_usuario}>{usuarioContext.nombre}</Text>
+                                <Text style={styles.Nombre_real}>{usuarioContext.nombreCompleto}</Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
                                     <Text style={styles.Contacto}>
                                         Datos de contacto
@@ -221,26 +232,38 @@ function Perfil({navigation}) {
                                 </TouchableOpacity>
                             </View>
                             <View style={{flexGrow: 1, flex: 1,}}>
-                                <TabView
-                                navigationState={{ index, routes }}
-                                renderScene={renderScene}
-                                onIndexChange={setIndex}
-                                initialLayout={{ width: layout.width, flex: 1}}
-                                renderTabBar={renderTabBar}
-                                />
+                                <Text style={[styles.Nombre_usuario, styles.textoGuardados]}>Negocios guardados</Text>
+                                {guardadosContext.map((negocio, index) => (
+                                    <View key={index} style={[styles.container, styles.contenedor_reseña]}>
+                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio')}>
+                                            <AntDesign name='export' size={30}></AntDesign>
+                                        </TouchableOpacity>
+                                        <View style={{flexDirection: 'row', marginTop: 10,}}>
+                                            <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
+                                                <Image style={styles.Imagen_negocio} source={{ uri: negocio.logo }}></Image>
+                                            </View>
+                                            <View style={{flex: 3, marginLeft: 10}}>
+                                                <Text style={styles.Nombre_negocio}>{negocio.nombre}</Text>
+                                            </View>
+                                        </View>
+                                        <Text style={styles.texto_reseña}>{negocio.descripcion}</Text>
+                                        <View>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
-                        </View>
+                        </ScrollView>
                     )}
                     {sesion_vendedor && (
-                        <View>
+                        <ScrollView showsVerticalScrollIndicator = {false}>
                             <View style={[styles.container]}>
                                 <TouchableOpacity style={styles.icon_log_out} 
-                                onPress={toggleSheet}>
+                                onPress={toggleModal}>
                                     <IonIcons name='settings-sharp' size={35}></IonIcons>
                                 </TouchableOpacity>
-                                <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
-                                <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
-                                <Text style={styles.Nombre_real}>Nombre real</Text>
+                                <Image style={styles.Imagen_perfil} source={{ uri: usuarioContext.foto }}></Image>
+                                <Text style={styles.Nombre_usuario}>{usuarioContext.nombre}</Text>
+                                <Text style={styles.Nombre_real}>{usuarioContext.nombreCompleto}</Text>
                                 <TouchableOpacity onPress={() => navigation.navigate('Datos_Contacto')} style={[styles.contenedor_contacto, { flexDirection: 'row', alignItems: 'center', width: '90%' }]}>
                                     <Text style={styles.Contacto}>
                                         Datos de contacto
@@ -255,40 +278,51 @@ function Perfil({navigation}) {
                                 </TouchableOpacity>
                             </View>
                             <View style={{flexGrow: 1, flex: 1,}}>
-                                <TabView
-                                navigationState={{ index, routes }}
-                                renderScene={renderScene}
-                                onIndexChange={setIndex}
-                                initialLayout={{ width: layout.width, flex: 1}}
-                                renderTabBar={renderTabBar}
-                                />
+                                <Text style={[styles.Nombre_usuario, styles.textoGuardados]}>Negocios guardados</Text>
+                                {guardadosContext.map((negocio, index) => (
+                                    <View key={index} style={[styles.container, styles.contenedor_reseña]}>
+                                        <TouchableOpacity style={styles.icon_dots} onPress={() => navigation.navigate('Negocio')}>
+                                            <AntDesign name='export' size={30}></AntDesign>
+                                        </TouchableOpacity>
+                                        <View style={{flexDirection: 'row', marginTop: 10,}}>
+                                            <View style={{flex:1,alignItems: 'center',justifyContent: 'center', marginLeft: 5}}>
+                                                <Image style={styles.Imagen_negocio} source={{ uri: negocio.logo }}></Image>
+                                            </View>
+                                            <View style={{flex: 3, marginLeft: 10}}>
+                                                <Text style={styles.Nombre_negocio}>{negocio.nombre}</Text>
+                                            </View>
+                                        </View>
+                                        <Text style={styles.texto_reseña}>{negocio.descripcion}</Text>
+                                        <View>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
-                        </View>
+                        </ScrollView>
                     )}
                 
             </SafeAreaView>
-            {isOpen && (
-                    <>
-                    <AnimatedPressable
-                    style={styles.backdrop}
-                    entering={FadeIn}
-                    exiting={FadeOut}
-                    onPress={toggleSheet}
-                    />
-                    <GestureDetector gesture={pan}>
-                        <Animated.View style={[styles.sheet, translateY]} 
-                        entering={SlideInDown.springify().damping(15)}
-                        exiting={SlideOutDown}>
-                            <TouchableOpacity style={[styles.container, {borderColor: 'rgba(0, 0, 0, 0.1)', borderStyle:'solid', borderBottomWidth: 1,}]}>
-                                <Text style={styles.texto}>Editar Perfil</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.container]} onPress={handleCerrarSesion}>
-                                <Text style={[styles.texto, {color: 'red'}]}>Cerrar Sesión</Text>
-                            </TouchableOpacity>
-                        </Animated.View>
-                    </GestureDetector>
-                    </>
-                )}
+            <Modal isVisible={isModalVisible} 
+            style={{alignItems: 'center', justifyContent: 'center'}}
+            onBackdropPress={() => setModalVisible(false)}
+            onBackButtonPress={() => setModalVisible(false)}
+            propagateSwipe={true}
+            onSwipeStart={() => setModalVisible(false)}
+            useNativeDriverForBackdrop = {true}
+            animationIn={'slideInUp'}
+            animationOut={'slideOutDown'}
+            animationInTiming={500}>
+                <View style={[styles.sheet]} 
+                    entering={SlideInDown.springify().damping(15)}
+                    exiting={SlideOutDown}>
+                        <TouchableOpacity style={[styles.container, {borderColor: 'rgba(0, 0, 0, 0.1)', borderStyle:'solid', borderBottomWidth: 1,}]}>
+                            <Text style={styles.texto}>Editar Perfil</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.container]} onPress={handleCerrarSesion}>
+                            <Text style={[styles.texto, {color: 'red'}]}>Cerrar Sesión</Text>
+                        </TouchableOpacity>
+                    </View>
+            </Modal>
         </GestureHandlerRootView>
     );
 }
@@ -312,6 +346,7 @@ const styles = StyleSheet.create({
         height: 50,
         margin: 6,
         borderRadius: 10,
+        backgroundColor: '#fff',
     },
     boton_crear:{
         borderColor: '#000',
@@ -382,6 +417,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         padding: 10,
         marginHorizontal: 2,
+        backgroundColor: '#fff',
     },
     Imagen_negocio: {
         width: 70,
@@ -421,11 +457,17 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
         zIndex: 1,
+        width: WIDTH,
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: "rgba(0, 0, 0, 0.3)",
         zIndex: 1,
+    },
+    textoGuardados: {
+        fontWeight: 'normal',
+        textAlign: 'center',
+        marginTop: 50,
     },
 });
 

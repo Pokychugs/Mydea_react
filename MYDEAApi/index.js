@@ -3,6 +3,7 @@ const cors = require('cors');
 const { Client } = require("pg");
 const bcrypt = require('bcrypt'); //Ya no utilizo
 const moment = require('moment');
+const { Pool } = require("pg");
 
 const port = 3000;
 const app = express();
@@ -11,6 +12,28 @@ app.use(express.json());
 
 app.listen(port, () => {
     console.log('App escuchando en http://192.168.0.223:3000');
+});
+
+/*
+const pool = new Pool({
+    user: 'ipsrpxvnaqxiwm',
+    host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
+    database: 'db3v6hean6n35q',
+    password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+    port: 5432,
+    ssl: {
+        rejectUnauthorized: false,
+    },
+});
+*/
+
+const pool = new Pool({
+    user: 'postgres',
+    host: 'localhost',
+    database: 'MydeaLocal',
+    password: 'FunnyValentine4',
+    port: 5432,
+    ssl: false,
 });
 
 //REGISTRO
@@ -38,18 +61,7 @@ app.post('/registro', async (req, res) => {
 });
 
 async function verificarUsuarioExistente(usu_nombre) {
-    
-    const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'MydeaLocal',
-        password: 'MydeaEthev4*',
-        port: 5432,
-        ssl: false,
-    });
-
-    await client.connect();
-
+    const client = await pool.connect();
     try {
         const queryUsuarioExistente = `
             SELECT COUNT(*) AS count
@@ -62,23 +74,12 @@ async function verificarUsuarioExistente(usu_nombre) {
         console.error('Error al verificar usuario existente:', error);
         return false;
     } finally {
-        await client.end();
+        client.release();
     }
 }
 
 async function verificarCorreoExistente(per_correo) {
-    
-    const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'MydeaLocal',
-        password: 'MydeaEthev4*',
-        port: 5432,
-        ssl: false,
-    });
-
-    await client.connect();
-
+    const client = await pool.connect();
     try {
         const queryCorreoExistente = `
             SELECT COUNT(*) AS count
@@ -91,23 +92,12 @@ async function verificarCorreoExistente(per_correo) {
         console.error('Error al verificar correo existente:', error);
         return false;
     } finally {
-        await client.end();
+        client.release();
     }
 }
 
 async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_correo, per_nombrereal) {
-    
-    const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'MydeaLocal',
-        password: 'MydeaEthev4*',
-        port: 5432,
-        ssl: false,
-    });
-
-    await client.connect();
-
+    const client = await pool.connect();
     try {
         const tiposValidos = ['1', '2'];
         if (!tiposValidos.includes(tip_id)) {
@@ -137,7 +127,7 @@ async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_co
     } catch (error) {
         console.error('Error al guardar usuario y persona:', error);
     } finally {
-        await client.end();
+        client.release();
     }
 }
 
@@ -146,7 +136,9 @@ app.post('/iniciosesion', async (req, res) => {
     try {
         const userData = req.body;
         await IniciarSesion(userData.usuario, userData.correo, userData.contra);
-        res.json({ message: 'Inicio de sesión exitoso' });
+        const usuarioData = await obtenerDatosUsuario(userData.usuario);
+        const guardadosData = await obtenerDatosGuardados(usuarioData.personaId);
+        res.json({ message: 'Inicio de sesión exitoso', usuario: usuarioData, guardados: guardadosData });
     } catch (error) {
         console.error('Error en el inicio de sesión:', error);
         res.status(401).json({ error: 'Error interno del servidor' });
@@ -154,19 +146,8 @@ app.post('/iniciosesion', async (req, res) => {
 });
 
 async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
-    let client;
+    const client = await pool.connect();
     try {
-        const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
-            port: 5432,
-            ssl: false,
-        });
-    
-        await client.connect();
-
         const query = `
             SELECT usu_password
             FROM Usuario
@@ -200,8 +181,93 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
         throw new Error('Credenciales inválidas');
     } finally {
         if (client) {
-            await client.end();
+            client.release();
         }
+    }
+}
+
+async function obtenerDatosUsuario(usu_nombre) {
+    const client = await pool.connect();
+    try {
+
+        const queryUsuario = `SELECT 
+            u.usu_id,
+            u.usu_nombre,
+            u.usu_password,
+            u.usu_activo,
+            u.tip_id,
+            p.per_id,
+            p.usu_id AS persona_usu_id,
+            p.per_correo,
+            p.per_telefono,
+            p.per_foto,
+            p.per_nombrecompleto,
+            p.per_facebook,
+            p.per_instagram,
+            p.per_twitter,
+            p.per_web,
+            p.per_fecha,
+            p.per_descripcion
+        FROM 
+            Usuario u
+        JOIN 
+            Persona p ON u.usu_id = p.usu_id
+        WHERE 
+            u.usu_nombre = $1;`;
+
+            const resUsuario = await client.query(queryUsuario, [usu_nombre]);
+            const usuarioData = {
+                id: resUsuario.rows[0].usu_id,
+                nombre: resUsuario.rows[0].usu_nombre,
+                password: resUsuario.rows[0].usu_password,
+                activo: resUsuario.rows[0].usu_activo,
+                tipoId: resUsuario.rows[0].tip_id,
+                personaId: resUsuario.rows[0].per_id,
+                personaUsuId: resUsuario.rows[0].persona_usu_id,
+                correo: resUsuario.rows[0].per_correo,
+                telefono: resUsuario.rows[0].per_telefono,
+                foto: resUsuario.rows[0].per_foto,
+                nombreCompleto: resUsuario.rows[0].per_nombrecompleto,
+                facebook: resUsuario.rows[0].per_facebook,
+                instagram: resUsuario.rows[0].per_instagram,
+                twitter: resUsuario.rows[0].per_twitter,
+                web: resUsuario.rows[0].per_web,
+                fecha: resUsuario.rows[0].per_fecha,
+                descripcion: resUsuario.rows[0].per_descripcion
+            };
+            return  usuarioData;
+    } catch (error) {
+        console.error('Error al obtener datos de los negocios:', error);
+        throw error;
+    } finally {
+        if (client) {
+            client.release();
+        }
+    }
+}
+
+async function obtenerDatosGuardados(personaId) {
+    const client = await pool.connect();
+    try {
+        const queryGuardados = `
+            SELECT n.neg_id, n.neg_logo, n.neg_descripcion, n.neg_nombre 
+            FROM negocio n 
+            INNER JOIN guardado g ON n.neg_id = g.neg_id 
+            WHERE g.per_id = $1;
+        `;
+        const resGuardados = await client.query(queryGuardados, [personaId]);
+        const guardadosData = resGuardados.rows.map(row => ({
+            id: row.neg_id,
+            logo: row.neg_logo,
+            descripcion: row.neg_descripcion,
+            nombre: row.neg_nombre
+        }));
+        return guardadosData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
     }
 }
 
@@ -217,20 +283,8 @@ app.get('/inicionegocio', async (req, res) => {
 });
 
 async function obtenerDatosNegocios() {
-    let client;
+    const client = await pool.connect();
     try {
-
-        const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
-            port: 5432,
-            ssl: false,
-        });
-
-        await client.connect();
-
         const queryNegocios = `
         SELECT n.neg_id, n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp, 
         COUNT(f.fed_like) AS likes, COUNT(f.fed_comentario) AS comentarios
@@ -247,6 +301,7 @@ async function obtenerDatosNegocios() {
         }
 
         const negociosData = resultNegocios.rows.map(negocio => ({
+            negocioid: negocio.neg_id,
             imagen: negocio.neg_logo,
             nombre: negocio.neg_nombre,
             direccion: {
@@ -265,7 +320,7 @@ async function obtenerDatosNegocios() {
         throw error;
     } finally {
         if (client) {
-            await client.end();
+            client.release();
         }
     }
 }
@@ -282,20 +337,8 @@ app.get('/inicioproducto', async (req, res) => {
 });
 
 async function obtenerDatosProductos() {
-    let client;
+    const client = await pool.connect();
     try {
-
-        const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
-            port: 5432,
-            ssl: false,
-        });
-
-        await client.connect();
-
         const queryProductos = `
         SELECT p.pro_imagen, p.pro_nombre, p.pro_precio, p.pro_descripcion
         FROM Producto p
@@ -382,54 +425,168 @@ async function obtenerDatosNovedades() {
 }
 
 //VISUALIZAR NEGOCIO ESPECÍFICO
-app.get('/negocioesp', async (req, res) => {
+
+app.get('/negocio/:id', async (req, res) => {
+    const negocioId = req.params.id;
     try {
-        const negocioData = await obtenerNegocioEspecifico();
-        res.json(negocioData);
+        const negocioData = await DatosNegocioIndividual(negocioId);
+        const horarioData = await Horarios(negocioId);
+        const direccionData = await Direccion(negocioId);
+        const productoData = await ProductosNegocio(negocioId);
+        const resenaData = await ResenasNegocio(negocioId);
+        res.json({negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData, resena: resenaData});
     } catch (error) {
         console.error('Error al obtener datos del negocio:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
-async function obtenerNegocioEspecifico() {
-    let client;
+
+async function DatosNegocioIndividual(neg_id) {
+    const client = await pool.connect();
     try {
-
-        const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
-            port: 5432,
-            ssl: false,
-        });
-        
-        await client.connect();
-
-        const queryNegocios = `
-        SELECT n.neg_descripcion, n.neg_imagen1, n.neg_imagen2, n.neg_imagen3
-        FROM Negocio n
-        WHERE n.neg_nombre = $1
-        GROUP BY n.neg_descripcion, n.neg_imagen1, n.neg_imagen2, n.neg_imagen3
+        const queryNegocio = `
+            SELECT n.*, u.usu_nombre, p.per_id, p.per_foto from 
+            Negocio n 
+            inner join Persona p 
+            on p.per_id=n.per_id 
+            inner join Usuario u on p.usu_id=u.usu_id 
+            where n.neg_id=$1;
         `;
-
-        const resultNegocios = await client.query(queryNegocios);
-        if (resultNegocios.rows.length === 0) {
-            throw new Error('No se encontraron datos de negocios');
-        }
-
-        const negociosData = resultNegocios.rows.map(negocio => ({
-            descripcion: negocio.neg_descripcion,
+        const resNegocio = await client.query(queryNegocio, [neg_id]);
+        const negocioData = resNegocio.rows.map(row => ({
+            correo: row.neg_correo,
+            telefono: row.neg_telefono,
+            logo: row.neg_logo,
+            descripcion: row.neg_descripcion,
+            facebook: row.neg_facebook,
+            instagram: row.neg_instagram,
+            twitter: row.neg_twitter,
+            web: row.neg_web,
+            nombre: row.neg_nombre,
+            imagen_1: row.neg_imagen1,
+            imagen_2: row.neg_imagen2,
+            imagen_3: row.neg_imagen3,
+            foto: row.per_foto,
+            usuario: row.usu_nombre,
         }));
-        
-        return negociosData;
+        return negocioData;
     } catch (error) {
-        console.error('Error al obtener datos de los negocios:', error);
+        console.error('Error al obtener datos guardados:', error);
         throw error;
     } finally {
-        if (client) {
-            await client.end();
-        }
+        client.release();
+    }
+}
+
+async function Horarios (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryHorario = `
+            select nh.*, h.* 
+            from Negocio_Horario nh 
+            inner join Horario h 
+            on nh.hor_id=h.hor_id 
+            where nh.neg_id =$1;
+        `;
+        const resHorario = await client.query(queryHorario, [neg_id]);
+        const horarioData = resHorario.rows.map(row => ({
+            abierto: row.hor_abierto,
+            cerrado: row.hor_cerrado,
+            especial: row.hor_especial,
+            dia: row.hor_dia,
+        }));
+        return horarioData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function Direccion (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryDireccion = `
+            select d.* 
+            from direccion d 
+            inner join negocio n 
+            on d.dir_id = n.dir_id 
+            where n.neg_id = $1;
+        `;
+        const resDireccion = await client.query(queryDireccion, [neg_id]);
+        const direccionData = resDireccion.rows.map(row => ({
+            calle: row.dir_calle,
+            numero: row.dir_numero,
+            colonia: row.dir_colonia,
+            cp: row.dir_cp,
+        }));
+        return direccionData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function ProductosNegocio (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryProducto = `
+            select p.*, d.* 
+            from producto p 
+            inner join disponibilidad d 
+            on d.dis_id = p.dis_id 
+            inner join negocio n 
+            on p.neg_id = n.neg_id 
+            where n.neg_id = $1;
+        `;
+        const resProducto = await client.query(queryProducto, [neg_id]);
+        const productoData = resProducto.rows.map(row => ({
+            id: row.pro_id,
+            nombre: row.pro_nombre,
+            descripcion: row.pro_descripcion,
+            precio: row.pro_precio,
+            imagen: row.pro_imagen,
+            disponibilidad: row.dis_nombre,
+        }));
+        return productoData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function ResenasNegocio (neg_id) {
+    const client = await pool.connect();
+    try {
+        const queryResena = `
+            select f.fed_id ,f.fed_comentario, f.fed_like, fed_activo, p.per_foto, u.usu_nombre
+            from feedback f 
+            inner join persona p 
+            on f.per_id = p.per_id
+            inner join usuario u
+            on p.usu_id = u.usu_id
+            where f.neg_id = $1;
+        `;
+        const resResena = await client.query(queryResena, [neg_id]);
+        const resenaData = resResena.rows.map(row => ({
+            id: row.fed_id,
+            comentario: row.fed_comentario,
+            like: row.fed_like,
+            foto: row.per_foto,
+            nombre: row.usu_nombre,
+        }));
+        console.log(resenaData);
+        return resenaData;
+    } catch (error) {
+        console.error('Error al obtener datos guardados:', error);
+        throw error;
+    } finally {
+        client.release();
     }
 }

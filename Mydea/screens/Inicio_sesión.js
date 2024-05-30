@@ -1,15 +1,20 @@
 import { useFonts } from 'expo-font';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from './AuthContext';
 
 function Inicio_sesión({navigation}) {
 
     //BACK
+    const { login } = useContext(AuthContext);
     const [usuario, setUsuario] = useState('');
     const [correo, setCorreo] = useState('');
     const [contra, setContra] = useState('');
+
+    const { setUsuarioContext } = useContext(AuthContext);
+    const { setGuardadosContext } = useContext(AuthContext);
 
     const handleInicioSesion = async () => {
         try {
@@ -22,7 +27,8 @@ function Inicio_sesión({navigation}) {
 
             const userDataJson = JSON.stringify(userData);
 
-            const response = await fetch("http://192.168.249.70:3000/iniciosesion", {
+
+            const response = await fetch("http://192.168.1.74:3000/iniciosesion", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -34,14 +40,18 @@ function Inicio_sesión({navigation}) {
                 throw new Error('Error en la solicitud');
             }
 
-            const data = await response.json();
+            const {usuario: usuarioData, guardados: guardadosData } = await response.json();
+            setUsuarioContext(usuarioData);
+            setGuardadosContext(guardadosData)
+            console.log(usuarioData, guardadosData);
             Alert.alert('Inicio de sesión exitoso');
-            navigation.navigate('Inicio');
+            navigation.navigate('Perfil');
 
         } catch (error) {
             Alert.alert('Error en el inicio de sesión: ' + error.message);
         }
     };
+
 
     //FRONT
     const [fontsLoaded] = useFonts({

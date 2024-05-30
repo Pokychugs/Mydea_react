@@ -1,16 +1,19 @@
-import * as React from 'react';
-import { View, Text, Image, StyleSheet, Linking, Alert} from 'react-native';
+import  React, {useContext} from 'react';
+import { View, Text, Image, StyleSheet, Linking, Alert, ScrollView} from 'react-native';
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
-import Imagen_perfil from './Imagenes/perfil_icono.png';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as Clipboard from 'expo-clipboard';
+import { AuthContext } from './AuthContext';
 
 
 function Datos_Contacto({navigation}) {
+
+    const { usuarioContext } = useContext(AuthContext);
+
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
@@ -20,7 +23,7 @@ function Datos_Contacto({navigation}) {
     }
 
     const handleOpenLink = async () => {
-        const url = 'https://www.facebook.com'; // URL externa que deseas abrir
+        const url = usuarioContext.facebook; // URL externa que deseas abrir
     
         const supported = await Linking.canOpenURL(url);
     
@@ -31,7 +34,7 @@ function Datos_Contacto({navigation}) {
         }
     };
     const handleOpenLink_2 = async () => {
-        const url = 'https://www.instagram.com'; // URL externa que deseas abrir
+        const url = usuarioContext.instagram; // URL externa que deseas abrir
     
         const supported = await Linking.canOpenURL(url);
     
@@ -42,7 +45,7 @@ function Datos_Contacto({navigation}) {
         }
     };
     const handleOpenLink_3 = async () => {
-        const url = 'https://twitter.com'; // URL externa que deseas abrir
+        const url = usuarioContext.twitter; // URL externa que deseas abrir
     
         const supported = await Linking.canOpenURL(url);
     
@@ -53,7 +56,7 @@ function Datos_Contacto({navigation}) {
         }
     };
     const handleOpenLink_4 = async () => {
-        const url = 'https://www.google.com'; // URL externa que deseas abrir
+        const url = usuarioContext.web; // URL externa que deseas abrir
     
         const supported = await Linking.canOpenURL(url);
     
@@ -65,48 +68,80 @@ function Datos_Contacto({navigation}) {
     };
 
     const copyToClipboard = async () => {
-        await Clipboard.setStringAsync('55 1689 3694');
+        await Clipboard.setStringAsync(usuarioContext.telefono);
         Alert.alert('Mensaje', 'Número copiado al portapapeles');
     };
     const copyToClipboard_2 = async () => {
-        await Clipboard.setStringAsync('ejemplo@gmail.com');
+        await Clipboard.setStringAsync(usuarioContext.correo);
         Alert.alert('Mensaje', 'Correo copiado al portapapeles');
     };
 
     return(
-        <SafeAreaView style={styles.container}>
-            <IonIcons style={styles.icon_log_out} name='arrow-back' size={35} onPress={() => navigation.goBack()}></IonIcons>
-            <View style={{flexDirection: 'row', marginTop: 50}}>
-                <View style={{flex:1,alignItems: 'center',justifyContent: 'center'}}>
-                    <Image style={styles.Imagen_perfil} source={Imagen_perfil}></Image>
+        <ScrollView>
+            <SafeAreaView style={styles.container}>
+                <IonIcons style={styles.icon_log_out} name='arrow-back' size={35} onPress={() => navigation.goBack()}></IonIcons>
+                <View style={{flexDirection: 'row', marginTop: 50}}>
+                    <View style={{flex:1,alignItems: 'center',justifyContent: 'center'}}>
+                        <Image style={styles.Imagen_perfil} source={{ uri: usuarioContext.foto }}></Image>
+                    </View>
+                    <View style={{flex: 3}}>
+                        <Text style={styles.Nombre_usuario}>{usuarioContext.nombre}</Text>
+                        <Text style={styles.Nombre_real}>{usuarioContext.nombreCompleto}</Text>
+                    </View>
                 </View>
-                <View style={{flex: 3}}>
-                    <Text style={styles.Nombre_usuario}>Nombre de usuario</Text>
-                    <Text style={styles.Nombre_real}>Nombre real</Text>
+                <View style={{margin: 20}}>
+                    <Text style={styles.texto_descripcion}>{usuarioContext.descripcion}</Text>
                 </View>
-            </View>
-            <View style={{margin: 20}}>
-                <Text style={styles.texto_descripcion}>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Assumenda, quis! Voluptates ea corrupti, nisi odio ullam voluptatibus delectus, praesentium accusamus laboriosam quas quae commodi illo cum neque qui molestiae maiores!</Text>
-            </View>
-            <View style={{width: '90%',marginTop:10, flexDirection: 'row'}}>
-                <View style={{flexDirection: 'column'}}>
-                    <FontAwesome style={styles.icon_contacto} name='phone' size={40}></FontAwesome>
-                    <IonIcons style={styles.icon_contacto} name='mail' size={35}></IonIcons>
-                    <IonIcons style={styles.icon_contacto} name='logo-facebook' size={35}></IonIcons>
-                    <FontAwesome style={styles.icon_contacto} name='instagram' size={35}></FontAwesome>
-                    <FontAwesome style={styles.icon_contacto} name='twitter' size={35}></FontAwesome>
-                    <MaterialCommunityIcons style={styles.icon_contacto} name='web' size={35}></MaterialCommunityIcons>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <FontAwesome style={styles.icon_contacto} name='phone' size={40}></FontAwesome>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                        <Text style={styles.texto_contacto} onPress={copyToClipboard}>{usuarioContext.telefono}</Text>
+                    </View>
                 </View>
-                <View style={{flexDirection: 'column'}}>
-                    <Text style={styles.texto_contacto} onPress={copyToClipboard}>55 1689 3694</Text>
-                    <Text style={styles.texto_contacto} onPress={copyToClipboard_2}>ejemplo@gmail.com</Text>
-                    <Text style={styles.texto_contacto} onPress={handleOpenLink}>Link</Text>
-                    <Text style={styles.texto_contacto} onPress={handleOpenLink_2}>Link</Text>
-                    <Text style={styles.texto_contacto} onPress={handleOpenLink_3}>Link</Text>
-                    <Text style={styles.texto_contacto} onPress={handleOpenLink_4}>Link</Text>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <IonIcons style={styles.icon_contacto} name='mail' size={35}></IonIcons>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                    <Text style={styles.texto_contacto} onPress={copyToClipboard_2}>{usuarioContext.correo}</Text>
+                    </View>
                 </View>
-            </View>
-        </SafeAreaView>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <IonIcons style={styles.icon_contacto} name='logo-facebook' size={35}></IonIcons>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                        <Text style={styles.texto_contacto} onPress={handleOpenLink}>{usuarioContext.facebook}</Text>
+                    </View>
+                </View>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <FontAwesome style={styles.icon_contacto} name='instagram' size={35}></FontAwesome>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                        <Text style={styles.texto_contacto} onPress={handleOpenLink_2}>{usuarioContext.instagram}</Text>
+                    </View>
+                </View>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <FontAwesome style={styles.icon_contacto} name='twitter' size={35}></FontAwesome>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                        <Text style={styles.texto_contacto} onPress={handleOpenLink_3}>{usuarioContext.twitter}</Text>
+                    </View>
+                </View>
+                <View style={{width: '90%',marginTop:10, flexDirection: 'row',}}>
+                    <View style={{flexDirection: 'column'}}>
+                        <MaterialCommunityIcons style={styles.icon_contacto} name='web' size={35}></MaterialCommunityIcons>
+                    </View>
+                    <View style={{flexDirection: 'column'}}>
+                    <Text style={styles.texto_contacto} onPress={handleOpenLink_4}>{usuarioContext.web}</Text>
+                    </View>
+                </View>
+            </SafeAreaView>
+        </ScrollView>
     );
 }
 
@@ -175,6 +210,8 @@ const styles = StyleSheet.create({
         textAlign: 'justify',
         fontSize: 30,
         marginVertical: 10,
+        flexWrap: 'wrap',
+        width: 300,
     },
     icon_contacto: {
         marginRight: 20,

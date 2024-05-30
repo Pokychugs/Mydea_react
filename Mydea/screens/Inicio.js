@@ -21,12 +21,13 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
             try {
-                const response = await fetch("http://192.168.249.70:3000/inicionegocio");
+                const response = await fetch("http://192.168.1.77:3000/inicionegocio");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
                 const negociosData = await response.json();
                 setNegocios(negociosData);
+                console.log(negocios);
             } catch (error) {
                 console.error('Error al obtener datos de los negocios:', error.message);
             }
@@ -39,7 +40,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosProductos = async () => {
             try {
-                const response = await fetch("http://192.168.249.70:3000/inicioproducto");
+                const response = await fetch("http://192.168.1.77:3000/inicioproducto");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -119,7 +120,7 @@ function Inicio({navigation}) {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {negocios.slice(0, 5).map((negocio, index) => (
-                    <TouchableOpacity key={index} style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio', {negocioSeleccionado : negocio})}>
+                    <TouchableOpacity key={index} style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio',{ negocioId: negocio.negocioid })}>
                         <View>
                             <Image style={styles.Imagen_negocio} source={{uri : negocio.imagen}}></Image>
                         </View>

@@ -11,38 +11,32 @@ import imagen_perfil from './Imagenes/asa.jpg'
 import * as Clipboard from 'expo-clipboard';
 import Modal from "react-native-modal";
 import moment from 'moment';
+import 'moment/locale/es';
+
+moment.locale('es');
 
 const WIDTH = Dimensions.get('window').width;
 const HEIGHT = Dimensions.get('window').height;
 
-
-const data = [
-    {
-        id: '1',
-        source: require('./Imagenes/neg1.jpg'),
-    },
-    {
-        id: '2',
-        source: require('./Imagenes/asa.jpg'),
-    },
-    {
-        id: '3',
-        source: require('./Imagenes/neg1.jpg'),
-    },
-];
 
 
 function Negocio({route, navigation}) {
 
     //BACK
     const {negocioSeleccionado} = route.params;
-    const [negocio, setNegocio] = useState(null);
-
     useEffect(() => {
         setNegocio(negocioSeleccionado);
     }, [negocioSeleccionado]);
 
     //FRONT 
+
+    const { negocioId } = route.params;
+    const [negocio, setNegocio] = useState([]);
+    const [horarios, setHorarios] = useState([]);
+    const [direccion, setDireccion] = useState([]);
+    const [productos, setProductos] = useState([]);
+    const [resenas, setResenas] = useState([]);
+    
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
     });
@@ -51,20 +45,9 @@ function Negocio({route, navigation}) {
 
     const [isModalVisible, setModalVisible] = useState(false);
     const [isModalVisible_2, setModalVisible_2] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
-
-    const [fecha, setFecha] = useState('');
-
-    const [lunes, setLunes] = useState('9:00 - 17:00');
-    const [martes, setMartes] = useState('9:00 - 17:00');
-    const [miercoles, setMiercoles] = useState('9:00 - 17:00');
-    const [jueves, setJueves] = useState('9:00 - 17:00');
-    const [viernes, setViernes] = useState('9:00 - 17:00');
-    const [sabado, setSabado] = useState('Cerrado');
-    const [domingo, setDomingo] = useState('Cerrado');
-
-    const [horario, setHorario] = useState({});
 
     const [general, setGeneral] = useState(false);
     const [menor_mayor, setMenor_mayor] = useState(false);
@@ -73,21 +56,64 @@ function Negocio({route, navigation}) {
     const [antiguos, setAntiguos] = useState(false);
     const [disponibilidad, setDisponiblidad] = useState(false);
 
-    useEffect(() => {
-        const fechaActual = moment().format('dddd');
 
-        const horarioEjemplo = {
-            Monday: lunes,
-            Tuesday: martes,
-            Wednesday: miercoles,
-            Thursday: jueves,
-            Friday: viernes,
-            Saturday: sabado,
-            Sunday: domingo,
+    useEffect(() => {
+        const DatosNegocioIndividual = async () => {
+            try {
+                const response = await fetch(`http://192.168.1.77:3000/negocio/${negocioId}`);
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+                const {negocio: negocioData, horario: horarioData, direccion: direccionData, producto: productoData, resena: resenaData} = await response.json();
+                setNegocio(negocioData);
+                setHorarios(horarioData);
+                setDireccion(direccionData);
+                setProductos(productoData);
+                setResenas(resenaData);
+            } catch (error) {
+                console.error('Error al obtener datos del negocio:', error.message);
+            }
         };
-        setFecha(fechaActual);
-        setHorario(horarioEjemplo);
+        DatosNegocioIndividual();
     }, []);
+
+    useEffect(() => {
+        /*console.log("Datos del negocio actualizados:", negocio);
+        console.log("Horario actualizados:", horarios); 
+        console.log("Direccion actualizados:", direccion);
+        console.log("Productos actualizados:", productos);*/
+        console.log("Reseñas actualizadas:", resenas);
+    }, [negocio, horarios, direccion, productos, resenas]);
+
+    const data = negocio.length > 0 ? [
+        {
+            id: '1',
+            source: { uri: negocio[0]?.logo },
+        },
+        {
+            id: '2',
+            source: { uri: negocio[0]?.imagen_1 },
+        },
+        {
+            id: '3',
+            source: { uri: negocio[0]?.imagen_2 },
+        },
+        {
+            id: '4',
+            source: { uri: negocio[0]?.imagen_3 },
+        },
+    ] : [];
+
+    const renderHorario = (horario) => {
+        if (horario.especial !== 'No') {
+            return <Text style={styles.textoEspecial}>{horario.especial}</Text>;
+        }
+        return (
+            <Text style={styles.textoHorario}>
+            {horario.abierto} - {horario.cerrado}
+            </Text>
+        );
+    };
 
     const pressGeneral = async () => {
         setGeneral(true);
@@ -157,8 +183,7 @@ function Negocio({route, navigation}) {
 
 
     const handleOpenLink = async () => {
-        const url = 'https://www.facebook.com';
-    
+        const url = negocio.length > 0 && negocio[0].facebook;    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -168,8 +193,7 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_2 = async () => {
-        const url = 'https://www.instagram.com';
-    
+        const url = negocio.length > 0 && negocio[0].instagram;    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -179,8 +203,7 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_3 = async () => {
-        const url = 'https://twitter.com';
-    
+        const url = negocio.length > 0 && negocio[0].twitter;    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -190,8 +213,7 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_4 = async () => {
-        const url = 'https://www.google.com';
-    
+        const url = negocio.length > 0 && negocio[0].web;    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -202,12 +224,12 @@ function Negocio({route, navigation}) {
     };
 
     const copyToClipboard = async () => {
-        await Clipboard.setStringAsync('55 1689 3694');
-        Alert.alert('Mensaje', 'Número copiado al portapapeles');
+        await Clipboard.setStringAsync(negocio.length > 0 && negocio[0].telefono);
+        Alert.alert(negocio.length > 0 && negocio[0].telefono, 'Número copiado al portapapeles');
     };
     const copyToClipboard_2 = async () => {
-        await Clipboard.setStringAsync('ejemplo@gmail.com');
-        Alert.alert('Mensaje', 'Correo copiado al portapapeles');
+        await Clipboard.setStringAsync(negocio.length > 0 && negocio[0].correo);
+        Alert.alert(negocio.length > 0 && negocio[0].correo, 'Correo copiado al portapapeles');
     };
 
     const handleFocus = () => {
@@ -226,6 +248,16 @@ function Negocio({route, navigation}) {
         setModalVisible_2(!isModalVisible_2);
     };
 
+    const getHorarioHoy = () => {
+        const diaHoy = moment().format('dddd');
+        const horarioHoy = horarios.find(
+            (horario) => horario.dia.toLowerCase() === diaHoy.toLowerCase()
+        );
+        //console.log('Horario de hoy:', horarioHoy);
+        return horarioHoy ? renderHorario(horarioHoy) : <Text>No disponible</Text>;
+    };
+    
+
     return(
         <GestureHandlerRootView style={styles.container}>
             <ScrollView>
@@ -242,35 +274,26 @@ function Negocio({route, navigation}) {
                     }}
                 />
                 <View style={styles.fondo_numero_img}>
-                    <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/3</Text>
+                    <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/4</Text>
                 </View>
                 <View style={styles.contenedorInfo}>
-                    {negocio ? (
-                        <>
-                        <Text style={styles.textoNombre}>{negocio.nombre}</Text>
-                        <View style={styles.contenedorLikes}> 
-                            <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                            <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>{negocio.likes}</Text>
-                        </View>
-                        <Text style={styles.textoDescripcion}>Descrición del negocio</Text>
-                        <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
-                            <Text style={styles.textoSub}>Horarios</Text> 
-                            <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
-                        </TouchableOpacity>
-                        <View style={{marginHorizontal: '5%'}}>
-                            <Text style={styles.textoDescripcion}>Hoy: {horario[moment().format('dddd')]}</Text>
-                        </View>
-                        <View style={styles.contenedorInfo}>
-                            <Text style={styles.textoSub}>Ubicación</Text>
-                            <Text style={styles.textoDescripcion}>
-                            {`${negocio.direccion && negocio.direccion.colonia}, ${negocio.direccion && negocio.direccion.calle} ${negocio.direccion && negocio.direccion.numero}, CP: ${negocio.direccion && negocio.direccion.cp}`}
-                            </Text>
-                        </View>
-                        </>
-                    ) : (
-                        <Text>Cargando...</Text>
-                    )}
+                    <Text style={styles.textoNombre}>{negocio.length > 0 && negocio[0].nombre}</Text>
+                    <View style={styles.contenedorLikes}> 
+                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
+                        <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
+                    </View>
+                    <Text style={styles.textoDescripcion}>{negocio.length > 0 && negocio[0].descripcion}</Text>
                 </View>
+                <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
+                    <Text style={styles.textoSub}>Horarios</Text> 
+                    <IonIcons style={styles.iconoFlecha} name='arrow-forward' size={25}></IonIcons>
+                </TouchableOpacity>
+                <View style={{marginHorizontal: '5%'}}>
+                    <Text style={styles.textoDescripcion}>Hoy: {getHorarioHoy()}</Text>
+                </View>
+                <View style={styles.contenedorInfo}>
+                    <Text style={styles.textoSub}>Ubicación</Text>
+                    <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>                </View>
                 <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
                         initialRegion={{
@@ -296,8 +319,8 @@ function Negocio({route, navigation}) {
                     <Text style={[styles.textoSub, {marginBottom: 10}]}>Propietario</Text>
                     <View style={styles.contenedor_perfil}>
                         <View style={styles.contenedor_amarillo}></View>
-                        <Image source={imagen_perfil} style={styles.imagen_perfil}></Image>
-                        <Text style={[styles.nombre_propietario, {marginTop: 70}]}>Nombre</Text>
+                        <Image source={{ uri: negocio[0]?.foto }} style={styles.imagen_perfil}></Image>
+                        <Text style={[styles.nombre_propietario, {marginTop: 70}]}>{negocio.length > 0 && negocio[0].usuario}</Text>
                         <View style={styles.contenedor_datos}>
                             <View style={[styles.info_perfil, styles.borde_medio]}>
                                 <Text style={styles.nombre_propietario}>1</Text>
@@ -348,44 +371,65 @@ function Negocio({route, navigation}) {
                         <Pressable style={[styles.filtro, disponibilidad && styles.filtro_activo]} onPress={pressDisponibilidad}><Text style={[styles.textoFiltro, disponibilidad && styles.textoFiltro_activo]}>Disponibilidad</Text></Pressable>
                     </ScrollView>
                     <View style={styles.productos}>
-                        <Pressable style={styles.contenedor_producto} onPress={toggleModal}>
-                            <Image style={styles.imagen_producto} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
-                            <Text style={styles.textoPrecio}>$00.00</Text>
-                            <Text style={styles.texto_nombrepro}>Nombre</Text>
+                    {productos.map(producto => (
+                        <Pressable 
+                            key={producto.id} 
+                            style={styles.contenedor_producto} 
+                            onPress={() => {
+                                setSelectedProduct(producto);
+                                setModalVisible(true);
+                            }}
+                        >
+                            <Image style={styles.imagen_producto} source={{ uri: producto.imagen }} />
+                            <Text style={styles.textoPrecio}>${producto.precio}</Text>
+                            <Text style={styles.texto_nombrepro}>{producto.nombre}</Text>
                         </Pressable>
+                    ))}
                     </View>
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={[styles.textoSub, {marginBottom: 10}, styles.borde_bajo]}>Reseñas</Text>
-                    <View style={styles.resena}>
-                        <View style={styles.fondo_nombre_resena}>
-                            <Text style={styles.nombre_usuario}>Nombre de usuario</Text>
+                    {resenas.map(resena => (
+                        <View key={resena.id} style={styles.resena}>
+                            <View style={styles.fondo_nombre_resena}>
+                                <Text style={styles.nombre_usuario}>{resena.nombre}</Text>
+                            </View>
+                            <View style={styles.border_imagen_usuario}>
+                                <Image style={styles.imagen_usuario} source={{uri: resena.foto}}></Image>
+                            </View>
+                            {resena.like && (
+                                <View style={styles.Container_slider}>
+                                    <MaterialCommunityIcons style={styles.corazon_resena} name='heart' size={30}></MaterialCommunityIcons>
+                                    <Text style={styles.texto_like}>Le gustó este negocio</Text>
+                                </View>
+                            )}
+                            <Text style={styles.texto_resena}>{resena.comentario}</Text>
                         </View>
-                        <View style={styles.border_imagen_usuario}>
-                            <Image style={styles.imagen_usuario} source={{uri: 'https://static.wikia.nocookie.net/jojo/images/d/df/GyroP.png/revision/latest?cb=20170517003440&path-prefix=es'}}></Image>
-                        </View>
-                        <View style={styles.Container_slider}>
-                            <MaterialCommunityIcons style={styles.corazon_resena} name='heart' size={30}></MaterialCommunityIcons>
-                            <Text style={styles.texto_like}>Le gustó este negocio</Text>
-                        </View>
-                        <Text style={styles.texto_resena}>Contenido de la reseña</Text>
-                    </View>
+                    ))}
                 </View>
             </ScrollView>
-            <Modal isVisible={isModalVisible} 
-            style={{alignItems: 'center', justifyContent: 'center'}}
-            onBackdropPress={() => setModalVisible(false)}
-            onBackButtonPress={() => setModalVisible(false)}
-            useNativeDriverForBackdrop = {true}
-            animationIn={'fadeIn'}
-            animationOut={'fadeOut'}>
-                <View style={styles.contenedor_producto_modal}>
-                    <Image style={styles.imagen_producto_modal} source={{uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/A_small_cup_of_coffee.JPG/1200px-A_small_cup_of_coffee.JPG'}}></Image>
-                    <Text style={styles.texto_nombrepro_modal}>Nombre</Text>
-                    <Text style={styles.textoPrecioModal}>$00.00</Text>
-                    <Text style={[styles.textoDescripcion, {textAlign: 'center'}]}>Descrición del producto</Text>
-                    <Text style={styles.textoDisponibilidad}>Disponible en todo momento</Text>
-                </View>
+            <Modal 
+                isVisible={isModalVisible} 
+                style={{ alignItems: 'center', justifyContent: 'center' }}
+                onBackdropPress={() => setModalVisible(false)}
+                onBackButtonPress={() => setModalVisible(false)}
+                useNativeDriverForBackdrop={true}
+                animationIn={'fadeIn'}
+                animationOut={'fadeOut'}
+            >
+                {selectedProduct ? (
+                    <View style={styles.contenedor_producto_modal}>
+                        <Image style={styles.imagen_producto_modal} source={{ uri: selectedProduct.imagen }} />
+                        <Text style={styles.texto_nombrepro_modal}>{selectedProduct.nombre}</Text>
+                        <Text style={styles.textoPrecioModal}>${selectedProduct.precio}</Text>
+                        <Text style={[styles.textoDescripcion, { textAlign: 'center' }]}>{selectedProduct.descripcion}</Text>
+                        <Text style={styles.textoDisponibilidad}>{selectedProduct.disponibilidad}</Text>
+                    </View>
+                ) : (
+                    <View style={styles.contenedor_producto_modal}>
+                        <Text style={styles.texto_nombrepro_modal}>No se ha seleccionado ningún producto.</Text>
+                    </View>
+                )}
             </Modal>
 
             <Modal isVisible={isModalVisible_2} 
@@ -405,29 +449,11 @@ function Negocio({route, navigation}) {
                         <View>
                             <Text style={styles.textoSub}>Horarios</Text>
                         </View>
-                        <View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Lunes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{lunes}</Text>
+                        {horarios.map((horario, index) => (
+                            <View key={index} style={styles.contenedorHorario}>
+                                <Text style={styles.textoDescripcion}>{horario.dia}</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{renderHorario(horario)}</Text>
                             </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Martes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{martes}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Miércoles</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{miercoles}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Jueves</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{jueves}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Viernes</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{viernes}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Sábado</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{sabado}</Text>
-                            </View>
-                            <View style={styles.contenedorHorario}>
-                                <Text style={styles.textoDescripcion}>Domingo</Text><Text style={[styles.textoDescripcion, styles.textoHora]}>{domingo}</Text>
-                            </View>
-                        </View>
+                        ))}
                 </View>
             </Modal>
         </GestureHandlerRootView>
@@ -457,6 +483,7 @@ const styles = StyleSheet.create({
     textoDescripcion: {
         fontSize: 23,
         fontFamily: 'InriaSans',
+        textAlign: 'justify',
     },
     contenedorLikes: {
         flexDirection: 'row',
@@ -687,6 +714,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         backgroundColor: '#fff',
         height: 250,
+        marginVertical: 5,
     },
     fondo_nombre_resena: {
         backgroundColor: 'rgb(151, 26, 64)',

@@ -48,11 +48,11 @@ function Registro({navigation}) {
 
     const hideAlert = () => {
         Animated.timing(translateY, {
-          toValue: -1000,
-          duration: 500,
-          useNativeDriver: true,
+            toValue: -1000,
+            duration: 500,
+            useNativeDriver: true,
         }).start(() => {
-          setShowAlert(false);
+            setShowAlert(false);
         });
     };
     
