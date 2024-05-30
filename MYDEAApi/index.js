@@ -38,25 +38,15 @@ app.post('/registro', async (req, res) => {
 });
 
 async function verificarUsuarioExistente(usu_nombre) {
+    
     const client = new Client({
-        user: 'ipsrpxvnaqxiwm',
-        host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-        database: 'db3v6hean6n35q',
-        password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
-        port: 5432,
-        ssl: {
-            rejectUnauthorized: false,
-        },
-    });
-
-    /*const client = new Client({
         user: 'postgres',
         host: 'localhost',
         database: 'MydeaLocal',
-        password: 'FunnyValentine4',
+        password: 'MydeaEthev4*',
         port: 5432,
         ssl: false,
-    });*/
+    });
 
     await client.connect();
 
@@ -77,15 +67,14 @@ async function verificarUsuarioExistente(usu_nombre) {
 }
 
 async function verificarCorreoExistente(per_correo) {
+    
     const client = new Client({
-        user: 'ipsrpxvnaqxiwm',
-        host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-        database: 'db3v6hean6n35q',
-        password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+        user: 'postgres',
+        host: 'localhost',
+        database: 'MydeaLocal',
+        password: 'MydeaEthev4*',
         port: 5432,
-        ssl: {
-            rejectUnauthorized: false,
-        },
+        ssl: false,
     });
 
     await client.connect();
@@ -107,15 +96,14 @@ async function verificarCorreoExistente(per_correo) {
 }
 
 async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_correo, per_nombrereal) {
+    
     const client = new Client({
-        user: 'ipsrpxvnaqxiwm',
-        host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-        database: 'db3v6hean6n35q',
-        password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
+        user: 'postgres',
+        host: 'localhost',
+        database: 'MydeaLocal',
+        password: 'MydeaEthev4*',
         port: 5432,
-        ssl: {
-            rejectUnauthorized: false,
-        },
+        ssl: false,
     });
 
     await client.connect();
@@ -169,16 +157,14 @@ async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     let client;
     try {
         const client = new Client({
-        user: 'ipsrpxvnaqxiwm',
-        host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
-        database: 'db3v6hean6n35q',
-        password: '45a8d512e214c8aec0d15935b70c9addc631a10c65bc23296d0e2e2bd0b2f0a0',
-        port: 5432,
-        ssl: {
-            rejectUnauthorized: false,
-        },
+            user: 'postgres',
+            host: 'localhost',
+            database: 'MydeaLocal',
+            password: 'MydeaEthev4*',
+            port: 5432,
+            ssl: false,
         });
-
+    
         await client.connect();
 
         const query = `
@@ -233,6 +219,7 @@ app.get('/inicionegocio', async (req, res) => {
 async function obtenerDatosNegocios() {
     let client;
     try {
+
         const client = new Client({
             user: 'postgres',
             host: 'localhost',
@@ -353,7 +340,7 @@ app.get('/inicionovedad', async (req, res) => {
 async function obtenerDatosNovedades() {
     let client;
     try {
-
+    
         const client = new Client({
             user: 'postgres',
             host: 'localhost',
@@ -361,7 +348,7 @@ async function obtenerDatosNovedades() {
             password: 'MydeaEthev4*',
             port: 5432,
             ssl: false,
-        });
+        });  
 
         await client.connect();
 
@@ -408,6 +395,7 @@ app.get('/negocioesp', async (req, res) => {
 async function obtenerNegocioEspecifico() {
     let client;
     try {
+
         const client = new Client({
             user: 'postgres',
             host: 'localhost',
@@ -416,7 +404,7 @@ async function obtenerNegocioEspecifico() {
             port: 5432,
             ssl: false,
         });
-
+        
         await client.connect();
 
         const queryNegocios = `

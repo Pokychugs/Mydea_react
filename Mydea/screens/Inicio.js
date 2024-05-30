@@ -21,7 +21,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
             try {
-                const response = await fetch("http://192.168.0.223:3000/inicionegocio");
+                const response = await fetch("http://192.168.249.70:3000/inicionegocio");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -39,7 +39,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosProductos = async () => {
             try {
-                const response = await fetch("http://192.168.0.223:3000/inicioproducto");
+                const response = await fetch("http://192.168.249.70:3000/inicioproducto");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -57,14 +57,14 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNovedades = async () => {
             try {
-                const response = await fetch("http://192.168.0.223:3000/inicionovedad");
+                const response = await fetch("http://192.168.249.70:3000/inicionovedad");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
                 const novedadesData = await response.json();
                 setNovedades(novedadesData);
             } catch (error) {
-                console.error('Error al obtener datos de los productos:', error.message);
+                console.error('Error al obtener datos de las novedades:', error.message);
             }
         };
 
@@ -73,7 +73,7 @@ function Inicio({navigation}) {
     }, []);
 
     if (negocios.length === 0) {
-        return <Text>Cargando...</Text>;
+        return <Text>Cargando negocios...</Text>;
     }
 
     if (productos.length === 0) {
@@ -81,7 +81,7 @@ function Inicio({navigation}) {
     }
 
     if (novedades.length === 0) {
-        return <Text>Cargando productos...</Text>;
+        return <Text>Cargando novedades...</Text>;
     }
 
     if (!fontsLoaded) {
