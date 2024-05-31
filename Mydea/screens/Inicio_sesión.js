@@ -27,8 +27,12 @@ function Inicio_sesión({navigation}) {
 
             const userDataJson = JSON.stringify(userData);
 
+<<<<<<< HEAD
 
             const response = await fetch("http://192.168.227.70:3000/iniciosesion", {
+=======
+            const response = await fetch("http://192.168.1.77:3000/iniciosesion", {
+>>>>>>> beb767d3999ae2cc6929c46e10c37bc24832aaba
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
