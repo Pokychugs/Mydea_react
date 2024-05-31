@@ -14,7 +14,7 @@ app.listen(port, () => {
     console.log('App escuchando en http://192.168.0.223:3000');
 });
 
-/*
+//
 const pool = new Pool({
     user: 'ipsrpxvnaqxiwm',
     host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
@@ -25,8 +25,9 @@ const pool = new Pool({
         rejectUnauthorized: false,
     },
 });
-*/
 //
+
+/*
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -35,7 +36,8 @@ const pool = new Pool({
     port: 5432,
     ssl: false,
 });
-//
+*/
+
 //REGISTRO
 app.post('/registro', async (req, res) => {
     try {
@@ -62,7 +64,6 @@ app.post('/registro', async (req, res) => {
 
 async function verificarUsuarioExistente(usu_nombre) {
     const client = await pool.connect();
-
     try {
         const queryUsuarioExistente = `
             SELECT COUNT(*) AS count
@@ -81,7 +82,6 @@ async function verificarUsuarioExistente(usu_nombre) {
 
 async function verificarCorreoExistente(per_correo) {
     const client = await pool.connect();
-
     try {
         const queryCorreoExistente = `
             SELECT COUNT(*) AS count
@@ -100,7 +100,6 @@ async function verificarCorreoExistente(per_correo) {
 
 async function GuardarUsuario(usu_nombre, usu_pass, tip_id, per_telefono, per_correo, per_nombrereal) {
     const client = await pool.connect();
-
     try {
         const tiposValidos = ['1', '2'];
         if (!tiposValidos.includes(tip_id)) {
@@ -151,7 +150,6 @@ app.post('/iniciosesion', async (req, res) => {
 async function IniciarSesion(usu_nombre, per_correo, usu_pass) {
     const client = await pool.connect();
     try {
-
         const query = `
             SELECT usu_password
             FROM Usuario
@@ -289,7 +287,6 @@ app.get('/inicionegocio', async (req, res) => {
 async function obtenerDatosNegocios() {
     const client = await pool.connect();
     try {
-
         const queryNegocios = `
         SELECT n.neg_id, n.neg_logo, n.neg_nombre, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp, 
         COUNT(f.fed_like) AS likes, COUNT(f.fed_comentario) AS comentarios
@@ -344,7 +341,6 @@ app.get('/inicioproducto', async (req, res) => {
 async function obtenerDatosProductos() {
     const client = await pool.connect();
     try {
-
         const queryProductos = `
         SELECT p.pro_imagen, p.pro_nombre, p.pro_precio, p.pro_descripcion
         FROM Producto p
@@ -375,6 +371,53 @@ async function obtenerDatosProductos() {
     }
 }
 
+//VISUALIZAR NOVEDADES INICIO
+app.get('/inicionovedad', async (req, res) => {
+    try {
+        const novedadData = await obtenerDatosNovedades();
+        res.json(novedadData);
+    } catch (error) {
+        console.error('Error al obtener datos de las novedades:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+async function obtenerDatosNovedades() {
+    const client = await pool.connect();
+    try {
+
+        const queryNovedad = `
+        SELECT n.neg_id, n.nov_nombre, n.nov_foto, n.nov_descripcion
+        FROM Novedad n
+        GROUP BY n.nov_nombre, n.nov_foto, n.nov_descripcion, n.neg_id
+        LIMIT 5;
+        `;
+
+        const resultNovedad = await client.query(queryNovedad);
+        if (resultNovedad.rows.length === 0) {
+            throw new Error('No se encontraron datos de la novedad');
+        }
+
+        const novedadData = resultNovedad.rows.map(novedad => ({
+            id: novedad.neg_id,
+            imagen: novedad.nov_foto,
+            nombre: novedad.nov_nombre,
+            descripcion: novedad.nov_descripcion,
+        }));
+        
+        return novedadData;
+    } catch (error) {
+        console.error('Error al obtener datos de las novedades:', error);
+        throw error;
+    } finally {
+        if (client) {
+            client.release();
+        }
+    }
+}
+
+//VISUALIZAR NEGOCIO ESPECÍFICO
+
 app.get('/negocio/:id', async (req, res) => {
     const negocioId = req.params.id;
     try {
@@ -389,6 +432,7 @@ app.get('/negocio/:id', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
 
 async function DatosNegocioIndividual(neg_id) {
     const client = await pool.connect();

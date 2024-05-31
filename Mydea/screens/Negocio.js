@@ -54,7 +54,7 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.77:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.227.70:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -276,10 +276,6 @@ function Negocio({navigation, route}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={styles.textoNombre}>{negocio.length > 0 && negocio[0].nombre}</Text>
-                    <View style={styles.contenedorLikes}> 
-                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                        <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
-                    </View>
                     <Text style={styles.textoDescripcion}>{negocio.length > 0 && negocio[0].descripcion}</Text>
                 </View>
                 <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
