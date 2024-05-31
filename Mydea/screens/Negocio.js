@@ -20,15 +20,9 @@ const HEIGHT = Dimensions.get('window').height;
 
 
 
-function Negocio({route, navigation}) {
+function Negocio({navigation, route}) {
 
-    //BACK
-    const {negocioSeleccionado} = route.params;
-    useEffect(() => {
-        setNegocio(negocioSeleccionado);
-    }, [negocioSeleccionado]);
-
-    //FRONT 
+    
 
     const { negocioId } = route.params;
     const [negocio, setNegocio] = useState([]);
@@ -60,7 +54,7 @@ function Negocio({route, navigation}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.77:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.227.70:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -183,7 +177,8 @@ function Negocio({route, navigation}) {
 
 
     const handleOpenLink = async () => {
-        const url = negocio.length > 0 && negocio[0].facebook;    
+        const url = negocio.length > 0 && negocio[0].facebook;
+    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -193,7 +188,8 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_2 = async () => {
-        const url = negocio.length > 0 && negocio[0].instagram;    
+        const url = negocio.length > 0 && negocio[0].instagram;
+    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -203,7 +199,8 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_3 = async () => {
-        const url = negocio.length > 0 && negocio[0].twitter;    
+        const url = negocio.length > 0 && negocio[0].twitter;
+    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -213,7 +210,8 @@ function Negocio({route, navigation}) {
         }
     };
     const handleOpenLink_4 = async () => {
-        const url = negocio.length > 0 && negocio[0].web;    
+        const url = negocio.length > 0 && negocio[0].web;
+    
         const supported = await Linking.canOpenURL(url);
     
         if (supported) {
@@ -278,10 +276,6 @@ function Negocio({route, navigation}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={styles.textoNombre}>{negocio.length > 0 && negocio[0].nombre}</Text>
-                    <View style={styles.contenedorLikes}> 
-                        <IonIcons style={styles.icon_heart} name='heart' size={25}></IonIcons>
-                        <Text style={[styles.textoDescripcion, {marginLeft: 10}]}>00</Text>
-                    </View>
                     <Text style={styles.textoDescripcion}>{negocio.length > 0 && negocio[0].descripcion}</Text>
                 </View>
                 <TouchableOpacity style={[styles.contenedorInfo, {flexDirection: 'row'}]} onPress={toggleModal_2}>
@@ -293,7 +287,8 @@ function Negocio({route, navigation}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={styles.textoSub}>Ubicación</Text>
-                    <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>                </View>
+                    <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>
+                </View>
                 <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
                         initialRegion={{
@@ -631,7 +626,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 10,
-        width: '47%',
+        width: WIDTH * 0.42,
         margin: 5,
     },
     imagen_producto: {
@@ -670,7 +665,7 @@ const styles = StyleSheet.create({
         padding: 10,
         margin: 5,
         width: '100%',
-        height: '70%',
+        height: 'auto',
     },
     texto_nombrepro_modal: {
         fontSize: 40,

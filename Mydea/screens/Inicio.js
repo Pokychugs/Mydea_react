@@ -21,7 +21,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNegocios = async () => {
             try {
-                const response = await fetch("http://192.168.1.77:3000/inicionegocio");
+                const response = await fetch("http://192.168.227.70:3000/inicionegocio");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -40,7 +40,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosProductos = async () => {
             try {
-                const response = await fetch("http://192.168.1.77:3000/inicioproducto");
+                const response = await fetch("http://192.168.227.70:3000/inicioproducto");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -58,7 +58,7 @@ function Inicio({navigation}) {
     useEffect(() => {
         const obtenerDatosNovedades = async () => {
             try {
-                const response = await fetch("http://192.168.249.70:3000/inicionovedad");
+                const response = await fetch("http://192.168.227.70:3000/inicionovedad");
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -170,7 +170,7 @@ function Inicio({navigation}) {
                 </View>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginBottom: 20}}>
                 {novedades.slice(0, 5).map((novedad, index) => (
-                    <TouchableOpacity key={index} style={styles.contenedor_negocio}>
+                    <TouchableOpacity key={index} style={styles.contenedor_negocio} onPress={() => navigation.navigate('Negocio',{ negocioId: novedad.id })}>
                         <View>
                             <Image style={styles.Imagen_negocio} source={{uri : novedad.imagen}}></Image>
                         </View>

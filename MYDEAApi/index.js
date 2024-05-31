@@ -14,7 +14,7 @@ app.listen(port, () => {
     console.log('App escuchando en http://192.168.0.223:3000');
 });
 
-/*
+//
 const pool = new Pool({
     user: 'ipsrpxvnaqxiwm',
     host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
@@ -25,8 +25,8 @@ const pool = new Pool({
         rejectUnauthorized: false,
     },
 });
-*/
-
+//
+/*
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -35,6 +35,7 @@ const pool = new Pool({
     port: 5432,
     ssl: false,
 });
+*/
 
 //REGISTRO
 app.post('/registro', async (req, res) => {
@@ -381,24 +382,13 @@ app.get('/inicionovedad', async (req, res) => {
 });
 
 async function obtenerDatosNovedades() {
-    let client;
+    const client = await pool.connect();
     try {
-    
-        const client = new Client({
-            user: 'postgres',
-            host: 'localhost',
-            database: 'MydeaLocal',
-            password: 'MydeaEthev4*',
-            port: 5432,
-            ssl: false,
-        });  
-
-        await client.connect();
 
         const queryNovedad = `
-        SELECT n.nov_nombre, n.nov_foto, n.nov_descripcion
+        SELECT n.neg_id, n.nov_nombre, n.nov_foto, n.nov_descripcion
         FROM Novedad n
-        GROUP BY n.nov_nombre, n.nov_foto, n.nov_descripcion
+        GROUP BY n.nov_nombre, n.nov_foto, n.nov_descripcion, n.neg_id
         LIMIT 5;
         `;
 
@@ -408,6 +398,7 @@ async function obtenerDatosNovedades() {
         }
 
         const novedadData = resultNovedad.rows.map(novedad => ({
+            id: novedad.neg_id,
             imagen: novedad.nov_foto,
             nombre: novedad.nov_nombre,
             descripcion: novedad.nov_descripcion,
@@ -419,7 +410,7 @@ async function obtenerDatosNovedades() {
         throw error;
     } finally {
         if (client) {
-            await client.end();
+            client.release();
         }
     }
 }
