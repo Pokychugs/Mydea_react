@@ -9,7 +9,7 @@
 * npm install moment
 * npm install axios
 
-* Código de búsqueda, tu front:
+* Código de  la pantalla búsqueda, tu front: A ver si lo puedes implementar de nuevo
 /*
 import React, {useState, useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Pressable, Alert, Linking, TextInput, Button} from 'react-native';
