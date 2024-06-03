@@ -54,7 +54,7 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.227.70:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.0.223:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
