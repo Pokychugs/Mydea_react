@@ -14,7 +14,7 @@ app.listen(port, () => {
     console.log('App escuchando en http://192.168.0.223:3000');
 });
 
-//
+/*
 const pool = new Pool({
     user: 'ipsrpxvnaqxiwm',
     host: 'ec2-100-26-73-144.compute-1.amazonaws.com',
@@ -25,9 +25,9 @@ const pool = new Pool({
         rejectUnauthorized: false,
     },
 });
-//
+*/
 
-/*
+//
 const pool = new Pool({
     user: 'postgres',
     host: 'localhost',
@@ -36,7 +36,7 @@ const pool = new Pool({
     port: 5432,
     ssl: false,
 });
-*/
+//
 
 //REGISTRO
 app.post('/registro', async (req, res) => {

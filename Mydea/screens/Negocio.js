@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions, FlatList, Pressable, Alert, Linking, TextInput, Button} from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, runOnJS, withTiming, SlideInDown, SlideOutDown, FadeIn, FadeOut,} from "react-native-reanimated";
 import { ScrollView, GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -6,12 +6,14 @@ import { useFonts } from 'expo-font';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MapView, { Marker } from 'react-native-maps';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Feather from 'react-native-vector-icons/Feather'
-import imagen_perfil from './Imagenes/asa.jpg'
 import * as Clipboard from 'expo-clipboard';
 import Modal from "react-native-modal";
 import moment from 'moment';
 import 'moment/locale/es';
+import { AuthContext } from './AuthContext';
+
 
 moment.locale('es');
 
@@ -22,7 +24,9 @@ const HEIGHT = Dimensions.get('window').height;
 
 function Negocio({navigation, route}) {
 
-    
+    const { guardadosContext, setGuardadosContext } = useContext(AuthContext);
+    const { usuarioContext } = useContext(AuthContext);
+
 
     const { negocioId } = route.params;
     const [negocio, setNegocio] = useState([]);
@@ -41,6 +45,8 @@ function Negocio({navigation, route}) {
     const [isModalVisible_2, setModalVisible_2] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
+    const [sesion, setSesion] = useState(false)
+
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
     const [general, setGeneral] = useState(false);
@@ -50,11 +56,13 @@ function Negocio({navigation, route}) {
     const [antiguos, setAntiguos] = useState(false);
     const [disponibilidad, setDisponiblidad] = useState(false);
 
+    const [guardado, setGuardado] = useState(false);
+
 
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.227.70:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.1.76:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -72,12 +80,22 @@ function Negocio({navigation, route}) {
     }, []);
 
     useEffect(() => {
-        /*console.log("Datos del negocio actualizados:", negocio);
-        console.log("Horario actualizados:", horarios); 
-        console.log("Direccion actualizados:", direccion);
-        console.log("Productos actualizados:", productos);*/
-        console.log("Reseñas actualizadas:", resenas);
-    }, [negocio, horarios, direccion, productos, resenas]);
+        const isBusinessSaved = guardadosContext && guardadosContext.some(negocio => negocio.id === negocioId);
+        if (usuarioContext) {
+            if (usuarioContext.tipoId === 1 || usuarioContext.tipoId === 2) {
+                setSesion(true);
+            } else {
+                setSesion(false);
+            }
+        } else {
+            setSesion(false);
+        }
+
+        console.log(guardadosContext, negocioId);
+        if(isBusinessSaved){
+            setGuardado(true);
+        }
+    }, [guardadosContext, negocioId]);
 
     const data = negocio.length > 0 ? [
         {
@@ -103,7 +121,7 @@ function Negocio({navigation, route}) {
             return <Text style={styles.textoEspecial}>{horario.especial}</Text>;
         }
         return (
-            <Text style={styles.textoHorario}>
+            <Text>
             {horario.abierto} - {horario.cerrado}
             </Text>
         );
@@ -275,6 +293,21 @@ function Negocio({navigation, route}) {
                     <Text style={styles.texto_numero_img}>{currentItemIndex + 1}/4</Text>
                 </View>
                 <View style={styles.contenedorInfo}>
+                    {sesion && (
+                        <>
+                        {guardado ? (
+                            <View style={styles.contenedorLikes}>
+                                <FontAwesome style={[styles.icon_heart, { color: '#FFC300' }]} name='bookmark' size={30} />
+                                <Text style={[styles.textoDescripcion, { marginLeft: 10, fontSize: 25 }]}>Negocio Guardado</Text>
+                            </View>
+                        ) : (
+                            <Pressable style={styles.contenedorLikes}>
+                                <FontAwesome style={styles.icon_heart} name='bookmark-o' size={30} />
+                                <Text style={[styles.textoDescripcion, { marginLeft: 10, fontSize: 25 }]}>Guardar Negocio</Text>
+                            </Pressable>
+                        )}
+                        </>
+                    )}
                     <Text style={styles.textoNombre}>{negocio.length > 0 && negocio[0].nombre}</Text>
                     <Text style={styles.textoDescripcion}>{negocio.length > 0 && negocio[0].descripcion}</Text>
                 </View>
@@ -289,7 +322,7 @@ function Negocio({navigation, route}) {
                     <Text style={styles.textoSub}>Ubicación</Text>
                     <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>
                 </View>
-                <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
+                {/* <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
                         initialRegion={{
                             latitude: 19.25437953360486,
@@ -309,7 +342,7 @@ function Negocio({navigation, route}) {
                             description="Esta es la descripción de mi marcador"
                         />
                     </MapView>
-                </View>
+                </View> */}
                 <View style={styles.contenedorInfo}>
                     <Text style={[styles.textoSub, {marginBottom: 10}]}>Propietario</Text>
                     <View style={styles.contenedor_perfil}>
@@ -482,6 +515,7 @@ const styles = StyleSheet.create({
     },
     contenedorLikes: {
         flexDirection: 'row',
+        marginBottom: 20,
     },
     textoSub: {
         fontSize: 33,

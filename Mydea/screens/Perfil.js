@@ -77,8 +77,8 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 function Perfil({navigation}) {
 
-    const { usuarioContext } = useContext(AuthContext);
-    const { guardadosContext } = useContext(AuthContext);
+    const { usuarioContext, setUsuarioContext } = useContext(AuthContext);
+    const { guardadosContext, setGuardadosContext} = useContext(AuthContext);
 
     const { user } = useContext(AuthContext);
 
@@ -166,6 +166,8 @@ function Perfil({navigation}) {
         setSin_sesion(true);
         setSesion_vendedor(false);
         setModalVisible(false)
+        setUsuarioContext(null);
+        setGuardadosContext(null);
     };
 
     
