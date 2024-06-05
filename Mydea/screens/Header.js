@@ -15,7 +15,7 @@ function Header({ navigation }) {
         }, 200);
 
         try {
-            const response = await axios.post('http://192.168.0.223:3000/buscador', { termino: searchTerm });
+            const response = await axios.post('http://192.168.1.77:3000/buscador', { termino: searchTerm });
             const negocios = response.data;
             navigation.navigate('Busqueda', { negocios });
         } catch (error) {

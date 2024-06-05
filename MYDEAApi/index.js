@@ -433,6 +433,7 @@ app.get('/negocio/:id', async (req, res) => {
     }
 });
 
+
 async function DatosNegocioIndividual(neg_id) {
     const client = await pool.connect();
     try {
@@ -581,6 +582,52 @@ async function ResenasNegocio (neg_id) {
         client.release();
     }
 }
+
+app.post('/guardarNegocio', async (req, res) => {
+    const { neg_id, per_id } = req.body;
+
+    if (!neg_id || !per_id) {
+        return res.status(400).json({ error: 'neg_id y per_id son requeridos' });
+    }
+
+    const client = await pool.connect();
+    try {
+        const query = `
+            INSERT INTO guardado (neg_id, per_id)
+            VALUES ($1, $2);
+        `;
+        const result = await client.query(query, [neg_id, per_id]);
+        res.status(201).json({ message: 'Negocio guardado con éxito', guardado: result.rows[0] });
+    } catch (error) {
+        console.error('Error al guardar negocio:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    } finally {
+        client.release();
+    }
+});
+
+app.post('/realizarComentario', async (req, res) => {
+    const { neg_id, per_id, fed_comentario, fed_like, fed_activo, fed_fecha } = req.body;
+
+    if (!neg_id || !per_id || !fed_comentario || !fed_like || !fed_fecha || !fed_activo) {
+        return res.status(400).json({ error: 'Faltan datos que son requeridos' });
+    }
+
+    const client = await pool.connect();
+    try {
+        const query = `
+            INSERT INTO feedback (neg_id, per_id, fed_comentario, fed_like, fed_activo, fed_fecha)
+            VALUES ($1, $2, $3, $4, $5, $6);
+        `;
+        const result = await client.query(query, [neg_id, per_id, fed_comentario, fed_like, fed_activo, fed_fecha]);
+        res.status(201).json({ message: 'Comentario realizado con éxito con éxito', comentario: result.rows[0] });
+    } catch (error) {
+        console.error('Error al realizar el comentario:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    } finally {
+        client.release();
+    }
+});
 
 //BUSCADOR
 app.post('/buscador', async (req, res) => {

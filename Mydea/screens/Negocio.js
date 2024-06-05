@@ -34,6 +34,8 @@ function Negocio({navigation, route}) {
     const [direccion, setDireccion] = useState([]);
     const [productos, setProductos] = useState([]);
     const [resenas, setResenas] = useState([]);
+
+    const [comentario, setComentario] = useState('');
     
     const [fontsLoaded] = useFonts({
         'InriaSans': require('./fonts/Inria_sans/InriaSans-Regular.ttf'),
@@ -44,6 +46,8 @@ function Negocio({navigation, route}) {
     const [isModalVisible, setModalVisible] = useState(false);
     const [isModalVisible_2, setModalVisible_2] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    
+    const [isLike, setIsLike] = useState(false);
 
     const [sesion, setSesion] = useState(false)
 
@@ -62,7 +66,7 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.76:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.1.68:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -91,11 +95,76 @@ function Negocio({navigation, route}) {
             setSesion(false);
         }
 
-        console.log(guardadosContext, negocioId);
+
+        //console.log(guardadosContext, negocioId, usuarioContext);
         if(isBusinessSaved){
             setGuardado(true);
         }
-    }, [guardadosContext, negocioId]);
+    }, [guardadosContext, negocioId, usuarioContext]);
+
+    const handleGuardarNegocio = async () => {
+        try {
+            const response = await fetch('http://192.168.1.68:3000/guardarNegocio', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ neg_id: negocioId, per_id: usuarioContext.personaId }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la solicitud: ' + response.status);
+            }
+
+            const data = await response.json();
+            setGuardadosContext([...guardadosContext, { id: negocioId, descripcion: negocio[0]?.descripcion, logo: negocio[0]?.logo, nombre: negocio[0]?.nombre}]);
+            setGuardado(true);
+        } catch (error) {
+            console.error('Error al guardar negocio:', error.message);
+        }
+    };
+
+    const handleRealizarComentario = async () => {
+        if (comentario.length > 0) {
+            const fechaActual = moment().format('YYYY-MM-DD');
+            console.log('Si se hizo', fechaActual);
+            console.log({
+                neg_id: negocioId,
+                per_id: usuarioContext.personaId,
+                fed_comentario: comentario,
+                fed_like: isLike,
+                fed_activo: 'true',
+                fed_fecha: fechaActual
+            });
+            try {
+                const response = await fetch('http://192.168.1.68:3000/realizarComentario', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        neg_id: negocioId,
+                        per_id: usuarioContext.personaId,
+                        fed_comentario: comentario,
+                        fed_like: isLike.toString(),
+                        fed_activo: true,
+                        fed_fecha: fechaActual
+                    }),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud: ' + response.status);
+                }
+    
+                const data = await response.json();
+                Alert.alert('Mensaje', 'Comentario realizado con éxito.');
+            } catch (error) {
+                console.error('Error al guardar negocio:', error.message);
+            }
+        } else {
+            Alert.alert('Error', 'El comentario no puede estar vacío.');
+        }
+    };
 
     const data = negocio.length > 0 ? [
         {
@@ -181,6 +250,10 @@ function Negocio({navigation, route}) {
         setDisponiblidad(true);
     };
 
+    const handleLike = async () => {
+        setIsLike(!isLike);
+    };
+
     if (!fontsLoaded) {
         return undefined;
     }
@@ -247,6 +320,14 @@ function Negocio({navigation, route}) {
         await Clipboard.setStringAsync(negocio.length > 0 && negocio[0].correo);
         Alert.alert(negocio.length > 0 && negocio[0].correo, 'Correo copiado al portapapeles');
     };
+    const copyToClipboard_3 = async () => {
+        if (direccion.length > 0) {
+            const { calle, numero, colonia, cp } = direccion[0];
+            const fullAddress = `${calle} ${numero}, ${colonia}, ${cp}.`;
+            await Clipboard.setStringAsync(fullAddress);
+            Alert.alert(fullAddress, 'Dirección copiada al portapapeles');
+        }
+    };
 
     const handleFocus = () => {
         setIsFocused(true);
@@ -301,7 +382,7 @@ function Negocio({navigation, route}) {
                                 <Text style={[styles.textoDescripcion, { marginLeft: 10, fontSize: 25 }]}>Negocio Guardado</Text>
                             </View>
                         ) : (
-                            <Pressable style={styles.contenedorLikes}>
+                            <Pressable style={styles.contenedorLikes} onPress={handleGuardarNegocio}>
                                 <FontAwesome style={styles.icon_heart} name='bookmark-o' size={30} />
                                 <Text style={[styles.textoDescripcion, { marginLeft: 10, fontSize: 25 }]}>Guardar Negocio</Text>
                             </Pressable>
@@ -320,7 +401,9 @@ function Negocio({navigation, route}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={styles.textoSub}>Ubicación</Text>
-                    <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>
+                    <Pressable onPress={copyToClipboard_3}>
+                        <Text style={styles.textoDescripcion}>{direccion.length > 0 && direccion[0].calle} {direccion.length > 0 && direccion[0].numero}, {direccion.length > 0 && direccion[0].colonia}, {direccion.length > 0 && direccion[0].cp}.</Text>
+                    </Pressable>
                 </View>
                 {/* <View style={[styles.contenedorInfo, {borderRadius: 10, overflow: 'hidden', marginTop: 4}]}>
                     <MapView style={styles.map} 
@@ -417,6 +500,31 @@ function Negocio({navigation, route}) {
                 </View>
                 <View style={styles.contenedorInfo}>
                     <Text style={[styles.textoSub, {marginBottom: 10}, styles.borde_bajo]}>Reseñas</Text>
+                    {sesion && (
+                        <View style={{flexDirection: 'row'}}>
+                            <View style={styles.realizarComentario}>
+                                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                                    <TextInput 
+                                    style={styles.inputResena} 
+                                    placeholder='Escribir un comentario'
+                                    onChangeText={text => setComentario(text)}
+                                    value={comentario}></TextInput>
+                                </View> 
+                                <TouchableOpacity style={[styles.boton, styles.boton_crear]} onPress={handleRealizarComentario}>
+                                    <Text style={[styles.texto_boton]}>Comentar</Text>
+                                </TouchableOpacity>
+                            </View>
+                                {isLike ? (
+                                    <Pressable style={{ marginLeft: 15, flex: 1, marginTop: 40}} onPress={handleLike}>
+                                        <FontAwesome style={{color: '#FFC300'}} name='heart' size={40} />
+                                    </Pressable>
+                                ) : (
+                                    <Pressable style={{flex: 1, marginLeft: 15, marginTop: 40}} onPress={handleLike}>
+                                        <FontAwesome name='heart-o' size={40} />
+                                    </Pressable>
+                                )}
+                        </View>
+                    )}
                     {resenas.map(resena => (
                         <View key={resena.id} style={styles.resena}>
                             <View style={styles.fondo_nombre_resena}>
@@ -742,7 +850,7 @@ const styles = StyleSheet.create({
         borderStyle:'solid',
         borderWidth: 2,
         backgroundColor: '#fff',
-        height: 250,
+        height: 'auto',
         marginVertical: 5,
     },
     fondo_nombre_resena: {
@@ -820,6 +928,48 @@ const styles = StyleSheet.create({
         fontFamily: 'InriaSans',
         fontWeight: 'bold',
     },
+    boton: {
+        alignItems: 'center', 
+        justifyContent: 'center',
+        height: 40,
+        margin: 6,
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        width: '50%',
+    },
+    boton_crear:{
+        borderColor: '#000',
+        borderStyle:'solid',
+        borderWidth: 2,
+    },
+    texto_boton: {
+        fontFamily: 'InriaSans',
+        fontSize: 20,
+        marginHorizontal: 5,
+    },
+    realizarComentario: {
+        backgroundColor: '#fff',
+        borderColor: '#000',
+        borderStyle:'solid',
+        borderWidth: 2,
+        borderRadius: 10,
+        padding: 10,
+        flex: 4,
+        marginBottom: 10,
+        justifyContent: 'center',
+        height: 120,
+    },
+    inputResena: {
+        backgroundColor: '#fff', 
+        flex: 3, 
+        borderWidth: 0, 
+        borderBottomWidth: 1,
+        height: 50,
+        fontSize: 20,
+        paddingHorizontal: 10,
+        fontFamily: 'InriaSans',
+        marginBottom: 10,
+    }
 });
 
 export default Negocio;

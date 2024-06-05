@@ -28,7 +28,7 @@ function Inicio_sesión({navigation}) {
             const userDataJson = JSON.stringify(userData);
 
 
-            const response = await fetch("http://192.168.1.76:3000/iniciosesion", {
+            const response = await fetch("http://192.168.1.68:3000/iniciosesion", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -43,7 +43,7 @@ function Inicio_sesión({navigation}) {
             const {usuario: usuarioData, guardados: guardadosData } = await response.json();
             setUsuarioContext(usuarioData);
             setGuardadosContext(guardadosData)
-            console.log(usuarioData, guardadosData);
+            //console.log(usuarioData, guardadosData);
             Alert.alert('Inicio de sesión exitoso');
             navigation.navigate('Perfil');
 
@@ -103,7 +103,7 @@ function Inicio_sesión({navigation}) {
                                 <TextInput style={[styles.textinput, focusedInput === 'input3' ? styles.inputFocused : null]}
                                 onFocus={() => handleFocus('input3')}
                                 onChangeText={text => setContra(text)}
-                                placeholder='CONTRSEÑA'
+                                placeholder='CONTRASEÑA'
                                 secureTextEntry={true}></TextInput>
                             </View>
                             <Text style={styles.texto}>¿Aún no tienes una cuenta?</Text><Text style={[styles.texto, {color:'#ad3f26'}]}

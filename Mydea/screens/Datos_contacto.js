@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     },
     icon_log_out: {
         left: 15,
-        top: 35,
+        top: 45,
         position: 'absolute',
     },
     boton_crear:{
