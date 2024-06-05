@@ -635,60 +635,72 @@ app.post('/buscador', async (req, res) => {
     const client = await pool.connect();
     try {
 
-        const queryBusqueda = `
+        const queryNegocios = `
+            SELECT 'Negocio' AS tipo, 
+                n.neg_id AS id, 
+                n.neg_nombre AS nombre,
+                n.neg_logo AS logo,
+                d.dir_colonia AS colonia,
+                d.dir_calle AS calle,
+                d.dir_numero AS numero,
+                d.dir_cp AS cp,
+                COUNT(f.fed_like) AS likes,
+                COUNT(f.fed_comentario) AS comentarios
+            FROM Negocio n
+            LEFT JOIN Direccion d ON n.dir_id = d.dir_id
+            LEFT JOIN Feedback f ON n.neg_id = f.neg_id
+            WHERE n.neg_nombre ILIKE $1
+            GROUP BY n.neg_id, n.neg_nombre, n.neg_logo, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp;
+        `;
+
+        const resNegocios = await client.query(queryNegocios, [`%${termino}%`]);
+
+        const queryVendedor = `
+            SELECT 'Vendedor' AS tipo, 
+                p.per_id AS id,
+                u.usu_nombre AS nombre,
+                p.per_foto AS foto
+            FROM Persona p
+            LEFT JOIN Usuario u ON p.usu_id = u.usu_id
+            WHERE u.usu_nombre ILIKE $1 AND u.tip_id = 2
+            GROUP BY p.per_id, u.usu_nombre, p.per_foto;
+        `;
+
+        const resVendedor = await client.query(queryVendedor, [`%${termino}%`]);
+
+        const queryUsuario = `
+            SELECT 'Usuario' AS tipo, 
+                p.per_id AS id,
+                u.usu_nombre AS nombre,
+                p.per_foto AS foto,
+                p.per_descripcion AS descripcion
+            FROM Persona p
+            LEFT JOIN Usuario u ON p.usu_id = u.usu_id
+            WHERE u.usu_nombre ILIKE $1 AND u.tip_id = 1
+            GROUP BY p.per_id, u.usu_nombre, p.per_foto;
+        `;
+
+        const resUsuario = await client.query(queryUsuario, [`%${termino}%`]);
+
+        const queryProductos = `
+            SELECT 'Producto' AS tipo, 
+                pro_id AS id, 
+                pro_nombre AS nombre,
+                pro_imagen AS imagen,
+                pro_descripcion AS descripcion,
+                pro_precio AS precio,
+                neg_id AS negocioId
+            FROM Producto
+            WHERE pro_nombre ILIKE $1
+            GROUP BY pro_id, pro_nombre, pro_descripcion, pro_precio, neg_id;
+        `;
+
+        const resProductos = await client.query(queryProductos, [`%${termino}%`]);
+
+        const resultados = [...resNegocios.rows, ...resVendedor.rows, ...resUsuario.rows,, ...resProductos.rows];
         
-        SELECT 'Negocio' AS tipo, 
-            n.neg_id AS id, 
-            n.neg_nombre AS nombre,
-            n.neg_logo AS logo,
-            d.dir_colonia AS colonia,
-            d.dir_calle AS calle,
-            d.dir_numero AS numero,
-            d.dir_cp AS cp,
-            COUNT(f.fed_like) AS likes,
-            COUNT(f.fed_comentario) AS comentarios
-        FROM Negocio n
-        LEFT JOIN Direccion d ON n.dir_id = d.dir_id
-        LEFT JOIN Feedback f ON n.neg_id = f.neg_id
-        WHERE n.neg_nombre ILIKE $1
-        GROUP BY n.neg_id, n.neg_nombre, n.neg_logo, d.dir_colonia, d.dir_calle, d.dir_numero, d.dir_cp
-
-        UNION
-
-        SELECT 'Persona' AS tipo, 
-            p.per_id AS id,
-            u.usu_nombre AS nombre,
-            p.per_foto AS foto,
-            p.per_telefono AS telefono,
-            NULL AS logo,
-            NULL AS colonia,
-            NULL AS calle,
-            NULL AS numero,
-            NULL AS cp
-        FROM Persona p
-        LEFT JOIN Usuario u ON p.usu_id = u.usu_id
-        WHERE u.usu_nombre ILIKE $1
-
-        UNION
-    
-        SELECT 'Producto' AS tipo, 
-            pro_id AS id, 
-            pro_nombre AS nombre,
-            pro_imagen AS imagen,
-            pro_descripcion AS descripcion,
-            NULL AS colonia,
-            NULL AS calle,
-            NULL AS numero,
-            pro_precio AS precio,
-            NULL AS cp
-        FROM Producto
-        WHERE pro_nombre ILIKE $1
-    `;
-
-        const resBusqueda = await client.query(queryBusqueda, [`%${termino}%`]);
-        
-        console.log('Resultados de la búsqueda:', resBusqueda.rows);
-        res.json(resBusqueda.rows);
+        console.log('Resultados de la búsqueda:', resultados);
+        res.json(resultados);
     } catch (error) {
         console.error('Error al buscar:', error)
         res.status(500).json({ error: 'Error interno del servidor' });

@@ -147,7 +147,7 @@ function Registro({navigation}) {
             let response;
             try {
                 console.log('hola');
-                response = await fetch("http://192.168.0.223:3000/registro", {
+                response = await fetch("http://192.168.1.68:3000/registro", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

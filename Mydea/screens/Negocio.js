@@ -66,7 +66,7 @@ function Negocio({navigation, route}) {
     useEffect(() => {
         const DatosNegocioIndividual = async () => {
             try {
-                const response = await fetch(`http://192.168.1.68:3000/negocio/${negocioId}`);
+                const response = await fetch(`http://192.168.1.82:3000/negocio/${negocioId}`);
                 if (!response.ok) {
                     throw new Error('Error en la solicitud: ' + response.status);
                 }
@@ -104,7 +104,7 @@ function Negocio({navigation, route}) {
 
     const handleGuardarNegocio = async () => {
         try {
-            const response = await fetch('http://192.168.1.68:3000/guardarNegocio', {
+            const response = await fetch('http://192.168.1.82:3000/guardarNegocio', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ function Negocio({navigation, route}) {
                 fed_fecha: fechaActual
             });
             try {
-                const response = await fetch('http://192.168.1.68:3000/realizarComentario', {
+                const response = await fetch('http://192.168.1.82:3000/realizarComentario', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
